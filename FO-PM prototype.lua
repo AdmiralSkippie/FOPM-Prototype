@@ -1203,5 +1203,61 @@ function enter_rwy()
                 return
             end
         end
+        if STEP == 4 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(PACKS)
+                end
+                DELAY = TIME + 1
+                STEP = 4.5
+            else
+                return
+            end
+        end
+        if STEP == 4.5 then
+            if TIME >= DELAY then
+                if not PACKS_FOR_TO then
+                    command_once(PACK_1_PB)
+                    DELAY = TIME + 0.3
+                    STEP = 4.6
+                else
+                    if not speak_only_essencials then
+                        play_sound(ON)
+                    end
+                    DELAY = TIME + 0.920
+                    STEP = 5
+                end
+            else
+                return
+            end
+        end
+        if STEP == 4.6 then
+            if TIME >= DELAY then
+                command_once(PACK_2_PB)
+                DELAY = TIME + 0.3
+                STEP = 4.7
+            else
+                return
+            end
+        end
+        if STEP == 4.7 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(OFF)
+                end
+                DELAY = TIME + 0.920
+                STEP = 5
+            end
+        end
+        if STEP == 5 then
+            if TIME >= DELAY then
+                local rindex = math.random(5)
+                play_sound(READY[rindex])
+                DELAY = TIME + 2
+                STEP = 0
+            else
+                return
+            end
+        end
     end
 end

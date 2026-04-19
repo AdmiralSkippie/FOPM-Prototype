@@ -50,6 +50,8 @@ local AL_CL = false
 local PARK_CL = false
 local SEC_CL = false
 local FLTCTL_CHK = false
+local ENT_RWY_DONE = false
+local EXIT_RWY_DONE = false
 
 ----------------------------
 ---- ONGOING PROCEDURES ----
@@ -59,6 +61,8 @@ local EXECUTING_PCP = false
 local EXECUTING_ASP = false
 local EXECUTING_BTP = false
 local ONEENG_TAXI_DEP = false
+local EXECUTING_ENRWY = false
+local EXECUTING_EXRWY = false
 
 -------------------
 ---- VARIABLES ----
@@ -1092,172 +1096,178 @@ end
 ---- ENTER RWY ----
 function enter_rwy()
     if ON_RWY then
-        if STEP == 0 then
-            if TIME >= DELAY then
-                DELAY = TIME + 1
-                STEP = 1
-            else
-                return
-            end
-        end
-        if STEP == 1 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(EXTERIOR_LIGHTS)
-                end
-                DELAY = TIME + 1.740
-                STEP = 1.2
-            else
-                return
-            end
-        end
-        if STEP == 1.2 then
-            if TIME >= DELAY then
-                STROBE_SW = 2
-                DELAY = TIME + 0.3
-                STEP = 1.3
-            else
-                return
-            end
-        end
-        if STEP == 1.3 then
-            if TIME >= DELAY then
-                LANDLT_L_SW = 2
-                LANDLT_R_SW = 2
-                DELAY = TIME + 0.3
-                STEP = 1.4
-            else
-                return
-            end
-        end
-        if STEP == 1.4 then
-            if TIME >= DELAY then
-                TAXILT_SW = 2
-                DELAY = TIME + 1.3
-                STEP = 1.5
-            else
-                return
-            end
-        end
-        if STEP == 1.5 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(SET)
-                end
-                DELAY = TIME + 1
-                STEP = 2
-            else
-                return
-            end
-        end
-        if STEP == 2 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(TCAS)
-                end
-                DELAY = TIME + 1.218
-                STEP = 2.5
-            else
-                return
-            end
-        end
-        if STEP == 2.5 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(TA_RA)
-                end
-                TCAS_SW = 4
-                DELAY = TIME + 1.792
-                STEP = 3
-            else
-                return
-            end
-        end
-        if STEP == 3 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(ENGINE_MODE_SELECTOR)
-                end
-                DELAY = TIME + 1.865
-                STEP = 3.5
-            else
-                return
-            end
-        end
-        if STEP == 3.5 then
-            if TIME >= DELAY then
-                if RAINING and ENG_MODEL ~= 1 then
-                    play_sound(IGNITION)
-                    ENG_MODE = 2
-                    DELAY = 1.095
-                    STEP = 4
+        if not ENT_RWY_DONE then
+            if STEP == 0 then
+                if TIME >= DELAY then
+                    DELAY = TIME + 1
+                    STEP = 1
                 else
+                    return
+                end
+            end
+            if STEP == 1 then
+                if TIME >= DELAY then
                     if not speak_only_essencials then
-                        play_sound(NORMAL)
+                        play_sound(EXTERIOR_LIGHTS)
                     end
-                    ENG_MODE = 1
-                    DELAY = 1.129
-                    STEP = 4
-                end
-            else
-                return
-            end
-        end
-        if STEP == 4 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(PACKS)
-                end
-                DELAY = TIME + 1
-                STEP = 4.5
-            else
-                return
-            end
-        end
-        if STEP == 4.5 then
-            if TIME >= DELAY then
-                if not PACKS_FOR_TO then
-                    command_once(PACK_1_PB)
-                    DELAY = TIME + 0.3
-                    STEP = 4.6
+                    DELAY = TIME + 1.740
+                    STEP = 1.2
                 else
+                    return
+                end
+            end
+            if STEP == 1.2 then
+                if TIME >= DELAY then
+                    STROBE_SW = 2
+                    DELAY = TIME + 0.3
+                    STEP = 1.3
+                else
+                    return
+                end
+            end
+            if STEP == 1.3 then
+                if TIME >= DELAY then
+                    LANDLT_L_SW = 2
+                    LANDLT_R_SW = 2
+                    DELAY = TIME + 0.3
+                    STEP = 1.4
+                else
+                    return
+                end
+            end
+            if STEP == 1.4 then
+                if TIME >= DELAY then
+                    TAXILT_SW = 2
+                    DELAY = TIME + 1.3
+                    STEP = 1.5
+                else
+                    return
+                end
+            end
+            if STEP == 1.5 then
+                if TIME >= DELAY then
                     if not speak_only_essencials then
-                        play_sound(ON)
+                        play_sound(SET)
+                    end
+                    DELAY = TIME + 1
+                    STEP = 2
+                else
+                    return
+                end
+            end
+            if STEP == 2 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(TCAS)
+                    end
+                    DELAY = TIME + 1.218
+                    STEP = 2.5
+                else
+                    return
+                end
+            end
+            if STEP == 2.5 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(TA_RA)
+                    end
+                    TCAS_SW = 4
+                    DELAY = TIME + 1.792
+                    STEP = 3
+                else
+                    return
+                end
+            end
+            if STEP == 3 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(ENGINE_MODE_SELECTOR)
+                    end
+                    DELAY = TIME + 1.865
+                    STEP = 3.5
+                else
+                    return
+                end
+            end
+            if STEP == 3.5 then
+                if TIME >= DELAY then
+                    if RAINING and ENG_MODEL ~= 1 then
+                        play_sound(IGNITION)
+                        ENG_MODE = 2
+                        DELAY = 1.095
+                        STEP = 4
+                    else
+                        if not speak_only_essencials then
+                            play_sound(NORMAL)
+                        end
+                        ENG_MODE = 1
+                        DELAY = 1.129
+                        STEP = 4
+                    end
+                else
+                    return
+                end
+            end
+            if STEP == 4 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(PACKS)
+                    end
+                    DELAY = TIME + 1
+                    STEP = 4.5
+                else
+                    return
+                end
+            end
+            if STEP == 4.5 then
+                if TIME >= DELAY then
+                    if not PACKS_FOR_TO then
+                        command_once(PACK_1_PB)
+                        DELAY = TIME + 0.3
+                        STEP = 4.6
+                    else
+                        if not speak_only_essencials then
+                            play_sound(ON)
+                        end
+                        DELAY = TIME + 0.920
+                        STEP = 5
+                    end
+                else
+                    return
+                end
+            end
+            if STEP == 4.6 then
+                if TIME >= DELAY then
+                    command_once(PACK_2_PB)
+                    DELAY = TIME + 0.3
+                    STEP = 4.7
+                else
+                    return
+                end
+            end
+            if STEP == 4.7 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(OFF)
                     end
                     DELAY = TIME + 0.920
                     STEP = 5
                 end
-            else
-                return
             end
-        end
-        if STEP == 4.6 then
-            if TIME >= DELAY then
-                command_once(PACK_2_PB)
-                DELAY = TIME + 0.3
-                STEP = 4.7
-            else
-                return
-            end
-        end
-        if STEP == 4.7 then
-            if TIME >= DELAY then
-                if not speak_only_essencials then
-                    play_sound(OFF)
+            if STEP == 5 then
+                if TIME >= DELAY then
+                    local rindex = math.random(5)
+                    play_sound(READY[rindex])
+                    DELAY = TIME + 2
+                    STEP = 0
+                    EXECUTING_ENRWY = false
+                    ENT_RWY_DONE = true
+                else
+                    return
                 end
-                DELAY = TIME + 0.920
-                STEP = 5
             end
-        end
-        if STEP == 5 then
-            if TIME >= DELAY then
-                local rindex = math.random(5)
-                play_sound(READY[rindex])
-                DELAY = TIME + 2
-                STEP = 0
-            else
-                return
-            end
+        else
+            EXECUTING_ENRWY = false
         end
     end
 end

@@ -4,6 +4,7 @@
 --------------------------
 
 speak_only_essencials = false
+fo_autoperform = false
 
 --------------------------
 ---- Male Voices Load ----

@@ -191,18 +191,18 @@ dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
 dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRESS
 dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 -- ENG TYPE INDICATION SELECTOR -- 
-ENG_THRRating = 0
-ENG_1_THR = 0
-ENG_2_THR = 0
+ENG_THRRate = 0
+ENG_1_POWER = 0
+ENG_2_POWER = 0
 function CHECK_ENGINE_TYPE()
     if ENG_MODEL ~= 1 then
-        ENG_THRRating = ENG_THRRating_N1
-        ENG_1_THR = ENG_1_N1
-        ENG_2_THR = ENG_2_N1
+        ENG_THRRate = ENG_THRRating_N1
+        ENG_1_POWER = ENG_1_N1
+        ENG_2_POWER = ENG_2_N1
     else
-        ENG_THRRating = ENG_THRRating_EPR
-        ENG_1_THR = ENG_1_EPR
-        ENG_2_THR = ENG_2_EPR
+        ENG_THRRate = ENG_THRRating_EPR
+        ENG_1_POWER = ENG_1_EPR
+        ENG_2_POWER = ENG_2_EPR
     end
 end
 

@@ -1,0 +1,95 @@
+||||| CKECK LIST |||||
+
+++ ALL THE ITEMS ARE ONLY CHECK ++
+* CPT CONFIRMATION
+
+//// BEFORE START ////
+    * EFB PREP                  |   COMPLETED
+    * AIRCRAFT PBN CAPABILITY   |   CHECK
+    +COCKPIT PREPARATION         |   COMPLETED   |   ****CHECK PF CKPT PREPARATION****
+    * GEAR PINS AND COVERS      |   REMOVED
+    +SIGNS                       |   ON/AUTO
+    +ADIRS                       |   NAV
+    *FUEL QTY                   |   SET
+    *BARO REF                   |   SET     | ****CHECK BARO REFERENCE WITH THE METAR****
+----DOWN TO THE LINE----
+
+//// BEFORE START BELOW THE LINE ////
+    *EFB                        |   SET
+    *ATC                        |   SET
+    +WINDOWS/DOORS               |   CLOSE
+    +BEACON                      |   ON
+    +THR LEVERS                  |   IDLE
+    *PARKING BREAK              |   AS RQRD |   SET
+----C/L COMPLETED----
+
+//// AFTER START ////
+    *ANTI ICE                   |   AS RQRD |   SET
+    *ECAM STS                    |   CHECK
+    *PITCH TRIM                  |   (sey setup) SET
+    +RUDDER TRIM                 |   CERO
+----C/L COMPLETED----
+
+//// BEFORE TAKEOFF ////
+    *FLIGHT CONTROLS            |   CHECK
+    *FLT INTRUMENTS             |   CHECK
+    BREAFING                    |   CONFIR  |   ****CHECK CONFIRMATION OF BREAFING****
+    *FLAPS                      |   CONF (SAY CONF) SET
+    *V1 VR V2 FLX               |   (CONFIRM)
+    *ECAM MEMO                  |   TAKEOFF NO BLUE
+----DOWN TO THE LINE----
+
+//// BEFORE TAKEOFF BELOW THE LINE ////
+*T/O RWY                        |   (Check rwy) CONFIRM
++NAV ON FMA                      |   (Check NAV) CHECK
++CABIN CREW                      |   ADVISED
++TCAS                            |   TA/RA
++ENG MODE                        |   AS RQRD |   ****CHECK DEPENDING THE BREAFING****
++PACKS/APU BLEED                 |   AS RQRD |   ****CHECK DEPENDING THE BREFAING****
+----C/L COMPLETED----
+
+//// AFTER T/O ////
++LDG GEAR                        |   UP
++FLAPS                           |   RETRACTED
++PACKS                           |   ON
+
+//// CLIMB ///
++BARO REF                        |   STD SET (Check standar)
+
+//// APPROACH ////
++BREAFING                        |   CONFIRM
++ECAM STATUS                     |   CHECK
+**BARO REF                      |   SET
++MINIMUM                         |   SET
++ENG MODE                        |   AS RQRD
+
+//// LANDING ////
++CABIN CREW                      |   ADVISED
++A/THR                           |   (CHECK FMA)
++AUTOBRAKES                      |   AS RQRD (check A/B)
++*ECAM MEMO                       |   LDG NO BLUE
+
+//// AFTER LANDING ////
++FLAPS                           |   RETRACTED/CONF 1
++SPOILERS                        |   DISARMED
++APU                             |   AS RQRD
++RADAR                           |   OFF/STBY
++PWS                             |   OFF
+
+//// PARKING ////
++APU BLEED                       |   ON
++ENGINES                         |   OFF
++SEAT BELTS                      |   OFF
+*EXT LIGHTS                      |   AS RQRD
++FUEL PUMPS                      |   OFF
++PARK BRK                        |   ON/OFF COCHK SET
+*EFB                             |   Set
+
+//// SECURING ////
++ADIRS                           |   OFF
+*OXYGEN                          |   OFF
++APU BLEED                       |   OFF
+*EMER EXIT LT                    |   OFF
+*NO PORTABLE                     |   OFF
+*APU AND BAT                     |   OFF
+*EFB                             |   OFF

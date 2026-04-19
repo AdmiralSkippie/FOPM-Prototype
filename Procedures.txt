@@ -1,0 +1,189 @@
+ //// Preliminary Cockpit Prep ////
+1    *ENG MASTERS         |   CHECK OFF
+2    *ENG MODE SEL        |   CHECK NORMAL
+3    *WEATHER RADAR       |   OFF
+4    *L/G LEVER           |   CHECK DOWN
+5    *WIPERS              |   OFF
+6    *BAT                 |   CHECK AUTO
+7    *EXT PWR             |   ON
+8    *ECAM RECALL         |   PRESS
+9    *ECAM CHECK
+        *OXY PRESS
+        *HYD QTY
+        *OIL QTY
+10    *FLAPS               |   CHECK POSITION
+11    *SPD BRK             |   RET & DISARM
+12    *PARKING BREAK       |   ON
+13    *ACCU/BRAKES PRESS   |   CHECK
+14    *ALTN BRAKING        |   CHECK
+
+**** Departure Breafing ****
+
+//// After Start ////
+Trigger: ENG MODE SELECTOR--NORM
+1    *GND SPOILERS    |   ARM
+2    *RUD TRIM        |   ZERO
+3    FLAPS           |   (Set conf)  Set
+4    PITCH TRIM      |   (Set Conf)  Set
+5    *ECAM STS        |   CHECK
+
+//// Flight Controls Check ////
+    *ELEVATOR
+    *AILERONS
+    *RUDDER
+
+//// Before Take Off ////
+1    *RADAR                   |   ON (SYS1/2)
+2    *PWS                     |   ON
+3    *TERRAIN                 |   ON
+4    *BRAKE TEMP  |   (CHECK BELOW 150°)
+        *IF YES AND BF ON    |   BREAK FAN OFF
+        *IF NO AND BF ON     |   ANNOUNCE WAIT
+        *IF YES AND BF OFF   |   CONTINUE
+//// ENTER\CROSS RWY ////
+5    *EXTERIOR LIGHTS         |   SET (Landing, Taxi, Strobes)
+6    *TCAS                    |   TA/RA
+7    *ENG MODE                |   AS RQRD (Set IGN/CON with rain)
+8    *PACKS                   |   AS RQRD (Set off if needed(breafing))
+
+//// Take Off ////
+    **** FMA reading ****
+    *CHECK THRUST STABLE     |   STABLE
+    *CHECK THRUST            |   THRUST SET
+    *CHECK 100Knt            |   100
+    *CHECK V1                |   V1
+    *CHECK VR                |   ROTATE
+    *CHECK CLB RATE          |   POSITIVE CLIMB
+    *GEAR UP                 |   GEAR UP
+    *CHECK THR CLB
+     ---- IF APU TO PACKS ----
+            *ENG 1 BLEED     |   ON
+            *After 10 Sec
+            *ENG 2 BLEED     |   ON
+            *APU BLEED       |   OFF
+            *APU MASTER SW   |   OFF
+        ---- IF PACKS OF ----
+            *PACK 1          |   ON
+            *After 30 Sec
+            *PACK 2          |   ON
+
+//// 10,000 FT CLB ////
+    *RWY TRNOFF LIGHTS   |   OFF
+    *LND LIGHTS          |   RETRACT
+    *SEAT BELTS          |   OFF/AUTO
+    *EFIS                |   80 Nm
+    *TERRAIN             |   OFF
+
+//// Descend Prep ////
+    Set Config
+    Mini Breafing
+    *GPWS LDG FLAP 3
+        IF NEEDED   |   GPWS LDG FLAP 3 SW  |   ON
+        IF NOT      |   CONTINUE
+
+//// 10.000 FT DES ////
+    *EXT LIGHTS  |   ON (RWY TOFL, LND, TAXI, WING)
+    *SEAT BELTS  |   ON
+    *EFIS
+        |   20Nm
+        |   TERRAIN
+    *LS PB       |   AS RQRD (ON IF ILS/FLS)
+    *ENG MODE    |   AS RQRD (IGN/CON IF RAIN)
+
+//// GO ARROUND ////
+    *CHECK APP PHASE
+    *CHECK TOGA
+        YES
+            *CALLOUT     |   GO/TOGA
+            *FLAPS       |   1 SET UP
+            *POSITIVE    |   GEAR UP
+        NO
+            CONTINUE TILL DECEL
+
+//// TOUCH DOWN ////
+    *check TD
+        NO  |   RETURN
+        YES
+            *CHECK SPOILERS  |   SPOILERS
+            *CHECK REVERSE   |   REVERSE GREEN
+            *CHECK DECEL     |   DECEL   |   DECEL PHASE
+            * 60 Knt          |   CALLOUT
+
+//// After Landing ////
+Trigger: GND SPOILERS DISARM
+    *RADAR                           |   OFF/STBY
+    *PWS                             |   OFF
+    *ENG MODE                        |   NORM
+    *FLAPS
+        *IF OAT < 29°                |   RETRACT
+        *IF OAT >= 29°               |   1
+    *APU                             |   Start
+    *ANTI ICE                        |   AS RQRD
+    *BRAKE TEMP                      |   CHECK
+        *IF > 150° & CRONO > 5min    |   BRK FAN PB
+        *IF CRONO < 5min             |   RETURN
+
+//// Vacating the RWY ////
+Command Activation
+    *LAND LIGHTS         |   RETRACT
+    *STROBE              |   AUTO
+    *NOSE TAXI           |   TAXI
+    *TCAS                |   XPNDR
+
+//// Parking ////
+    *ANTI-ICE            |   OFF
+    *APU-BLEED           |   ON
+    *FUEL PUMPS          |   OFF
+    *ATC                 |   STBY
+    *BRAKE FAN   
+        *IF CRONO < 5min |   BRK FAN PB ON
+        *IF CRONO > 5min
+            CHECK TEMP
+
+
+----------------------------------------------------------------------
+|||||||||||||||||||||||| SUP PROCEDURES ||||||||||||||||||||||||||||||
+----------------------------------------------------------------------
+
+//// ONE ENGINE TAXI DEPARTURE ////
+OPTION AVAIL BEFORE PUSHBACK
+    *ENG 1                   |   CHECK AVAIL
+    *AFTER START PROCEDURES
+    *CHECK TAXI LIGHT
+        *YES |   Y ELEC PUMP |   ON
+        NO  |   RETURN
+    ****CHECK STRAIGHT LINE****
+        NO  |   RETURN
+        YES |   CONTINUE
+    ****WHEN COMANDED
+    *Y ELEC PUMP             |   OFF
+    *APU BLEED               |   ON
+    *ENG MODE                |   IGN
+    --WAIT 10S--
+    *ENG 2                   |   START
+    ++WHEN ENG 2 AVAIL++
+    *CHECK TIME              |   START CRONO
+    *ENG MODE                |   NORM
+    *APU BLEED               |   OFF(AS RQRD IF APU TO PACKS)
+    *APU MASTER              |   OFF(AS RQRD IF APU TO PACKS)
+    *XBLEED                  |   AUTO
+    *ECAM STS                |   CHECK
+    *ENG 2 ANTI-ICE          |   AS RQRD
+    ++WHEN AFTER START C/L++
+    *FLIGHTCONTROLS          |   CHECK
+    *AUTOBRAKES              |   MAX
+    *TO CONFIG P/B           |   PRESS
+    *CHECK TIME
+        IF < 2min   |   RETURN
+        IF > 2min   |   READY FOR T/O
+
+//// ONE ENGINE TAXI ARRIVAL ////
+    *CHECK APU AVAIL
+        NO  |   RETURN
+        YES |   CONTINUE
+    *CHECK TIME
+        IF < 3min   |   RETURN
+        IF > 3min   |   CONTINUE
+    *ENG 2           |   SHUTDOWN
+    *Y ELEC PUMP     |   ON
+    ++ AT PARKING (LIGHTS OUT/ PRKING BRAKE ON)

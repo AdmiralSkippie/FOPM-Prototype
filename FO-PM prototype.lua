@@ -64,6 +64,14 @@ local ONEENG_TAXI_DEP = false
 local EXECUTING_ENRWY = false
 local EXECUTING_EXRWY = false
 
+------------------
+---- COMMANDS ----
+------------------
+
+local command_GUP = false
+local command_FLPS_1UP = false
+local command_FLPS_1DN = false
+
 -------------------
 ---- VARIABLES ----
 -------------------
@@ -77,6 +85,31 @@ local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
 local RAINING = false
 local PACKS_FOR_TO = false
+
+-------------------------
+---- ENGINE THR MATH ----
+-------------------------
+
+local STABLE1_CHECK = 0
+local STABLE2_CHECK = 0
+local ENG_THR_Rating = 0
+local ENG_1_THR = 0
+local ENG_2_THR = 0
+
+function engine_math()
+    if ENG_MODEL == 1 then
+        ENG_THR_Rating = math.floor(ENG_THRRate * 100) / 100
+        ENG_1_THR = math.floor(ENG_1_POWER * 100) / 100
+        ENG_2_THR = math.floor(ENG_2_POWER * 100) / 100
+    else
+        ENG_THR_Rating = math.floor(ENG_THRRate * 10) / 10
+        ENG_1_THR = math.floor(ENG_1_POWER * 10) / 10
+        ENG_2_THR = math.floor(ENG_2_POWER * 10) / 10
+    end
+end
+
+do_every_frame(engine_math())
+
 
 ---------------------
 ---- FLAPS TO VOICE CHECK ----
@@ -1268,6 +1301,119 @@ function enter_rwy()
             end
         else
             EXECUTING_ENRWY = false
+        end
+    end
+end
+
+---- TAKE OFF PROCEDURE ----
+function take_off_proc()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            if ENG_1_N1 > 50 and ENG_2_N1 > 50 then
+                STABLE1_CHECK = ENG_1_THR
+                STABLE2_CHECK = ENG_2_THR
+                STEP = 1
+                DELAY = TIME + 1
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            if ENG_1_THR == STABLE2_CHECK and ENG_2_THR == STABLE1_CHECK then
+                play_sound(STABLE)
+                DELAY = TIME + 1
+                STEP = 2
+            else
+                STABLE1_CHECK = ENG_1_THR
+                STABLE2_CHECK = ENG_2_THR
+                DELAY = TIME + 0.8
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            if ENG_1_THR == ENG_THR_Rating and ENG_2_THR == ENG_THR_Rating then
+                DELAY = TIME + 5
+                STEP = 2.5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 2.5 then
+        if TIME >= DELAY then
+            play_sound(TRHUST_SET)
+            DELAY = TIME + 1.347
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then -- speeds check --
+        if TIME >= DELAY then
+            if IND_AIRSPEED == 100 then
+                play_sound(N100)
+                DELAY = TIME + 1.179
+            end
+            if IND_AIRSPEED == V1_SPEED - 1 then
+                play_sound(V1)
+                DELAY = TIME + 0.992
+            end
+            if IND_AIRSPEED >= VR_SPEED - 1 then
+                play_sound(ROTATE)
+                DELAY = TIME + 1.005
+                STEP = 4
+            end
+            return
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if VERTICAL_SPEED > 300 then
+            DELAY = TIME + 2
+            STEP = 5
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if GNDAIR_SW == 0 then
+                if VERTICAL_SPEED > 150 then
+                    play_sound(POSITIVE_RATE)
+                    DELAY = TIME + 1.521
+                    STEP = 6
+                else
+                    DELAY = TIME + 1
+                    return
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            if fo_autoperform then
+                play_sound(GEAR_UP)
+                LG_Lever = 0
+                DELAY = TIME + 0.986
+                STEP = 0
+            end
+        else
+            return
         end
     end
 end

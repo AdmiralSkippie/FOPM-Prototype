@@ -111,7 +111,7 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     STARTING_APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/STARTINGAPU.wav") -- 1.540
     SPEED_CHECK = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SPDCHECK.wav") -- 1.136
     TERRAIN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BW3.wav") -- 0.825
--- POST BREAFING --
+-- POST BREAFING -- // TODO: Agregar las voces de confirmacion
     --* OK CAPTAIN BREAFING COMPLETED
     --* ROGER BREAFING COMPLETED
     --* UNDERSTOOD NOTHING TO ADD

@@ -85,6 +85,9 @@ local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
 local RAINING = false
 local PACKS_FOR_TO = false
+local FLAP_RETRACT_SPEED = 0
+local SLAT_RETRACT_SPEED = 0
+local GREENDOT = 0
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -853,6 +856,9 @@ function after_start_proc()
                 if TIME >= DELAY then
                     PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
                     PT_TO_ANGLE = string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)")
+                    FLAP_RETRACT_SPEED = string.match(MCDU_GLINE_1, "(%d+)")
+                    SLAT_RETRACT_SPEED = string.match(MCDU_GLINE_2, "(%d+)")
+                    GREENDOT = string.match(MCDU_GLINE_3,"(%d+)")
                     if PT_TO_DIRECTION == "UP" then
                         PT_TO_CONFIG = PT_TO_ANGLE * 1
                     elseif PT_TO_DIRECTION == "DN" then

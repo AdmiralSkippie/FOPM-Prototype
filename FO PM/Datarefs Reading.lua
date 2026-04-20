@@ -120,11 +120,14 @@ dataref("FLAPS_LEVER_State", "AirbusFBW/FlapLeverRatio", "readonly")
 dataref("FLAPS_State", "AirbusFBW/FlapRequestPos", "readonly") -- -1 = on position
 dataref("FLAPS_TO_CONFIG", "AirbusFBW/TOFlapSettingMCDU", "readonly") -- 1 = 1
 dataref("SPDBRK_State", "sim/cockpit2/controls/speedbrake_ratio", "readonly")
-dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 FLX-MCT/3 TOGA
+dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 
 ---- MCDU ----
 dataref("MCDU_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
 MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
+dataref("MCDU_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly") -- text line FLP retract to FLP1 --
+dataref("MCDU_GLINE_2", "AirbusFBW/MCDU1cont2g", "readonly") -- text line SLAT retract to 0 --
+dataref("MCDU_GLINE_3", "AirbusFBW/MCDU1cont3g", "readonly") -- text line Green DOT --
 
 ---- INDICATIONS ----
 -- dataref("OXY_Press", "", "readonly")
@@ -155,7 +158,7 @@ dataref("IND_AIRSPEED", "sim/cockpit2/gauges/indicators/airspeed_kts_copilot", "
 dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
 dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
 dataref("VERTICAL_SPEED", "toliss_airbus/pfdoutputs/captain/vertical_speed", "readonly")
-dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly")
+dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly") -- ONLY SHOWS ATHR ENGAGE --
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
 dataref("SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
 dataref("CRONO", "AirbusFBW/ClockChronoValue", "readonly")

@@ -41,6 +41,7 @@ local AS_CL = false
 local BTO_PROC_DONE = false
 local BTO_DTL = false
 local BTO_CL = false
+local TO_PROC_DONE = false
 local ATO_CL = false
 local CLB_CL = false
 local DES_BREAFING_DONE = false
@@ -85,6 +86,7 @@ local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
 local RAINING = false
 local PACKS_FOR_TO = false
+local APU_TO_PACKS = false
 local FLAP_RETRACT_SPEED = 0
 local SLAT_RETRACT_SPEED = 0
 local GREENDOT = 0
@@ -1313,113 +1315,241 @@ end
 
 ---- TAKE OFF PROCEDURE ----
 function take_off_proc()
-    if STEP == 0 then
-        if TIME >= DELAY then
-            if ENG_1_N1 > 50 and ENG_2_N1 > 50 then
-                STABLE1_CHECK = ENG_1_THR
-                STABLE2_CHECK = ENG_2_THR
-                STEP = 1
-                DELAY = TIME + 1
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP == 1 then
-        if TIME >= DELAY then
-            if ENG_1_THR == STABLE2_CHECK and ENG_2_THR == STABLE1_CHECK then
-                play_sound(STABLE)
-                DELAY = TIME + 1
-                STEP = 2
-            else
-                STABLE1_CHECK = ENG_1_THR
-                STABLE2_CHECK = ENG_2_THR
-                DELAY = TIME + 0.8
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP == 2 then
-        if TIME >= DELAY then
-            if ENG_1_THR == ENG_THR_Rating and ENG_2_THR == ENG_THR_Rating then
-                DELAY = TIME + 5
-                STEP = 2.5
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP == 2.5 then
-        if TIME >= DELAY then
-            play_sound(TRHUST_SET)
-            DELAY = TIME + 1.347
-            STEP = 3
-        else
-            return
-        end
-    end
-    if STEP == 3 then -- speeds check --
-        if TIME >= DELAY then
-            if IND_AIRSPEED == 100 then
-                play_sound(N100)
-                DELAY = TIME + 1.179
-            end
-            if IND_AIRSPEED == V1_SPEED - 1 then
-                play_sound(V1)
-                DELAY = TIME + 0.992
-            end
-            if IND_AIRSPEED >= VR_SPEED - 1 then
-                play_sound(ROTATE)
-                DELAY = TIME + 1.005
-                STEP = 4
-            end
-            return
-        else
-            return
-        end
-    end
-    if STEP == 4 then
-        if VERTICAL_SPEED > 300 then
-            DELAY = TIME + 2
-            STEP = 5
-        else
-            return
-        end
-    end
-    if STEP == 5 then
-        if TIME >= DELAY then
-            if GNDAIR_SW == 0 then
-                if VERTICAL_SPEED > 150 then
-                    play_sound(POSITIVE_RATE)
-                    DELAY = TIME + 1.521
-                    STEP = 6
-                else
+    if not TO_PROC_DONE then
+        if STEP == 0 then
+            if TIME >= DELAY then
+                if ENG_1_N1 > 50 and ENG_2_N1 > 50 then
+                    STABLE1_CHECK = ENG_1_THR
+                    STABLE2_CHECK = ENG_2_THR
+                    STEP = 1
                     DELAY = TIME + 1
+                else
                     return
                 end
             else
                 return
             end
-        else
-            return
         end
-    end
-    if STEP == 6 then
-        if TIME >= DELAY then
-            if fo_autoperform then
-                play_sound(GEAR_UP)
-                LG_Lever = 0
-                DELAY = TIME + 0.986
-                STEP = 0
+        if STEP == 1 then
+            if TIME >= DELAY then
+                if ENG_1_THR == STABLE2_CHECK and ENG_2_THR == STABLE1_CHECK then
+                    play_sound(STABLE)
+                    DELAY = TIME + 1
+                    STEP = 2
+                else
+                    STABLE1_CHECK = ENG_1_THR
+                    STABLE2_CHECK = ENG_2_THR
+                    DELAY = TIME + 0.8
+                    return
+                end
+            else
+                return
             end
-        else
-            return
+        end
+        if STEP == 2 then
+            if TIME >= DELAY then
+                if ENG_1_THR == ENG_THR_Rating and ENG_2_THR == ENG_THR_Rating then
+                    DELAY = TIME + 5
+                    STEP = 2.5
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP == 2.5 then
+            if TIME >= DELAY then
+                play_sound(TRHUST_SET)
+                DELAY = TIME + 1.347
+                STEP = 3
+            else
+                return
+            end
+        end
+        if STEP == 3 then -- speeds check --
+            if TIME >= DELAY then
+                if IND_AIRSPEED == 100 then
+                    play_sound(N100)
+                    DELAY = TIME + 1.179
+                end
+                if IND_AIRSPEED == V1_SPEED - 1 then
+                    play_sound(V1)
+                    DELAY = TIME + 0.992
+                end
+                if IND_AIRSPEED >= VR_SPEED - 1 then
+                    play_sound(ROTATE)
+                    DELAY = TIME + 1.005
+                    STEP = 4
+                end
+                return
+            else
+                return
+            end
+        end
+        if STEP == 4 then
+            if VERTICAL_SPEED > 300 then
+                DELAY = TIME + 2
+                STEP = 5
+            else
+                return
+            end
+        end
+        if STEP == 5 then
+            if TIME >= DELAY then
+                if GNDAIR_SW == 0 then
+                    if VERTICAL_SPEED > 150 then
+                        play_sound(POSITIVE_RATE)
+                        DELAY = TIME + 1.521
+                        STEP = 6
+                    else
+                        DELAY = TIME + 1
+                        return
+                    end
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP == 6 then
+            if TIME >= DELAY then
+                if fo_autoperform then
+                    play_sound(GEAR_UP)
+                    LG_Lever = 0
+                    DELAY = TIME + 0.986
+                    STEP = 7
+                end
+            else
+                return
+            end
+        end
+        if STEP == 7 then -- decide next proc --
+            if TIME >= DELAY then
+                if not PACKS_FOR_TO then
+                    if THR_STATE == 1 then
+                        DELAY = TIME + 3
+                        STEP = 7.2
+                    else
+                        return
+                    end
+                elseif APU_TO_PACKS then
+                    if THR_STATE == 1 then
+                        DELAY = TIME + 3
+                        STEP = 7.4
+                    else
+                        return
+                    end
+                else
+                    if THR_STATE == 1 then
+                        DELAY = TIME + 3
+                        STEP = 0
+                        TO_PROC_DONE = true
+                        return
+                    else
+                        return
+                    end
+                end
+            else
+                return
+            end
+        end
+        if STEP == 7.2 then -- PACKS OFF --
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(PACKS)
+                end
+                DELAY = TIME + 0.25
+                STEP = 7.21
+            else
+                return
+            end
+        end
+        if STEP == 7.21 then
+            if TIME >= DELAY then
+                command_once(PACK_1_PB)
+                DELAY = TIME + 30
+                STEP = 7.22
+            else
+                return
+            end
+        end
+        if STEP == 7.22 then
+            if TIME >= DELAY then
+                command_once(PACK_2_PB)
+                DELAY = TIME +0.3
+                STEP = 0
+                TO_PROC_DONE = true
+                return
+            else
+                return
+            end
+        end
+        if STEP == 7.4 then -- APU TO PACKS --
+            if TIME >= DELAY then
+                ENG_1_BLEED_PB = 0
+                DELAY = TIME + 10
+                STEP = 7.41
+            else
+                return
+            end
+        end
+        if STEP == 7.41 then
+            if TIME >= DELAY then
+                ENG_2_BLEED_PB = 0
+                DELAY = TIME + 0.7
+                STEP = 7.42
+            else
+                return
+            end
+        end
+        if STEP == 7.42 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(APU_BLEED)
+                end
+                DELAY = TIME + 1.203
+                STEP = 7.43
+            else
+                return
+            end
+        end
+        if STEP == 7.43 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(OFF)
+                end
+                command_once(APU_BLEED_PB)
+                DELAY = TIME + 0.920
+                STEP = 7.44
+            else
+                return
+            end
+        end
+        if STEP == 7.44 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(APU_MASTER)
+                end
+                DELAY = TIME + 1.418
+                STEP = 7.45
+            else
+                return
+            end
+        end
+        if STEP == 7.45 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(OFF)
+                end
+                command_once(APU_MASTER_PB)
+                DELAY = TIME + 0.928
+                STEP = 0
+                TO_PROC_DONE = true
+            else
+                return
+            end
         end
     end
 end

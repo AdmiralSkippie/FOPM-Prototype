@@ -42,6 +42,7 @@ local BTO_PROC_DONE = false
 local BTO_DTL = false
 local BTO_CL = false
 local TO_PROC_DONE = false
+local ACF_CLEAN = false
 local ATO_CL = false
 local CLB_CL = false
 local DES_BREAFING_DONE = false
@@ -79,8 +80,11 @@ local command_FLPS_1DN = false
 
 local DELAY = 0
 local DELAY_CHECK = 0
+local DELAY_CLEAN = 0
 local STEP = 0
 local STEP_FLT = 0
+local STEP_CLEAN = 0
+local STEP_SPEACH = 0
 local PT_TO_DIRECTION = 0
 local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
@@ -1550,6 +1554,94 @@ function take_off_proc()
             else
                 return
             end
+        end
+    end
+end
+
+---- CLEAN UP PROCEDURE ----
+function clean_up_auto()
+    if STEP_CLEAN == 0 then
+        DELAY_CLEAN = TIME + 5
+        STEP_CLEAN = 1
+    end
+    if STEP_CLEAN == 1 then
+        if TIME >= DELAY_CLEAN then
+            if FLAPS_LEVER_State ~= 0.25 then
+                if STEP_SPEACH == 0 then
+                    if IND_AIRSPEED > FLAP_RETRACT_SPEED + 4 then
+                        play_sound(SPEED_CHECK)
+                        DELAY_CLEAN = TIME + 1.436
+                        STEP_SPEACH = 1
+                        return
+                    else
+                        return
+                    end
+                end
+                if STEP_SPEACH == 1 then
+                    command_once(FLAPS_1UP)
+                    STEP_SPEACH = 2
+                end
+                if STEP_SPEACH == 2 then
+                    if FLAPS_State ~= -1 then
+                        play_sound(FLAP_POS[FL_VOICE_SRCH])
+                        STEP_SPEACH = 3
+                    else
+                        return
+                    end
+                end
+                if STEP_SPEACH == 3 then
+                    if FLAPS_State == -1 then
+                        DELAY_CLEAN = TIME + 1
+                        STEP_SPEACH = 0
+                        return
+                    else
+                        return
+                    end
+                end
+            else
+                play_sound(FLAP_POS[FL_VOICE_SRCH])
+                STEP_CLEAN = 2
+            end
+        else
+            return
+        end
+    end
+    if STEP_CLEAN == 2 then
+        if TIME >= DELAY_CLEAN then
+            if STEP_SPEACH == 0 then
+                if IND_AIRSPEED > SLAT_RETRACT_SPEED + 5 then
+                    play_sound(SPEED_CHECK)
+                    DELAY_CLEAN = TIME + 1.436
+                    STEP_SPEACH = 1
+                    return
+                else
+                    return
+                end
+            end
+            if STEP_SPEACH == 1 then
+                command_once(FLAPS_1UP)
+                STEP_SPEACH = 2
+            end
+            if STEP_SPEACH == 2 then
+                if FLAPS_State ~= -1 then
+                    play_sound(FLAP_POS[FL_VOICE_SRCH])
+                    STEP_SPEACH = 3
+                else
+                    return
+                end
+            end
+            if STEP_SPEACH == 3 then
+                if FLAPS_State == -1 then
+                    STEP_SPEACH = 0
+                    STEP_CLEAN = 0
+                    DELAY = TIME + 1
+                    ACF_CLEAN = true
+                else
+                    return
+                end
+            end
+        else
+            return
         end
     end
 end

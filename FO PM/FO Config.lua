@@ -127,6 +127,8 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     REVERSE_GREEN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/REVERSEGREEN.wav") -- 0.753
     DECEL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DECEL.wav") -- 0.834
     N80_KNOTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/80.wav") -- 1.197
+    TRNS_ALT = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS ALT.wav")
+    TRNS_LVL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS LVL.wav")
 -- SECTION 7 --
     ANTI_ICE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ANTIICE1.wav") -- 1.180
     LANDING_LIGHTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/LNDLIGHTS.wav") -- 1.180
@@ -144,6 +146,7 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     AUTOBRAKES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/AUTOBRK.wav") --1.010
     ENGINE_2_SHUTDOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ENG2SD.wav") -- 1.352
     ECAM_RCLL = load_WAV_file(SCRIPT_DIRECTORY .. "")
+    TEN_THAUSAND_FEET = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/10000 FEET.wav")
 -- READY SPEECH --
 
 READY = {

@@ -71,6 +71,7 @@ local EXECUTING_EXRWY = false
 ------------------
 
 local command_GUP = false
+local command_GDN = false
 local command_FLPS_1UP = false
 local command_FLPS_1DN = false
 
@@ -1736,6 +1737,54 @@ function flaps_commanded_change()
                 else
                     return
                 end
+            else
+                return
+            end
+        end
+    end
+end
+
+function gear_command()
+    if command_GUP then
+        DELAY_CHECK = TIME + 0.88
+        if TIME >= DELAY_CHECK then
+            if FLAPS_State ~= -1 then
+                if IND_AIRSPEED <= GEAR_RETRACTION_LIMIT then
+                    play_sound(GEAR_UP)
+                    LG_Lever = 0
+                    command_GUP = false
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+    elseif command_GDN then
+        DELAY_CHECK = TIME + 1.052
+        if STEP_FLT == 0 then
+            if TIME >= DELAY_CHECK then
+                if FLAPS_State ~= -1 then
+                    if IND_AIRSPEED <= GEAR_EXTENTION_LIMIT then
+                        play_sound(GEAR_DOWN)
+                        LG_Lever = 1
+                        STEP_FLT = 1
+                    else
+                        return
+                    end
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP_FLT == 1 then
+            if LG_State == 1 then
+                play_sound(GEAR_3GREENS)
+                DELAY = TIME + 1
+                STEP_FLT = 0
+                command_GDN = false
             else
                 return
             end

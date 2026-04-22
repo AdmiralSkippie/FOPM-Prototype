@@ -44,6 +44,7 @@ local BTO_CL = false
 local TO_PROC_DONE = false
 local ACF_CLEAN = false
 local ATO_CL = false
+local TEN_THAUSAND_FEET_CLB_DONE = false
 local CLB_CL = false
 local DES_BREAFING_DONE = false
 local APP_CL = false
@@ -1788,6 +1789,90 @@ function gear_command()
             else
                 return
             end
+        end
+    end
+end
+
+function ten_thausand_feet_CLB()
+    if STEP == 0 then
+        if fo_autoperform then
+            play_sound(TEN_THAUSAND_FEET)
+            DELAY = TIME + 1.2
+            STEP = 1
+        else
+            DELAY = TIME + 1.2
+            STEP = 1
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(EXTERIOR_LIGHTS)
+            end
+            DELAY = TIME + 1.7
+            STEP = 2.3
+        else
+            return
+        end
+    end
+    if STEP == 2.3 then
+        if TIME >= DELAY then
+            RWYTOLT_SW = 0
+            DELAY = TIME + 0.3
+            STEP = 2.4
+        else
+            return
+        end
+    end
+    if STEP == 2.4 then
+        if TIME >= DELAY then
+            LANDLT_L_SW = 0
+            LANDLT_R_SW = 0
+            DELAY = TIME + 0.4
+            STEP = 2.5
+        else
+            return
+        end
+    end
+    if STEP == 2.5 then
+        if TIME >= DELAY then
+            TAXILT_SW = 0
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            DELAY = TIME + 0.92
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            EFIS_RNG = 3
+            DELAY = TIME + 0.5
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            command_once(TERRAIN_FO_PB)
+            DELAY = TIME + 1
+            STEP = 5
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            local lindex = math.random(5)
+            play_sound(READY[lindex])
+            DELAY = TIME + 2
+            STEP = 0
+            TEN_THAUSAND_FEET_CLB_DONE = true
+        else
+            return
         end
     end
 end

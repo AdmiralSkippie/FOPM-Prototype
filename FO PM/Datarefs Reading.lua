@@ -5,6 +5,7 @@
 --|||| GENERAL |||||--
 dataref("TIME", "sim/time/total_running_time_sec", "readonly")
 dataref("ENG_MODEL", "AirbusFBW/EngineType", "readonly") -- 1 IAE/2 CFM/3 PW/4 LEAP
+dataref("ACF_ICAO", "sim/aircraft/view/acf_ICAO", "readonly") -- 
 
 --|||| COMMAND/CHANGE ||||--
 ----- P/B -----
@@ -210,3 +211,28 @@ function CHECK_ENGINE_TYPE()
 end
 
 do_sometimes(CHECK_ENGINE_TYPE())
+
+---- FLAP LIMITS ----
+GEAR_EXTENTION_LIMIT = 250
+GEAR_RETRACTION_LIMIT = 220
+function flaps_gear_limits()
+    if ACF_ICAO == "A319" or ACF_ICAO == "A320" or ACF_ICAO == "A20N" then
+        FLAPS_LIMIT = {
+        [1] = 230,
+        [2] = 200,
+        [3] = 185,
+        [4] = 177,
+        [0] = 0
+        }
+    elseif ACF_ICAO == "A321" or ACF_ICAO == "A21N" then
+        FLAPS_LIMIT = {
+        [1] = 238,
+        [2] = 215,
+        [3] = 195,
+        [4] = 186,
+        [5] = 0
+        }
+    end
+end
+
+do_sometimes(flaps_gear_limits())

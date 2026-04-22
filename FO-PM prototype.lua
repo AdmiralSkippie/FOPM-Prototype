@@ -127,6 +127,7 @@ do_every_frame(engine_math())
 local FLAP_VOICE_DIR = {"P0", "P1", "P2", "P3", "FULL"}
 local CONFIG_VOICE_SRCH = "P1"
 local FL_VOICE_SRCH = "P0"
+local lindex = math.floor((FLAPS_LEVER_State * 4) + 1)
 
 function flaps_voice_search()
     local index = math.floor((FLAPS_LEVER_State * 4) + 1)
@@ -1642,6 +1643,102 @@ function clean_up_auto()
             end
         else
             return
+        end
+    end
+end
+
+function flaps_commanded_change()
+    if command_FLPS_1UP then
+        if STEP_CLEAN == 0 then
+            DELAY_CLEAN = TIME + 1
+            STEP_CLEAN = 1
+        end 
+        if STEP_CLEAN == 1 then
+            if TIME >= DELAY_CLEAN then
+                play_sound(SPEED_CHECK)
+                DELAY_CLEAN = TIME + 1.436
+                STEP_CLEAN = 2
+            else
+                return
+            end
+        end
+        if STEP_CLEAN == 2 then
+            if TIME >= DELAY_CLEAN then
+                if FLAPS_LEVER_State > 0.25 then
+                    if IND_AIRSPEED > FLAP_RETRACT_SPEED + 4 then
+                        command_once(FLAPS_1UP)
+                        DELAY_CLEAN = TIME + 0.3
+                        STEP_CLEAN = 3
+                    else
+                        return
+                    end
+                elseif FLAPS_LEVER_State == 0.25 then
+                    if IND_AIRSPEED > SLAT_RETRACT_SPEED + 5 then
+                        command_once(FLAPS_1UP)
+                        DELAY_CLEAN = TIME + 0.3
+                        STEP_CLEAN = 3
+                    else
+                        return
+                    end
+                end
+            else
+                return
+            end
+        end
+        if STEP_CLEAN == 3 then
+            if TIME >= DELAY_CLEAN then
+                if FLAPS_State ~= -1 then
+                    play_sound(FLAP_POS[FL_VOICE_SRCH])
+                    DELAY_CLEAN = TIME + 0.3
+                    STEP_CLEAN = 0
+                    command_FLPS_1UP = false
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+    elseif command_FLPS_1DN then
+        if STEP_CLEAN == 0 then
+            DELAY_CLEAN = TIME + 1
+            STEP_CLEAN = 1
+        end
+        if STEP_CLEAN == 1 then
+            if TIME >= DELAY_CLEAN then
+                play_sound(SPEED_CHECK)
+                DELAY_CLEAN = TIME + 1.536
+                STEP_CLEAN = 2
+            else
+                return
+            end
+        end
+        if STEP_CLEAN == 2 then
+            if TIME >= DELAY_CLEAN then
+                if IND_AIRSPEED + 5 < FLAPS_LIMIT[lindex] then
+                    command_once(FLAPS_1DOWN)
+                    DELAY_CLEAN = TIME + 0.3
+                    STEP_CLEAN = 3
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP_CLEAN == 3 then
+            if TIME >= DELAY_CLEAN then
+                if FLAPS_State ~= -1 then
+                    play_sound(FLAP_POS[FL_VOICE_SRCH])
+                    DELAY_CLEAN = TIME + 0.3
+                    STEP_CLEAN = 0
+                    command_FLPS_1DN = false
+                else
+                    return
+                end
+            else
+                return
+            end
         end
     end
 end

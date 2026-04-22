@@ -195,6 +195,8 @@ dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
     dataref("BARO_UNIT_FO","AirbusFBW/BaroUnitFO", "readonly")
 dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRESS
 dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
+dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")
+dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
 -- ENG TYPE INDICATION SELECTOR -- 
 ENG_THRRate = 0
 ENG_1_POWER = 0

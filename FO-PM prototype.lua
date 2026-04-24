@@ -118,6 +118,8 @@ local FLAP_RETRACT_SPEED = 0
 local SLAT_RETRACT_SPEED = 0
 local GREENDOT = 0
 local CHECK_SPEED = 0
+local F_TARGET = 0
+local F_ATARGET = 0
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -2117,6 +2119,7 @@ function go_arround()
     if STEP == 3 then
         if TIME >= DELAY then
             play_sound(FLAP_POS[FLUP_VOICE_SRCH])
+            command_once(FLAPS_1UP)
             DELAY = TIME + 1.429
             STEP = 4
         else
@@ -2206,6 +2209,168 @@ function touch_down()
                 STEP = 0
                 DECELERATION = false
             end
+        end
+    end
+end
+
+function after_landing_proc()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            DELAY = TIME + 0.4
+            STEP = 1
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            play_sound(CHECK_TIME)
+            command_once(CRONO_SET_PB)
+            DELAY = TIME + 1.109
+            STEP = 2
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(WEATHER_RADAR)
+            end
+            DELAY = TIME + 1.209
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            DELAY = TIME + 0.920
+            Radar_SYS_SW = 0
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(PWS)
+            end
+            DELAY = TIME + 1.286
+            STEP = 5
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            PWS_SW = 0
+            DELAY = TIME + 0.920
+            STEP = 6
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(ENGINE_MODE_SELECTOR)
+            end
+            DELAY = TIME + 1.885
+            STEP = 7
+        else
+            return
+        end
+    end
+    if STEP == 7 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(NORMAL)
+            end
+            ENG_Mode = 1
+            DELAY = TIME + 1.129
+            STEP = 8
+        else
+            return
+        end
+    end
+    if STEP == 8 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(FLAPS)
+            end
+            if OAT >= 29 then
+                F_TARGET = 0.25
+            else
+                F_TARGET = 0
+            end
+            F_ATARGET = FLAPS_LEVER_State
+            DELAY = TIME + 1.112
+            STEP = 9
+        else
+            return
+        end
+    end
+    if STEP == 9 then
+        if TIME >= DELAY then
+            if FLAPS_LEVER_State ~= F_TARGET then
+                if FLAPS_LEVER_State == F_ATARGET then
+                    F_ATARGET = FLAPS_LEVER_State - 0.25
+                    command_once(FLAPS_1UP)
+                    return
+                else
+                    return
+                end
+            else
+                if not speak_only_essencials then
+                    play_sound(FLAP_POS[FL_VOICE_SRCH])
+                end
+                DELAY = 1.629
+                STEP = 10
+            end
+        else
+            return
+        end
+    end
+    if STEP == 10 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(APU_MASTER)
+            end
+            command_once(APU_MASTER_PB)
+            DELAY = TIME + 6
+            STEP = 11
+        else
+            return
+        end
+    end
+    if STEP == 12 then
+        if TIME >= DELAY then
+           if not speak_only_essencials then
+                play_sound(STARTING_APU)
+           end
+           command_once(APU_START_PB)
+           DELAY = TIME + 1.750
+           STEP = 13
+        else
+            return
+        end
+    end
+    if STEP == 13 then
+        if TIME >= DELAY then
+           local rindex = math.random(5)
+           play_sound(READY[rindex])
+           DELAY = TIME + 3
+           STEP = 0
+        else
+            return
         end
     end
 end

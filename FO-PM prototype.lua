@@ -52,6 +52,7 @@ local APP_CL = false
 local LND_CL = false
 local AP_DISCN_PROC = false
 local GA_PROC = false
+local AL_PROC = false
 local AL_CL = false
 local PARK_CL = false
 local SEC_CL = false
@@ -2369,6 +2370,7 @@ function after_landing_proc()
            play_sound(READY[rindex])
            DELAY = TIME + 3
            STEP = 0
+           AL_PROC = true
         else
             return
         end

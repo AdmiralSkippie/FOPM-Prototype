@@ -50,6 +50,7 @@ local DES_BREAFING_DONE = false
 local TEN_THAUSAND_FEET_DES_DONE = false
 local APP_CL = false
 local LND_CL = false
+local AP_DISCN_PROC = false
 local AL_CL = false
 local PARK_CL = false
 local SEC_CL = false
@@ -99,10 +100,13 @@ local command_FLPS_1DN = false
 local DELAY = 0
 local DELAY_CHECK = 0
 local DELAY_CLEAN = 0
+local DELAY_SPEACH = 0
+local DELAY_AP = 0
 local STEP = 0
 local STEP_FLT = 0
 local STEP_CLEAN = 0
 local STEP_SPEACH = 0
+local STEP_AP = 0
 local PT_TO_DIRECTION = 0
 local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
@@ -2012,6 +2016,68 @@ function ten_thausand_feet_DES()
             DELAY = TIME + 3
             STEP = 0
             TEN_THAUSAND_FEET_DES_DONE = true
+        else
+            return
+        end
+    end
+end
+
+function ap_discn_behaviour()
+    if STEP_AP == 0 then
+        if AP_DISCN_ALARM == 1 then
+            if not ILS_APP or MLS_APP then
+                DELAY_AP = TIME + 2
+                STEP_AP = 1
+            else
+                STEP_AP = 9
+            end
+        else
+            return
+        end
+    end
+    if STEP_AP == 1 then
+        if TIME >= DELAY_AP then
+            play_sound(FLIGHT_DIRECTORS)
+            DELAY_AP = TIME + 0.5
+            DELAY_SPEACH = TIME + 1.2
+            STEP_AP = 2
+        else
+            return
+        end
+    end
+    if STEP_AP == 2 then
+        if TIME >= DELAY_AP then
+            command_once(FD_CAP_PB)
+            DELAY_AP = TIME + 0.5
+            STEP_AP = 3
+        else
+            return
+        end
+    end
+    if STEP_AP == 3 then
+        if TIME >= DELAY_AP then
+            command_once(FD_FO_PB)
+            DELAY_AP = TIME + 0.5
+            STEP_AP = 4
+        else
+            return
+        end
+    end
+    if STEP_AP == 4 then
+        if TIME >= DELAY_SPEACH then
+            play_sound(OFF)
+            DELAY_AP = TIME + 0.836
+            STEP_AP = 5
+        else
+            return
+        end
+    end
+    if STEP_AP == 5 then
+        if TIME >= DELAY_AP then
+            command_once(HDGTRK_TOGGLE)
+            DELAY_AP = TIME + 0.5
+            STEP_AP = 0
+            AP_DISCN_PROC = true
         else
             return
         end

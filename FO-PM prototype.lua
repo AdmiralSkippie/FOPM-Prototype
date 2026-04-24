@@ -47,6 +47,7 @@ local ATO_CL = false
 local TEN_THAUSAND_FEET_CLB_DONE = false
 local CLB_CL = false
 local DES_BREAFING_DONE = false
+local TEN_THAUSAND_FEET_DES_DONE = false
 local APP_CL = false
 local LND_CL = false
 local AL_CL = false
@@ -55,6 +56,21 @@ local SEC_CL = false
 local FLTCTL_CHK = false
 local ENT_RWY_DONE = false
 local EXIT_RWY_DONE = false
+
+-----------------------------
+---- APPROACH PROCEDURES ----
+-----------------------------
+
+---- Precision Approach ----
+local ILS_APP = false
+local MLS_APP = false
+---- Non Precision Approach ----
+local RNAV_APP = false
+local RNAV_LNAV = false
+local RNPAR_APP = false
+local VOR_APP = false
+local NDB_APP = false
+local LDA_APP = false
 
 ----------------------------
 ---- ONGOING PROCEDURES ----
@@ -1241,14 +1257,14 @@ function enter_rwy()
                 if TIME >= DELAY then
                     if RAINING and ENG_MODEL ~= 1 then
                         play_sound(IGNITION)
-                        ENG_MODE = 2
+                        ENG_Mode = 2
                         DELAY = 1.095
                         STEP = 4
                     else
                         if not speak_only_essencials then
                             play_sound(NORMAL)
                         end
-                        ENG_MODE = 1
+                        ENG_Mode = 1
                         DELAY = 1.129
                         STEP = 4
                     end
@@ -1871,6 +1887,131 @@ function ten_thausand_feet_CLB()
             DELAY = TIME + 2
             STEP = 0
             TEN_THAUSAND_FEET_CLB_DONE = true
+        else
+            return
+        end
+    end
+end
+
+function ten_thausand_feet_DES()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            DELAY = TIME + 1.5
+            STEP = 1
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(EXTERIOR_LIGHTS)
+            end
+            DELAY = TIME + 1.7
+            STEP = 1.3
+        else
+            return
+        end
+    end
+    if STEP == 1.3 then
+        if TIME >= DELAY then
+            RWYTOLT_SW = 1
+            DELAY = TIME + 0.3
+            STEP = 1.4
+        else
+            return
+        end
+    end
+    if STEP == 1.4 then
+        if TIME >= DELAY then
+            LANDLT_L_SW = 2
+            LANDLT_R_SW = 2
+            DELAY = TIME + 0.4
+            STEP = 1.5
+        else
+            return
+        end
+    end
+    if STEP == 1.5 then
+        if TIME >= DELAY then
+            TAXILT_SW = 2
+            if not speak_only_essencials then
+                play_sound(ON)
+            end
+            DELAY = TIME + 0.92
+            STEP = 2
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            EFIS_RNG = 1
+            DELAY = TIME + 0.5
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            command_once(TERRAIN_FO_PB)
+            DELAY = TIME + 0.5
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            if ILS_APP or MLS_APP or VOR_APP or NDB_APP or LDA_APP then
+                if not speak_only_essencials then
+                    play_sound(LS)
+                end
+                command_once(LS_FO_PB)
+                DELAY = TIME + 1.2
+                STEP = 5
+            else
+                STEP = 5
+            end
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if RAINING and ENG_MODEL ~= 1 then
+                if not speak_only_essencials then
+                    play_sound(ENGINE_MODE_SELECTOR)
+                end
+                DELAY = TIME + 1.9
+                STEP = 5.5
+            else
+                STEP = 6
+            end
+        else
+            return
+        end
+    end
+    if STEP == 5.5 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(IGNITION)
+            end
+            ENG_Mode = 2
+            DELAY = TIME + 1.195
+            STEP = 6
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            local rindex = math.random(5)
+            play_sound(READY[rindex])
+            DELAY = TIME + 3
+            STEP = 0
+            TEN_THAUSAND_FEET_DES_DONE = true
         else
             return
         end

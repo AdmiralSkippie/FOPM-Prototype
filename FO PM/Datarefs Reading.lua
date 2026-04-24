@@ -36,7 +36,7 @@ CRONO_SET_PB = "toliss_airbus/chrono/ChronoStartStopPush"
 CRONO_RESET_PB= "toliss_airbus/chrono/ChronoResetPush"
 ANTI_ICE_ENG1_PB = "toliss_airbus/antiicecommands/ENG1Toggle"
 ANTI_ICE_ENG2_PB = "toliss_airbus/antiicecommands/ENG2Toggle"
-ANT_ICE_WING_PB = "toliss_airbus/antiicecommands/WingToggle"
+ANTI_ICE_WING_PB = "toliss_airbus/antiicecommands/WingToggle"
 -- FUEL PUMPS --
     FPUMP_RTANK_1_PB = "toliss_airbus/fuelcommands/PumpLWing1Toggle"
     FPUMP_RTANK_2_PB = "toliss_airbus/fuelcommands/PumpLWing2Toggle"

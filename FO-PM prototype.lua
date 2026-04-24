@@ -54,6 +54,7 @@ local AP_DISCN_PROC = false
 local GA_PROC = false
 local AL_PROC = false
 local AL_CL = false
+local RWY_VACATED = false
 local PARK_CL = false
 local SEC_CL = false
 local FLTCTL_CHK = false
@@ -2377,6 +2378,7 @@ function after_landing_proc()
     end
 end
 
+-- BRAKE TEMP CHECK PROCEDURE --
 function brake_temp_check()
     if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
         if not speak_only_essencials then
@@ -2384,5 +2386,82 @@ function brake_temp_check()
         end
         command_once(BRKFAN_PB)
         DELAY = TIME + 1.173
+    end
+end
+
+function vacating_rwy()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            DELAY = TIME + 1
+            STEP = 1
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(EXTERIOR_LIGHTS)
+            end
+            DELAY = TIME + 1.74
+            STEP = 2
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            LANDLT_L_SW = 0
+            LANDLT_R_SW = 0
+            DELAY = TIME + 0.3
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            STROBE_SW = 1
+            DELAY = TIME + 0.4
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(SET)
+            end
+            TAXI_LIGHT = 1
+            DELAY = TIME + 0.871
+            STEP = 5
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(TCAS)
+            end
+            DELAY = TIME + 1.218
+            STEP = 7
+        else
+            return
+        end
+    end
+    if STEP == 8 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(SET)
+            end
+            TCAS_SW = 2
+            DELAY = TIME + 0.871
+            STEP = 0
+            RWY_VACATED = false
+        else
+            return
+        end
     end
 end

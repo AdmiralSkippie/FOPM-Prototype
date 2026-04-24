@@ -29,6 +29,9 @@ APU_BLEED_PB = "toliss_airbus/apucommands/BleedToggle"
 TERRAIN_FO_PB = "toliss_airbus/dispcommands/TerrOnND2Toggle"
 GPWS_FLAP3_PB = "toliss_airbus/gpwscommands/Flap3Toggle"
 LS_FO_PB = "toliss_airbus/dispcommands/CoLSButtonPush"
+HDGTRK_TOGGLE = "toliss_airbus/hdgtrk_button_push"
+FD_CAP_PB = "toliss_airbus/fd1_push"
+FD_FO_PB = "toliss_airbus/fd2_push"
 CRONO_SET_PB = "toliss_airbus/chrono/ChronoStartStopPush"
 CRONO_RESET_PB= "toliss_airbus/chrono/ChronoResetPush"
 ANTI_ICE_ENG1_PB = "toliss_airbus/antiicecommands/ENG1Toggle"
@@ -197,6 +200,7 @@ dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRE
 dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")
 dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
+dataref("AP_DISCN_ALARM", "AirbusFBW/APWarning", "readonly") -- 1 ON --
 -- ENG TYPE INDICATION SELECTOR -- 
 ENG_THRRate = 0
 ENG_1_POWER = 0

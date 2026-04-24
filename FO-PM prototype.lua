@@ -55,6 +55,7 @@ local GA_PROC = false
 local AL_PROC = false
 local AL_CL = false
 local RWY_VACATED = false
+local PARK_PROC = false
 local PARK_CL = false
 local SEC_CL = false
 local FLTCTL_CHK = false
@@ -2460,6 +2461,118 @@ function vacating_rwy()
             DELAY = TIME + 0.871
             STEP = 0
             RWY_VACATED = false
+        else
+            return
+        end
+    end
+end
+
+-- PARKING PROCEDURE --
+function parking_proc()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            DELAY = TIME + 1
+            STEP = 1
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(APU_BLEED)
+            end
+            DELAY = TIME + 1.203
+            STEP = 2
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(ON)
+            end
+            DELAY = TIME + 0.92
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(FUEL_PUMPS)
+            end
+            DELAY = TIME + 1.153
+            STEP = 6
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            command_once(FPUMP_LTANK_1_PB)
+            command_once(FPUMP_LTANK_2_PB)
+            DELAY = TIME + 0.4
+            STEP = 7
+        else
+            return
+        end
+    end
+    if STEP == 7 then
+        if TIME >= DELAY then
+            command_once(FPUMP_CTANK_1_PB)
+            command_once(FPUMP_CTANK_2_PB)
+            DELAY = TIME + 0.4
+            STEP = 8
+        else
+            return
+        end
+    end
+    if STEP == 8 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            command_once(FPUMP_RTANK_1_PB)
+            command_once(FPUMP_RTANK_2_PB)
+            DELAY = TIME + 0.920
+            STEP = 9
+        else
+            return
+        end
+    end
+    if STEP == 9 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(ATC)
+            end
+            DELAY = TIME + 1.039
+            STEP = 10
+        else
+            return
+        end
+    end
+    if STEP == 10 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(SET)
+            end
+            TCAS_SW = 0
+            DELAY = TIME + 0.871
+            STEP = 11
+        else
+            return
+        end
+    end
+    if STEP == 11 then
+        if TIME >= DELAY then
+            local rindex = math.random(5)
+            play_sound(READY[rindex])
+            DELAY = TIME + 2
+            STEP = 0
+            PARK_PROC = true
         else
             return
         end

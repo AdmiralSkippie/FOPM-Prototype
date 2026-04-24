@@ -74,7 +74,7 @@ dataref("FO_QNH_SW", "ckpt/fcu/baroRight/anim", "writable") -- 5to5 posible --
 dataref("LG_Lever", "AirbusFBW/GearLever", "writable") -- 0 up
 FLAPS_1UP = "sim/flight_controls/flaps_up" -- COMAND --
 FLAPS_1DOWN = "sim/flight_controls/flaps_down" -- COMAND --
-dataref("SPDBRK_Lever", "sim/cockpit2/controls/speedbrake_ratio", "writable") -- 0.5 ARM/0 RET <> 1
+dataref("SPDBRK_Lever", "sim/cockpit2/controls/speedbrake_ratio", "writable") -- -0.5 ARM/0 RET <> 1
 PITCH_TRIM_DN = "sim/flight_controls/pitch_trim_down"
 PITCH_TRIM_UP = "sim/flight_controls/pitch_trim_up"
 
@@ -201,6 +201,7 @@ dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")
 dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
 dataref("AP_DISCN_ALARM", "AirbusFBW/APWarning", "readonly") -- 1 ON --
+dataref("OAT", "sim/cockpit2/temperature/outside_air_temp_deg", "readonly")
 -- ENG TYPE INDICATION SELECTOR -- 
 ENG_THRRate = 0
 ENG_1_POWER = 0

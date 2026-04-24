@@ -24,9 +24,9 @@ local CLIMB = false
 local CRUISE = false
 local DESCEND = false
 local APPROACH = false
-local DECEL = false
+local DECELERATION = false
 local GA = false
-local TAXI_OUT = false
+local TAXI_IN = false
 local PARKING = false
 
 -----------------------------
@@ -117,6 +117,7 @@ local APU_TO_PACKS = false
 local FLAP_RETRACT_SPEED = 0
 local SLAT_RETRACT_SPEED = 0
 local GREENDOT = 0
+local CHECK_SPEED = 0
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -2087,7 +2088,8 @@ function ap_discn_behaviour()
     end
 end
 
-function go_arround()
+-- GO ARROUND PROCEDURE --
+function go_arround() 
     if STEP == 0 then
         DELAY = TIME + 0.5
         STEP = 1
@@ -2150,6 +2152,60 @@ function go_arround()
             end
         else
             return
+        end
+    end
+end
+
+-- TOUCH DOWN PROCEDURE --
+function touch_down()
+    if STEP == 0 then
+        if TIME >= DELAY then
+            if INBD_SPOILERS == 1 then
+                play_sound(SPOILERS)
+                DELAY = TIME + 1.376
+                STEP = 1
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            if ENG_1_REV == 2 and ENG_2_REV == 2 then
+                play_sound(REVERSE_GREEN)
+                DELAY = TIME + 1.053
+                STEP = 2
+                CHECK_SPEED = IND_AIRSPEED - 10
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            if IND_AIRSPEED < CHECK_SPEED then
+                play_sound(DECEL)
+                DELAY = TIME + 1.034
+                STEP = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            if IND_AIRSPEED < 78 then
+                play_sound(N80_KNOTS)
+                DELAY = TIME + 1.4
+                STEP = 0
+                DECELERATION = false
+            end
         end
     end
 end

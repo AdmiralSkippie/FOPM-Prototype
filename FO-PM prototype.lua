@@ -25,7 +25,7 @@ local CRUISE = false
 local DESCEND = false
 local APPROACH = false
 local DECEL = false
-local GO_ARROUND = false
+local GA = false
 local TAXI_OUT = false
 local PARKING = false
 
@@ -51,6 +51,7 @@ local TEN_THAUSAND_FEET_DES_DONE = false
 local APP_CL = false
 local LND_CL = false
 local AP_DISCN_PROC = false
+local GA_PROC = false
 local AL_CL = false
 local PARK_CL = false
 local SEC_CL = false
@@ -149,11 +150,13 @@ do_every_frame(engine_math())
 local FLAP_VOICE_DIR = {"P0", "P1", "P2", "P3", "FULL"}
 local CONFIG_VOICE_SRCH = "P1"
 local FL_VOICE_SRCH = "P0"
+local FLUP_VOICE_SRCH = "P0"
 local lindex = math.floor((FLAPS_LEVER_State * 4) + 1)
 
 function flaps_voice_search()
     local index = math.floor((FLAPS_LEVER_State * 4) + 1)
     FL_VOICE_SRCH = FLAP_VOICE_DIR[index]
+    FLUP_VOICE_SRCH = FLAP_VOICE_DIR[(index - 1)]
     CONFIG_VOICE_SRCH = FLAP_VOICE_DIR[index]
 end
 
@@ -2078,6 +2081,73 @@ function ap_discn_behaviour()
             DELAY_AP = TIME + 0.5
             STEP_AP = 0
             AP_DISCN_PROC = true
+        else
+            return
+        end
+    end
+end
+
+function go_arround()
+    if STEP == 0 then
+        DELAY = TIME + 0.5
+        STEP = 1
+        ATO_CL = false
+        LND_CL = false
+    end
+    if STEP == 1 then
+        if TIME >= DELAY then
+            play_sound(GO_ARROUND)
+            DELAY = TIME + 1.2
+            STEP = 2
+        else
+            return
+        end
+    end
+    if STEP == 2 then
+        if TIME >= DELAY then
+            play_sound(TOGA)
+            DELAY = TIME + 1.2
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            play_sound(FLAP_POS[FLUP_VOICE_SRCH])
+            DELAY = TIME + 1.429
+            STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            if VERTICAL_SPEED > 500 then
+                play_sound(POSITIVE_RATE)
+                DELAY = TIME + 1.721
+                STEP = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if fo_autoperform then
+                command_GUP = true
+            end
+            if command_GUP then
+                play_sound(GEAR_UP)
+                LG_Lever = 0
+                DELAY = TIME + 0.986
+                STEP = 0
+                GA_PROC = true
+            else
+                return
+            end
         else
             return
         end

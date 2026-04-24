@@ -165,7 +165,7 @@ dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
 dataref("VERTICAL_SPEED", "toliss_airbus/pfdoutputs/captain/vertical_speed", "readonly")
 dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly") -- ONLY SHOWS ATHR ENGAGE --
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
-dataref("SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
+dataref("INBD_SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
 dataref("CRONO", "AirbusFBW/ClockChronoValue", "readonly")
 -- BRAKE TEMP --
     dataref("BRAKE1_TEMP", "AirbusFBW/BrakeTemperatureArray", "readonly", 0)

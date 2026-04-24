@@ -2376,3 +2376,13 @@ function after_landing_proc()
         end
     end
 end
+
+function brake_temp_check()
+    if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
+        if not speak_only_essencials then
+            play_sound(BRAKE_FAN)
+        end
+        command_once(BRKFAN_PB)
+        DELAY = TIME + 1.173
+    end
+end

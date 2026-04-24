@@ -129,6 +129,7 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     N80_KNOTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/80.wav") -- 1.197
     TRNS_ALT = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS ALT.wav")
     TRNS_LVL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS LVL.wav")
+    FLIGHT_DIRECTORS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/FD.wav")
 -- SECTION 7 --
     ANTI_ICE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ANTIICE1.wav") -- 1.180
     LANDING_LIGHTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/LNDLIGHTS.wav") -- 1.180

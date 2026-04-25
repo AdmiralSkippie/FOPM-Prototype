@@ -96,6 +96,7 @@ local command_GUP = false
 local command_GDN = false
 local command_FLPS_1UP = false
 local command_FLPS_1DN = false
+local response_CHECK = false
 
 -------------------
 ---- VARIABLES ----
@@ -111,6 +112,7 @@ local STEP_FLT = 0
 local STEP_CLEAN = 0
 local STEP_SPEACH = 0
 local STEP_AP = 0
+local STEP_CHECK = 0
 local PT_TO_DIRECTION = 0
 local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
@@ -2573,6 +2575,225 @@ function parking_proc()
             DELAY = TIME + 2
             STEP = 0
             PARK_PROC = true
+        else
+            return
+        end
+    end
+end
+
+-- //////////////////////
+-- ///// CHECKLISTS /////
+-- //////////////////////
+
+-- BEFORE START CHECKLIST --
+function checklist_before_start()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BEFORE_START_CHECKLIST)
+            DELAY_CHECK = TIME + 1.818
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(EFB_PREPARATION)
+            DELAY_CHECK = TIME + 1.781
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(COMPLETED)
+                DELAY_CHECK = TIME + 0.957
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AIRCRAFT_PBN_CAPABILITY)
+            DELAY_CHECK = TIME + 2.140
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(COCKPIT_PREPARATION)
+            DELAY_CHECK = TIME + 1.609
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if PF_DONE then
+                    play_sound(COMPLETED)
+                    DELAY_CHECK = TIME + 0.957
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(GEAR_PINS_AND_COVERS)
+            DELAY_CHECK = TIME + 1.781
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(REMOVED)
+                DELAY_CHECK = TIME + 0.869
+                STEP_CHECK = 9
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(SIGNS)
+            DELAY_CHECK = TIME + 0.872
+            STEP_CHECK = 10
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 10 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if SEATBELTS_SW == 2 and SIGNS_STATE == 1 then
+                    play_sound(COMPLETED)
+                    DELAY_CHECK = TIME + 0.957
+                    STEP_CHECK = 11
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 11 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ADIRS)
+            DELAY_CHECK = TIME + 0.993
+            STEP_CHECK = 12
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 12 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if ADIR_1_STATE == 1 and ADIR_2_STATE == 1 and ADIR_3_STATE == 1 then
+                    play_sound(NAV)
+                    DELAY_CHECK = TIME + 1.094
+                    STEP_CHECK = 13
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 13 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FUEL_QUANTITY)
+            DELAY_CHECK = TIME + 1.236
+            STEP_CHECK = 14
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 14 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(SET)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 15
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 15 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BARO_REFERENCE)
+            DELAY_CHECK = TIME + 1.433
+            STEP_CHECK = 16
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 16 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if CM_QNH == FO_QNH then
+                    play_sound(SET)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 17
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 17 then
+        if TIME >= DELAY_CHECK then
+            play_sound(DOWN_TO_THE_LINE)
+            DELAY_CHECK = TIME + 1.5
+            STEP_CHECK = 0
+            BS_DTL = true
         else
             return
         end

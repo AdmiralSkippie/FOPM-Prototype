@@ -2799,3 +2799,153 @@ function checklist_before_start()
         end
     end
 end
+
+-- BEFORE_START_CHECKLIST BELOW THE LINE --
+function checklist_before_start_BL()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BEFORE_START_CHECKLIST_BELOW_THE_LINE)
+            DELAY_CHECK = TIME + 2.188
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(EFB)
+            DELAY_CHECK = TIME + 1.042
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(SET)
+                DELAY_CHECK = TIME + 0.86
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ATC)
+            DELAY_CHECK = TIME + 0.936
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if TCAS_STATE == 2 then
+                    play_sound(SET)
+                    DELAY_CHECK = TIME + 0.86
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(WINDOWS_AND_DOORS)
+            DELAY_CHECK = TIME + 1.515
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if
+                DOOR_1L == 0 and
+                DOOR_1R == 0 and
+                DOOR_2L == 0 and
+                DOOR_2R == 0 and
+                DOOR_3L == 0 and
+                DOOR_3R == 0 and
+                DOOR_4L == 0 and
+                DOOR_4R == 0 then
+                    play_sound(CLOSE)
+                    DELAY_CHECK = TIME + 0.815
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(THRUST_LEVERS)
+            DELAY_CHECK = TIME + 1.476
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(IDLE)
+                DELAY_CHECK = TIME + 0.79
+                STEP_CHECK = 9
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PARKING_BRAKE)
+            DELAY_CHECK = TIME + 0.836
+            STEP_CHECK = 10
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 10 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(SET)
+                DELAY_CHECK = TIME + 0.82
+                STEP_CHECK = 11
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 11 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            BS_CL = true
+        else
+            return
+        end
+    end
+end

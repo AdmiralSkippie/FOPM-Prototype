@@ -3713,3 +3713,121 @@ function checklist_approach()
         end
     end
 end
+
+-- LANDING CHECKLIST --
+function chacklist_landing()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(LANDING_CHECKLIST)
+            DELAY_CHECK = TIME + 1.375
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CABIN_CREW)
+            DELAY_CHECK = TIME + 1.145
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(ADVISED)
+                DELAY_CHECK = TIME + 1.036
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AUTO_TRHUST)
+            DELAY_CHECK = TIME + 1.183
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AUTOBRAKES)
+            DELAY_CHECK = TIME + 1.212
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if AUTOBRK_LOW == 1 then
+                    play_sound(LOW)
+                elseif AUTOBRK_MED == 1 then
+                    play_sound(MEDIUM)
+                end
+                DELAY_CHECK = TIME + 0.910
+                STEP_CHECK = 7
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ECAM_MEMO)
+            DELAY_CHECK = TIME + 1.138
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                DELAY_CHECK = TIME + 0.5
+                STEP_CHECK = 9
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            LND_CL = true
+        else
+            return
+        end
+    end
+end

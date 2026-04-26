@@ -34,6 +34,7 @@ local PARKING = false
 -----------------------------
 
 local PF_DONE = false
+local TO_BREAFING = false
 local BS_DTL = false
 local BS_CL = false
 local AS_PROC_DONE = false
@@ -46,7 +47,7 @@ local ACF_CLEAN = false
 local ATO_CL = false
 local TEN_THAUSAND_FEET_CLB_DONE = false
 local CLB_CL = false
-local DES_BREAFING_DONE = false
+local DES_BREAFING = false
 local TEN_THAUSAND_FEET_DES_DONE = false
 local APP_CL = false
 local LND_CL = false
@@ -3062,6 +3063,168 @@ function checklist_after_start()
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
             AS_CL = true
+        else
+            return
+        end
+    end
+end
+
+function checklist_before_takeoff()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BEFORE_START_CHECKLIST)
+            DELAY_CHECK = TIME + 1.645
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FLIGHT_CONTROLS)
+            DELAY_CHECK = TIME + 1.208
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FLY_INSTRUMENTS)
+            DELAY_CHECK = TIME + 1.232
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BREAFING)
+            DELAY_CHECK = TIME + 0.845
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if TO_BREAFING then
+                    play_sound(COMPLETED)
+                    DELAY_CHECK = TIME + 0.957
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FLAPS)
+            DELAY_CHECK = TIME + 1.112
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(FLAP_POS[FL_VOICE_SRCH])
+                DELAY_CHECK = TIME + 1.429
+                STEP_CHECK = 9
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(V1_VR_V2_FLEX_TEMP)
+            DELAY_CHECK = TIME + 2.2
+            STEP_CHECK = 10
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 10 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 11
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 11 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ECAM_MEMO)
+            DELAY_CHECK = TIME + 1.138
+            STEP_CHECK = 12
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 12 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 13
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 13 then
+        if TIME >= DELAY_CHECK then
+            play_sound(DOWN_TO_THE_LINE)
+            DELAY_CHECK = TIME + 1.182
+            STEP_CHECK = 0
+            BTO_DTL = true
         else
             return
         end

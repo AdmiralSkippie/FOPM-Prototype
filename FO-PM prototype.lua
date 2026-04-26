@@ -3421,3 +3421,101 @@ function checklist_before_takeoff_BTL()
         end
     end
 end
+
+-- AFTER TAKEOFF CHECKLIST --
+function checklist_after_takeoff()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AFTER_TAKEOFF_CHECKLIST)
+            DELAY_CHECK = TIME + 1.661
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(LANDING_GEAR)
+            DELAY_CHECK = TIME + 1.046
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if LG_Lever_State == 0 then
+                    play_sound(UP)
+                    DELAY_CHECK = TIME + 0.878
+                    STEP_CHECK = 3
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FLAPS)
+            DELAY_CHECK = TIME + 1.112
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if FLAPS_LEVER_State == 0 then
+                    play_sound(RETRACTED)
+                    DELAY_CHECK = TIME + 1.792
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PACKS)
+            DELAY_CHECK = TIME + 0.999
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if PACK_1_STATE == 0 and PACK_2_STATE == 0 then
+                    play_sound(ON)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            ATO_CL = true
+        else
+            return
+        end
+    end
+end

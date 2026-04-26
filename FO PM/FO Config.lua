@@ -170,6 +170,7 @@ TAKEOFF_NO_BLUE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TONOBLUE.wav")
 ADVISED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ADVISED.wav") -- 0.836
 MANAGE_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/MNGSPD.wav") -- 1.180
 SELECTED_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SELECSPD.wav") -- 1.277
+RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/RETRACTED.wav")
 
 ---------------
 -- CHECKLIST --

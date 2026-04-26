@@ -2949,3 +2949,121 @@ function checklist_before_start_BL()
         end
     end
 end
+
+function checklist_after_start()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AFTER_START_CHECKLIST)
+            DELAY_CHECK = TIME + 1.758
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ANTI_ICE)
+            DELAY_CHECK = TIME + 1.227
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(SET)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ECAM_STATUS)
+            DELAY_CHECK = TIME + 1.343
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PITCH_TRIM)
+            DELAY_CHECK = TIME + 1.328
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if PT_TO_CONFIG == PITCH_TRIM then
+                    play_sound(SET)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(RUDDER_TRIM)
+            DELAY_CHECK = TIME + 1.009
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if RUDDER_TRIM_POS < 0.2 and RUDDER_TRIM_POS > -0.2 then
+                    play_sound(N0)
+                    DELAY_CHECK = TIME + 1.116
+                    STEP_CHECK = 9
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            AS_CL = true
+        else
+            return
+        end
+    end
+end

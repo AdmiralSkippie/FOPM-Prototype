@@ -171,6 +171,7 @@ ADVISED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ADVISED.wav") -- 0.836
 MANAGE_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/MNGSPD.wav") -- 1.180
 SELECTED_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SELECSPD.wav") -- 1.277
 RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/RETRACTED.wav")
+DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DISARMED.wav")
 
 ---------------
 -- CHECKLIST --
@@ -220,6 +221,7 @@ RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/RETRACTED.wav")
     AUTO_TRHUST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL38.wav") -- 0.983
     AOUTOBRAKES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL39.wav") -- 1.012
     AFTER_LANDING_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL40.wav") -- 1.595
+    APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL48.wav")
 -- CHECKLIST 5 --
     PARKING_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL41.wav") -- 1.051
     ENGINES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL42.wav") -- 0.777

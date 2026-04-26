@@ -2802,7 +2802,7 @@ function checklist_before_start()
 end
 
 -- BEFORE_START_CHECKLIST BELOW THE LINE --
-function checklist_before_start_BL()
+function checklist_before_start_BTL()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             play_sound(BEFORE_START_CHECKLIST_BELOW_THE_LINE)
@@ -2951,6 +2951,7 @@ function checklist_before_start_BL()
     end
 end
 
+-- AFTER START CHECKLIST -- 
 function checklist_after_start()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3069,6 +3070,7 @@ function checklist_after_start()
     end
 end
 
+-- BEFORE TAKEOFF CHECKLIST --
 function checklist_before_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3209,8 +3211,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 12 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(CHECK)
-                DELAY_CHECK = TIME + 0.839
+                play_sound(TAKEOFF_NO_BLUE)
+                DELAY_CHECK = TIME + 1.298
                 STEP_CHECK = 13
             else
                 return
@@ -3225,6 +3227,195 @@ function checklist_before_takeoff()
             DELAY_CHECK = TIME + 1.182
             STEP_CHECK = 0
             BTO_DTL = true
+        else
+            return
+        end
+    end
+end
+
+-- BEFORE TAKEOFF CHECKLIST BELOW THE LINE --
+function checklist_before_takeoff_BTL()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE)
+            DELAY_CHECK = TIME + 2.352
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(TAKEOFF_RUNWAY)
+            DELAY_CHECK = TIME + 1.343
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CONFIRM)
+                DELAY_CHECK = TIME + 0.991
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(NAV_ON_FMA)
+            DELAY_CHECK = TIME + 1.343
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if string.find(FMA_B_STATE, "NAV") then
+                    play_sound(CHECK)
+                    DELAY_CHECK = TIME + 0.839
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CABIN_CREW)
+            DELAY_CHECK = TIME + 1.145
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(ADVISED)
+                DELAY_CHECK = TIME + 1.036
+                STEP_CHECK = 7
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(TCAS)
+            DELAY_CHECK = TIME + 1.218
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if TCAS_STATE == 4 then
+                    play_sound(TA_RA)
+                    DELAY_CHECK = TIME + 1.792
+                    STEP_CHECK = 9
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ENGINE_MODE_SELECTOR)
+            DELAY_CHECK = TIME + 1.885
+            STEP_CHECK = 10
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if RAINING and ENG_MODEL ~= 1 then
+                    if ENG_Mode_State == 2 then
+                        play_sound(IGNITION)
+                        DELAY_CHECK = TIME + 1.095
+                        STEP_CHECK = 5
+                    end
+                elseif ENG_Mode_State == 1 then
+                    play_sound(NORMAL)
+                    DELAY_CHECK = TIME + 1.129
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PACKS_AND_APU_BLEED)
+            DELAY_CHECK = TIME + 1.616
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if PACKS_FOR_TO then
+                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 then
+                        play_sound(CHECK)
+                        DELAY_CHECK = TIME + 0.839
+                        STEP_CHECK = 7
+                    end
+                elseif APU_TO_PACKS then
+                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 1 then
+                        play_sound(CHECK)
+                        DELAY_CHECK = TIME + 0.839
+                        STEP_CHECK = 7
+                    end
+                else
+                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 then
+                        play_sound(CHECK)
+                        DELAY_CHECK = TIME + 0.839
+                        STEP_CHECK = 7
+                    end
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            BTO_CL = true
         else
             return
         end

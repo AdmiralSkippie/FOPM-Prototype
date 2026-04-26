@@ -3519,3 +3519,49 @@ function checklist_after_takeoff()
         end
     end
 end
+
+-- CLIMB CHECKLIST --
+function checklist_climb()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CLIMB_CHECKLIST)
+            DELAY_CHECK = TIME + 1.305
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(BARO_REFERENCE)
+            DELAY_CHECK = TIME + 1.433
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            CLB_CL = true
+        else
+            return
+        end
+    end
+end

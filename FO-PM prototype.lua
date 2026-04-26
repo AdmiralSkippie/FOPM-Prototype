@@ -3165,7 +3165,7 @@ function checklist_before_takeoff()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(FLAP_POS[FL_VOICE_SRCH])
+                play_sound(FLAP_POS[CONFIG_VOICE_SRCH])
                 DELAY_CHECK = TIME + 1.429
                 STEP_CHECK = 9
             else
@@ -3826,6 +3826,155 @@ function chacklist_landing()
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
             LND_CL = true
+        else
+            return
+        end
+    end
+end
+
+-- AFTER LANDING CHECKLIST --
+function checklist_after_landing()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(AFTER_START_CHECKLIST)
+            DELAY_CHECK = TIME + 1.795
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(FLAPS)
+            DELAY_CHECK = TIME + 1.112
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(FLAP_POS[FL_VOICE_SRCH])
+                DELAY_CHECK = TIME + 1.429
+                STEP_CHECK = 3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(SPOILERS)
+            DELAY_CHECK = TIME + 1.276
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if SPDBRK_State == 0 then
+                    play_sound(DISARMED)
+                    DELAY_CHECK = TIME + 1.429
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(APU)
+            DELAY_CHECK = TIME + 1.276
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if APU_STATE == 1 then
+                    play_sound(AVAIL)
+                    DELAY_CHECK = TIME + 1.154
+                else
+                    play_sound(STARTING_APU)
+                    DELAY_CHECK = TIME + 1.740
+                end
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(WEATHER_RADAR)
+            DELAY_CHECK = TIME + 1.209
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if RADAR_SYS_SW_State == 1 then
+                    play_sound(OFF)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PWS)
+            DELAY_CHECK = TIME + 1.286
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if PWS_STATE == 0 then
+                    play_sound(OFF)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 9
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            AL_CL = true
         else
             return
         end

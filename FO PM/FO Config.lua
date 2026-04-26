@@ -176,7 +176,7 @@ SELECTED_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SELECSPD.wav") 
 ---------------
 
 -- CHECKLIST 1--
-    BEFORE_START_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL1.wav") -- 1.318
+    BEFORE_START_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL1.wav") -- 1.318 
     EFB_PREPARATION = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL2.wav") -- 1.581
     AIRCRAFT_PBN_CAPABILITY = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL3.wav") -- 1.940
     COCKPIT_PREPARATION = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL4.wav") -- 1.409

@@ -187,7 +187,7 @@ dataref("ECAM_MSG_A", "AirbusFBW/EWD1aText", "readonly")
 --dataref("ECAM_UPPER_RIGHT_MSG", "", "readonly")
 --dataref("ECAM_LOWER_MSG", "", "readonly")
 dataref("PITCH_TRIM", "AirbusFBW/PitchTrimPosition  ", "readonly")
-dataref("RUDDER_TRIM", "AirbusFBW/YawTrimPosition", "readonly")
+dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
 dataref("FMA_B_STATE", "AirbusFBW/FMA1b", "readonly")
 dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
 -- QNH INDICATOR --

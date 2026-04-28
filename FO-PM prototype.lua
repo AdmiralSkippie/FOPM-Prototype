@@ -4179,3 +4179,191 @@ function checklist_parking()
         end
     end
 end
+
+-- SECURING CHECKLIST -- 
+function checklist_securing()
+    if STEP_CHECK == 0 then
+        if TIME >= DELAY_CHECK then
+            play_sound(SECURING_CHECKLIST)
+            DELAY_CHECK = TIME + 1.533
+            STEP_CHECK = 1
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(ADIRS)
+            DELAY_CHECK = TIME + 0.993
+            STEP_CHECK = 2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if ADIR_1_STATE == 0 and ADIR_2_STATE == 0 and ADIR_3_STATE == 0 then
+                    play_sound(OFF)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 3
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(OXYGEN)
+            DELAY_CHECK = TIME + 1.013
+            STEP_CHECK = 4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(OFF)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 5
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 5 then
+        if TIME >= DELAY_CHECK then
+            play_sound(APU_BLEED)
+            DELAY_CHECK = TIME + 1.203
+            STEP_CHECK = 6
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                if APU_BLEED_STATE == 0 then
+                    play_sound(OFF)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 7
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 7 then
+        if TIME >= DELAY_CHECK then
+            play_sound(EMERGENCY_EXIT_LIGHTS)
+            DELAY_CHECK = TIME + 1.655
+            STEP_CHECK = 8
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 8 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(OFF)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 9
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 9 then
+        if TIME >= DELAY_CHECK then
+            play_sound(NO_PORTABLE_SIGNS)
+            DELAY_CHECK = TIME + 1.412
+            STEP_CHECK = 10
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 10 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(OFF)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 11
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 11 then
+        if TIME >= DELAY_CHECK then
+            play_sound(APU_AND_BATTERY)
+            DELAY_CHECK = TIME + 1.551
+            STEP_CHECK = 12
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 12 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(OFF)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 13
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 13 then
+        if TIME >= DELAY_CHECK then
+            play_sound(EFB)
+            DELAY_CHECK = TIME + 1.042
+            STEP_CHECK = 14
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 14 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(OFF)
+                DELAY_CHECK = TIME + 0.920
+                STEP_CHECK = 15
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 15 then
+        if TIME >= DELAY_CHECK then
+            play_sound(CHECKLIST_COMPLETED)
+            DELAY_CHECK = TIME + 1.602
+            STEP_CHECK = 0
+            SEC_CL = true
+        else
+            return
+        end
+    end
+end

@@ -14,54 +14,60 @@ dofile(SCRIPT_DIRECTORY .. "/FO PM/Datarefs Reading.lua")
 ----------------
 ---- PHASES ----
 ----------------
-local PREFLIGHT = false
+local PREFLIGHT = true
 local PUSHBACK = false
 local ENG_START = false
 local TAXI_OUT = false
 local ON_RWY = false
 local TAKEOFF = false
+local REJECTED = false
 local CLIMB = false
 local CRUISE = false
 local DESCEND = false
 local APPROACH = false
+local FINAL_APP = false
 local DECELERATION = false
 local GA = false
 local TAXI_IN = false
 local PARKING = false
 
------------------------------
+--------------------------------
 ---- PROCEDURES/CL COMPLETE ----
------------------------------
+--------------------------------
 
 local PF_DONE = false
 local TO_BREAFING = false
-local BS_DTL = false
-local BS_CL = false
 local AS_PROC_DONE = false
-local AS_CL = false
 local BTO_PROC_DONE = false
-local BTO_DTL = false
-local BTO_CL = false
 local TO_PROC_DONE = false
 local ACF_CLEAN = false
-local ATO_CL = false
 local TEN_THAUSAND_FEET_CLB_DONE = false
-local CLB_CL = false
 local DES_BREAFING = false
 local TEN_THAUSAND_FEET_DES_DONE = false
-local APP_CL = false
-local LND_CL = false
 local AP_DISCN_PROC = false
 local GA_PROC = false
 local AL_PROC = false
-local AL_CL = false
-local RWY_VACATED = false
 local PARK_PROC = false
-local PARK_CL = false
-local SEC_CL = false
 local FLTCTL_CHK = false
 local ENT_RWY_DONE = false
 local EXIT_RWY_DONE = false
+
+------------------------------
+---- CHECKLISTS VARIABLES ----
+------------------------------
+
+local BS_DTL = false
+local BS_CL = false
+local AS_CL = false
+local BTO_DTL = false
+local BTO_CL = false
+local ATO_CL = false
+local CLB_CL = false
+local APP_CL = false
+local LND_CL = false
+local AL_CL = false
+local PARK_CL = false
+local SEC_CL = false
 
 -----------------------------
 ---- APPROACH PROCEDURES ----
@@ -171,9 +177,9 @@ end
 
 do_every_frame(flaps_voice_search())
 
-----------------------
------ PROCEDURES -----
-----------------------
+-- //////////////////////////////
+-- ///////// PROCEDURES /////////
+-- //////////////////////////////
 
 ---- Flight Controls Check ----
 function flt_ctl_chk()
@@ -1751,7 +1757,7 @@ function flaps_commanded_change()
         end
         if STEP_CLEAN == 2 then
             if TIME >= DELAY_CLEAN then
-                if IND_AIRSPEED + 5 < FLAPS_LIMIT[lindex] then
+                if IND_AIRSPEED + 3 < FLAPS_LIMIT[lindex] then
                     command_once(FLAPS_1DOWN)
                     DELAY_CLEAN = TIME + 0.3
                     STEP_CLEAN = 3
@@ -2107,6 +2113,7 @@ function go_arround()
     if STEP == 0 then
         DELAY = TIME + 0.5
         STEP = 1
+        APP_CL = false
         ATO_CL = false
         LND_CL = false
     end
@@ -2471,7 +2478,7 @@ function vacating_rwy()
             TCAS_SW = 2
             DELAY = TIME + 0.871
             STEP = 0
-            RWY_VACATED = false
+            EXIT_RWY_DONE = false
         else
             return
         end
@@ -2590,9 +2597,9 @@ function parking_proc()
     end
 end
 
--- //////////////////////
--- ///// CHECKLISTS /////
--- //////////////////////
+-- //////////////////////////////
+-- ///////// CHECKLISTS /////////
+-- //////////////////////////////
 
 -- BEFORE START CHECKLIST --
 function checklist_before_start()
@@ -2803,6 +2810,8 @@ function checklist_before_start()
             DELAY_CHECK = TIME + 1.5
             STEP_CHECK = 0
             BS_DTL = true
+            PARK_CL = false
+            SEC_CL = false
         else
             return
         end
@@ -3522,6 +3531,7 @@ function checklist_after_takeoff()
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
             ATO_CL = true
+            TO_PROC_DONE = false
         else
             return
         end
@@ -4182,6 +4192,16 @@ function checklist_parking()
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
             PARK_CL = true
+            BS_DTL = false
+            BS_CL = false
+            AS_CL = false
+            BTO_DTL = false
+            BTO_CL = false
+            ATO_CL = false
+            CLB_CL = false
+            APP_CL = false
+            LND_CL = false
+            AL_CL = false
         else
             return
         end
@@ -4375,3 +4395,144 @@ function checklist_securing()
         end
     end
 end
+
+---- //////////////////////////////
+---- ///////// MAIN LOGIC /////////
+---- //////////////////////////////
+
+function phase_check()
+    if PREFLIGHT then
+        if BS_CL then
+            PREFLIGHT = false
+            PUSHBACK = true
+            PARK_PROC = false
+        end
+    end
+    if PUSHBACK then
+        if ENG_Mode_State == 2 then
+            ENG_START = true
+        end
+        if TAXILT_SW > 0 then
+            ENG_START = false
+            PUSHBACK = false
+            TAXI_OUT = true
+        end
+        if BEACON_STATE == 0 and not ENG_START then
+            PUSHBACK = false
+            PREFLIGHT = true
+        end
+    end
+    if EXECUTING_ENRWY then
+        ON_RWY = true
+        EXIT_RWY_DONE = false
+    end
+    if EXECUTING_EXRWY then
+        ON_RWY = false
+        ENT_RWY_DONE = false
+    end
+    if TAXI_OUT then
+        if THR_STATE >= 3 then
+            TAKEOFF = true
+            TAXI_OUT = false
+            AS_PROC_DONE = false
+        end
+        if ENG_1_Master_State == 0 and ENG_2_Master_State == 0 and BEACON_STATE == 0 then
+            PARKING = true
+            TAXI_OUT = false
+        end
+    end
+    if TAKEOFF then
+        if GNDAIR_SW == 0 then
+            ON_RWY = false
+        end
+        if ENG_1_REV ~= 0 or ENG_2_REV ~= 0 then
+            STEP = 0
+            REJECTED = true
+            TAKEOFF = false
+        end
+        if THR_STATE == 1 and ATO_CL then
+            CLIMB = true
+            TAKEOFF = false
+            BTO_PROC_DONE = false
+            ACF_CLEAN = false
+            AL_PROC = false
+        end
+    end
+    if CLIMB or CRUISE or DESCEND then
+        if string.find(FMA_G_STATE, "CLB") then
+            CLIMB = true
+            CRUISE = false
+            DESCEND = false
+        end
+        if string.find(FMA_G_STATE, "CRZ") then
+            CLIMB = false
+            CRUISE = true
+            DESCEND = false
+        end
+        if string.find(FMA_G_STATE, "DES") then
+            CLIMB = false
+            CRUISE = false
+            DESCEND = true
+        end
+        if APP_CL then
+            CLIMB = false
+            CRUISE = false
+            DESCEND = false
+            APPROACH = true
+            AP_DISCN_PROC = false
+        end
+    end
+    if APPROACH then
+        if LND_CL then
+            APPROACH = false
+            FINAL_APP = true
+            GA_PROC = false
+        end
+    end
+    if FINAL_APP then
+        if THR_STATE == 3 then
+            FINAL_APP = false
+            GA = true
+            TEN_THAUSAND_FEET_CLB_DONE = false
+            TEN_THAUSAND_FEET_DES_DONE = false
+            DES_BREAFING = false
+        end
+        if ENG_1_REV > 0 or ENG_2_REV > 0 then
+            FINAL_APP = false
+            DECELERATION = true
+            ON_RWY = true
+            TO_PROC_DONE = false
+            TEN_THAUSAND_FEET_CLB_DONE = false
+            TEN_THAUSAND_FEET_DES_DONE = false
+        end
+    end
+    if GA then
+        if THR_STATE == 1 then
+            GA = false
+            TAKEOFF = true
+        end
+    end
+    if DECELERATION then
+        if ENG_1_REV == 0 and ENG_2_REV == 0 then
+            DECELERATION = false
+            TAXI_IN = true
+        end
+    end
+    if TAXI_IN then
+        if PRKBRK_State == 1 and ENG_1_Master_State == 0 and ENG_2_Master_State == 0 then
+            TAXI_IN = false
+            PARKING = true
+        end
+    end
+    if PARKING then
+        if PARK_CL then
+            PARKING = false
+            PREFLIGHT = true
+            PF_DONE = false
+            TO_BREAFING = false
+            FLTCTL_CHK = false
+        end
+    end
+end
+
+do_every_frame(phase_check())

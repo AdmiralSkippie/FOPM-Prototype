@@ -1008,6 +1008,7 @@ function after_start_proc()
     end
 end
 
+---- BEFORE TAKEOFF PROCEDURE ----
 function before_takeoff_proc()
     if not BTO_PROC_DONE then
         if EXECUTING_BTP then
@@ -1593,7 +1594,7 @@ function take_off_proc()
     end
 end
 
----- CLEAN UP PROCEDURE ----
+---- CLEAN UP PROCEDURE (AUTO)----
 function clean_up_auto()
     if STEP_CLEAN == 0 then
         DELAY_CLEAN = TIME + 5
@@ -1681,6 +1682,7 @@ function clean_up_auto()
     end
 end
 
+---- FLAPS CHANGE UNDER COMMAND ----
 function flaps_commanded_change()
     if command_FLPS_1UP then
         if STEP_CLEAN == 0 then
@@ -1777,6 +1779,7 @@ function flaps_commanded_change()
     end
 end
 
+---- GEAR CHANGE UNDER COMMAND ----
 function gear_command()
     if command_GUP then
         DELAY_CHECK = TIME + 0.88
@@ -1825,6 +1828,7 @@ function gear_command()
     end
 end
 
+---- 10.000FT CLB PROCEDURE ----
 function ten_thausand_feet_CLB()
     if STEP == 0 then
         if fo_autoperform then
@@ -1909,6 +1913,7 @@ function ten_thausand_feet_CLB()
     end
 end
 
+---- 10.000FT DES PROCEDURE ----
 function ten_thausand_feet_DES()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2034,6 +2039,7 @@ function ten_thausand_feet_DES()
     end
 end
 
+---- AP DISCONECT ----
 function ap_discn_behaviour()
     if STEP_AP == 0 then
         if AP_DISCN_ALARM == 1 then
@@ -2096,7 +2102,7 @@ function ap_discn_behaviour()
     end
 end
 
--- GO ARROUND PROCEDURE --
+---- GO ARROUND PROCEDURE ----
 function go_arround() 
     if STEP == 0 then
         DELAY = TIME + 0.5
@@ -2165,7 +2171,7 @@ function go_arround()
     end
 end
 
--- TOUCH DOWN PROCEDURE --
+---- TOUCH DOWN PROCEDURE ----
 function touch_down()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2219,6 +2225,7 @@ function touch_down()
     end
 end
 
+---- AFTER LANDING PROCEDURE ----
 function after_landing_proc()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2382,7 +2389,7 @@ function after_landing_proc()
     end
 end
 
--- BRAKE TEMP CHECK PROCEDURE --
+---- BRAKE TEMP CHECK PROCEDURE ----
 function brake_temp_check()
     if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
         if not speak_only_essencials then
@@ -2393,6 +2400,7 @@ function brake_temp_check()
     end
 end
 
+---- VACATING RWY ----
 function vacating_rwy()
     if STEP == 0 then
         if TIME >= DELAY then

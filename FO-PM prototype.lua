@@ -32,7 +32,7 @@ local TAXI_IN = false
 local PARKING = false
 
 --------------------------------
----- PROCEDURES/CL COMPLETE ----
+---- PROCEDURES COMPLETE ----
 --------------------------------
 
 local PF_DONE = false
@@ -58,17 +58,29 @@ local BRKTEMP_CHK_DONE = false
 ------------------------------
 
 local BS_DTL = false
+local EX_BS_DTL = false
 local BS_CL = false
+local EX_BS_CL = false
 local AS_CL = false
+local EX_AS_CL = false
 local BTO_DTL = false
+local EX_BTO_DTL = false
 local BTO_CL = false
+local EX_BTO_CL = false
 local ATO_CL = false
+local EX_ATO_CL = false
 local CLB_CL = false
+local EX_CLB_CL = false
 local APP_CL = false
+local EX_APP_CL = false
 local LND_CL = false
+local EX_LND_CL = false
 local AL_CL = false
+local EX_AL_CL = false
 local PARK_CL = false
+local EX_PARK_CL = false
 local SEC_CL = false
+local EX_SEC_CL = false
 
 -----------------------------
 ---- APPROACH PROCEDURES ----
@@ -185,7 +197,7 @@ do_every_frame(flaps_voice_search())
 -- ///////// PROCEDURES /////////
 -- //////////////////////////////
 
----- Flight Controls Check ----
+---- Flight Controls Check
 function flt_ctl_chk()
     if STEP_FLT == 0 then
         if TIME >= DELAY then
@@ -307,7 +319,7 @@ function flt_ctl_chk()
     end
 end
 
----- PRELIMINARY COCKPIT PREPARATION ----
+---- PRELIMINARY COCKPIT PREPARATION
 function pre_cockpit_pre()
     if not PF_DONE then
         if STEP == 0 then
@@ -811,7 +823,7 @@ function pre_cockpit_pre()
     end
 end
 
----- AFTER START PROCEDURE ----
+---- AFTER START PROCEDURE
 function after_start_proc()
     if not AS_PROC_DONE then
         if EXECUTE_ASP then
@@ -1020,7 +1032,7 @@ function after_start_proc()
     end
 end
 
----- BEFORE TAKEOFF PROCEDURE ----
+---- BEFORE TAKEOFF PROCEDURE
 function before_takeoff_proc()
     if not BTO_PROC_DONE then
         if EXECUTE_BTP then
@@ -1187,7 +1199,7 @@ function before_takeoff_proc()
     end
 end
 
----- ENTER RWY ----
+---- ENTER RWY
 function enter_rwy()
     if ON_RWY then
         if not ENT_RWY_DONE then
@@ -1386,7 +1398,7 @@ function enter_rwy()
     end
 end
 
----- TAKE OFF PROCEDURE ----
+---- TAKE OFF PROCEDURE
 function take_off_proc()
     if not TO_PROC_DONE then
         if STEP == 0 then
@@ -1630,7 +1642,7 @@ function take_off_proc()
     end
 end
 
----- CLEAN UP PROCEDURE (AUTO)----
+---- CLEAN UP PROCEDURE (AUTO)
 function clean_up_auto()
     if STEP_CLEAN == 0 then
         DELAY_CLEAN = TIME + 5
@@ -1718,7 +1730,7 @@ function clean_up_auto()
     end
 end
 
----- FLAPS CHANGE UNDER COMMAND ----
+---- FLAPS CHANGE UNDER COMMAND
 function flaps_commanded_change()
     if command_FLPS_1UP then
         if STEP_CLEAN == 0 then
@@ -1815,7 +1827,7 @@ function flaps_commanded_change()
     end
 end
 
----- GEAR CHANGE UNDER COMMAND ----
+---- GEAR CHANGE UNDER COMMAND
 function gear_command()
     if command_GUP then
         DELAY_CHECK = TIME + 0.88
@@ -1864,7 +1876,7 @@ function gear_command()
     end
 end
 
----- 10.000FT CLB PROCEDURE ----
+---- 10.000FT CLB PROCEDURE
 function ten_thausand_feet_CLB()
     if STEP == 0 then
         if fo_autoperform then
@@ -1950,7 +1962,7 @@ function ten_thausand_feet_CLB()
     end
 end
 
----- 10.000FT DES PROCEDURE ----
+---- 10.000FT DES PROCEDURE
 function ten_thausand_feet_DES()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2077,7 +2089,7 @@ function ten_thausand_feet_DES()
     end
 end
 
----- AP DISCONECT ----
+---- AP DISCONECT
 function ap_discn_behaviour()
     if STEP_AP == 0 then
         if AP_DISCN_ALARM == 1 then
@@ -2141,7 +2153,7 @@ function ap_discn_behaviour()
     end
 end
 
----- GO ARROUND PROCEDURE ----
+---- GO ARROUND PROCEDURE
 function go_arround() 
     if STEP == 0 then
         DELAY = TIME + 0.25
@@ -2251,7 +2263,7 @@ function go_arround()
     end
 end
 
----- TOUCH DOWN PROCEDURE ----
+---- TOUCH DOWN PROCEDURE
 function touch_down()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2304,7 +2316,7 @@ function touch_down()
     end
 end
 
----- AFTER LANDING PROCEDURE ----
+---- AFTER LANDING PROCEDURE
 function after_landing_proc()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2470,7 +2482,7 @@ function after_landing_proc()
     end
 end
 
----- BRAKE TEMP CHECK PROCEDURE ----
+---- BRAKE TEMP CHECK PROCEDURE
 function brake_temp_check()
     if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
         if not speak_only_essencials then
@@ -2484,7 +2496,7 @@ function brake_temp_check()
     end
 end
 
----- VACATING RWY ----
+---- VACATING RWY
 function vacating_rwy()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2562,7 +2574,7 @@ function vacating_rwy()
     end
 end
 
--- PARKING PROCEDURE --
+-- PARKING PROCEDURE
 function parking_proc()
     if STEP == 0 then
         if TIME >= DELAY then
@@ -2678,7 +2690,7 @@ end
 -- ///////// CHECKLISTS /////////
 -- //////////////////////////////
 
--- BEFORE START CHECKLIST --
+-- BEFORE START CHECKLIST
 function checklist_before_start()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -2886,6 +2898,7 @@ function checklist_before_start()
             play_sound(DOWN_TO_THE_LINE)
             DELAY_CHECK = TIME + 1.5
             STEP_CHECK = 0
+            EX_BS_DTL = false
             BS_DTL = true
             PARK_CL = false
             SEC_CL = false
@@ -2895,7 +2908,7 @@ function checklist_before_start()
     end
 end
 
--- BEFORE_START_CHECKLIST BELOW THE LINE --
+-- BEFORE_START_CHECKLIST BELOW THE LINE
 function checklist_before_start_BTL()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3038,6 +3051,7 @@ function checklist_before_start_BTL()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_BS_CL = false
             BS_CL = true
         else
             return
@@ -3045,7 +3059,7 @@ function checklist_before_start_BTL()
     end
 end
 
--- AFTER START CHECKLIST -- 
+-- AFTER START CHECKLIST
 function checklist_after_start()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3157,6 +3171,7 @@ function checklist_after_start()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_AS_CL = false
             AS_CL = true
         else
             return
@@ -3164,7 +3179,7 @@ function checklist_after_start()
     end
 end
 
--- BEFORE TAKEOFF CHECKLIST --
+-- BEFORE TAKEOFF CHECKLIST
 function checklist_before_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3320,6 +3335,7 @@ function checklist_before_takeoff()
             play_sound(DOWN_TO_THE_LINE)
             DELAY_CHECK = TIME + 1.182
             STEP_CHECK = 0
+            EX_BTO_DTL = false
             BTO_DTL = true
         else
             return
@@ -3327,7 +3343,7 @@ function checklist_before_takeoff()
     end
 end
 
--- BEFORE TAKEOFF CHECKLIST BELOW THE LINE --
+-- BEFORE TAKEOFF CHECKLIST BELOW THE LINE
 function checklist_before_takeoff_BTL()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3509,6 +3525,7 @@ function checklist_before_takeoff_BTL()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_BTO_CL = false
             BTO_CL = true
         else
             return
@@ -3516,7 +3533,7 @@ function checklist_before_takeoff_BTL()
     end
 end
 
--- AFTER TAKEOFF CHECKLIST --
+-- AFTER TAKEOFF CHECKLIST
 function checklist_after_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3607,6 +3624,7 @@ function checklist_after_takeoff()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_ATO_CL = false
             ATO_CL = true
             TO_PROC_DONE = false
         else
@@ -3615,7 +3633,7 @@ function checklist_after_takeoff()
     end
 end
 
--- CLIMB CHECKLIST --
+-- CLIMB CHECKLIST
 function checklist_climb()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3654,6 +3672,7 @@ function checklist_climb()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_CLB_CL = false
             CLB_CL = true
         else
             return
@@ -3661,7 +3680,7 @@ function checklist_climb()
     end
 end
 
--- APPROACH CHECKLIST --
+-- APPROACH CHECKLIST
 function checklist_approach()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -3802,6 +3821,7 @@ function checklist_approach()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_APP_CL = false
             APP_CL = true
         else
             return
@@ -3809,8 +3829,8 @@ function checklist_approach()
     end
 end
 
--- LANDING CHECKLIST --
-function chacklist_landing()
+-- LANDING CHECKLIST
+function checklist_landing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             play_sound(LANDING_CHECKLIST)
@@ -3920,6 +3940,7 @@ function chacklist_landing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_LND_CL = false
             LND_CL = true
         else
             return
@@ -3927,7 +3948,7 @@ function chacklist_landing()
     end
 end
 
--- AFTER LANDING CHECKLIST --
+-- AFTER LANDING CHECKLIST
 function checklist_after_landing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -4069,6 +4090,7 @@ function checklist_after_landing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_AL_CL = false
             AL_CL = true
         else
             return
@@ -4076,7 +4098,7 @@ function checklist_after_landing()
     end
 end
 
--- PARKING CHECKLIST --
+-- PARKING CHECKLIST
 function checklist_parking()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -4268,6 +4290,7 @@ function checklist_parking()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_PARK_CL = false
             PARK_CL = true
             BS_DTL = false
             BS_CL = false
@@ -4285,7 +4308,7 @@ function checklist_parking()
     end
 end
 
--- SECURING CHECKLIST -- 
+-- SECURING CHECKLIST
 function checklist_securing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
@@ -4466,6 +4489,7 @@ function checklist_securing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
+            EX_SEC_CL = false
             SEC_CL = true
         else
             return
@@ -4477,7 +4501,7 @@ end
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
 
--- ACTUAL FLIGHT PHASE --
+-- ACTUAL FLIGHT PHASE
 function phase_check()
     if PREFLIGHT then
         if BS_CL then
@@ -4710,3 +4734,45 @@ function FO_main_logic()
 end
 
 do_every_frame(FO_main_logic())
+
+-- FO CHECKLIST LOGIC
+function FO_checklist()
+    if EX_BS_DTL then
+        checklist_before_start()
+    end
+    if EX_BS_CL then
+        checklist_before_start_BTL()
+    end
+    if EX_AS_CL then
+        checklist_after_start()
+    end
+    if EX_BTO_DTL then
+        checklist_before_takeoff()
+    end
+    if EX_BTO_CL then
+        checklist_before_takeoff_BTL()
+    end
+    if EX_ATO_CL then
+        checklist_after_takeoff()
+    end
+    if EX_CLB_CL then
+        checklist_climb()
+    end
+    if EX_APP_CL then
+        checklist_approach()
+    end
+    if EX_LND_CL then
+        checklist_landing()
+    end
+    if EX_AL_CL then
+        checklist_after_landing()
+    end
+    if EX_PARK_CL then
+        checklist_parking()
+    end
+    if EX_SEC_CL then
+        checklist_securing()
+    end
+end
+
+do_every_frame(FO_checklist())

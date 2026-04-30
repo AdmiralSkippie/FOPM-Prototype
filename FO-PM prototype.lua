@@ -51,6 +51,7 @@ local PARK_PROC = false
 local FLTCTL_CHK = false
 local ENT_RWY_DONE = false
 local EXIT_RWY_DONE = false
+local BRKTEMP_CHK_DONE = false
 
 ------------------------------
 ---- CHECKLISTS VARIABLES ----
@@ -88,12 +89,15 @@ local LDA_APP = false
 ---- ONGOING PROCEDURES ----
 ----------------------------
 
-local EXECUTING_PCP = false
-local EXECUTING_ASP = false
-local EXECUTING_BTP = false
+local EXECUTE_PCP = false
+local EXECUTE_ASP = false
+local EXECUTE_BTP = false
+local EXECUTE_10FT_CLB = false
+local EXECUTE_10FT_DES = false
 local ONEENG_TAXI_DEP = false
-local EXECUTING_ENRWY = false
-local EXECUTING_EXRWY = false
+local EXECUTE_AL_PROC = false
+local EXECUTE_ENRWY = false
+local EXECUTE_EXRWY = false
 
 ------------------
 ---- COMMANDS ----
@@ -796,19 +800,21 @@ function pre_cockpit_pre()
                 DELAY = TIME + 3
                 STEP = 0
                 PF_DONE = true
+                EXECUTE_PCP = false
             end
         end
     else
         local rindex = math.random(5)
         play_sound(READY[rindex])
         DELAY = TIME + 3
+        EXECUTE_PCP = false
     end
 end
 
----- AFTER START PROCEDURES ----
+---- AFTER START PROCEDURE ----
 function after_start_proc()
     if not AS_PROC_DONE then
-        if EXECUTING_ASP then
+        if EXECUTE_ASP then
             if STEP == 0 then
                 STEP = 1
                 DELAY = TIME + 1
@@ -1000,7 +1006,7 @@ function after_start_proc()
                     DELAY = TIME + 3
                     STEP = 0
                     AS_PROC_DONE = true
-                    EXECUTING_ASP = false
+                    EXECUTE_ASP = false
                 else
                     return
                 end
@@ -1010,14 +1016,14 @@ function after_start_proc()
         local rindex = math.random(5)
         play_sound(READY[rindex])
         DELAY = TIME + 3
-        EXECUTING_ASP = false
+        EXECUTE_ASP = false
     end
 end
 
 ---- BEFORE TAKEOFF PROCEDURE ----
 function before_takeoff_proc()
     if not BTO_PROC_DONE then
-        if EXECUTING_BTP then
+        if EXECUTE_BTP then
              if STEP == 0 then
                 STEP = 1
                 DELAY = TIME + 0.5
@@ -1166,8 +1172,9 @@ function before_takeoff_proc()
                     play_sound(READY[rindex])
                     DELAY = TIME + 2
                     STEP = 0
-                    EXECUTING_BTP = false
+                    EXECUTE_BTP = false
                     BTO_PROC_DONE = true
+                    BRKTEMP_CHK_DONE = false
                 else
                     return
                 end
@@ -1176,7 +1183,7 @@ function before_takeoff_proc()
     else
         local rindex = math.random(5)
         play_sound(READY[rindex])
-        EXECUTING_BTP = false
+        EXECUTE_BTP = false
     end
 end
 
@@ -1204,12 +1211,16 @@ function enter_rwy()
                 end
             end
             if STEP == 1.2 then
-                if TIME >= DELAY then
-                    STROBE_SW = 2
-                    DELAY = TIME + 0.3
-                    STEP = 1.3
+                if not TAXI_IN then
+                    if TIME >= DELAY then
+                        STROBE_SW = 2
+                        DELAY = TIME + 0.3
+                        STEP = 1.3
+                    else
+                        return
+                    end
                 else
-                    return
+                    STEP = 1.3
                 end
             end
             if STEP == 1.3 then
@@ -1266,14 +1277,20 @@ function enter_rwy()
                 end
             end
             if STEP == 3 then
-                if TIME >= DELAY then
-                    if not speak_only_essencials then
-                        play_sound(ENGINE_MODE_SELECTOR)
+                if not TAXI_IN then
+                    if TIME >= DELAY then
+                        if not speak_only_essencials then
+                            play_sound(ENGINE_MODE_SELECTOR)
+                        end
+                        DELAY = TIME + 1.865
+                        STEP = 3.5
+                    else
+                        return
                     end
-                    DELAY = TIME + 1.865
-                    STEP = 3.5
                 else
-                    return
+                    STEP = 4
+                    EXECUTE_ENRWY = false
+                    ENT_RWY_DONE = true
                 end
             end
             if STEP == 3.5 then
@@ -1296,20 +1313,28 @@ function enter_rwy()
                 end
             end
             if STEP == 4 then
-                if TIME >= DELAY then
-                    if not speak_only_essencials then
-                        play_sound(PACKS)
+                if not TAXI_IN then
+                    if TIME >= DELAY then
+                        if not speak_only_essencials then
+                            play_sound(PACKS)
+                        end
+                        DELAY = TIME + 1
+                        STEP = 4.5
+                    else
+                        return
                     end
-                    DELAY = TIME + 1
-                    STEP = 4.5
                 else
-                    return
+                    STEP = 0
+                    EXECUTE_ENRWY = false
+                    ENT_RWY_DONE = true
                 end
             end
             if STEP == 4.5 then
                 if TIME >= DELAY then
                     if not PACKS_FOR_TO then
-                        command_once(PACK_1_PB)
+                        if PACK_1_STATE == 0 then
+                            command_once(PACK_1_PB)
+                        end
                         DELAY = TIME + 0.3
                         STEP = 4.6
                     else
@@ -1325,7 +1350,9 @@ function enter_rwy()
             end
             if STEP == 4.6 then
                 if TIME >= DELAY then
-                    command_once(PACK_2_PB)
+                    if PACK_2_STATE == 0 then
+                        command_once(PACK_2_PB)
+                    end
                     DELAY = TIME + 0.3
                     STEP = 4.7
                 else
@@ -1347,14 +1374,14 @@ function enter_rwy()
                     play_sound(READY[rindex])
                     DELAY = TIME + 2
                     STEP = 0
-                    EXECUTING_ENRWY = false
+                    EXECUTE_ENRWY = false
                     ENT_RWY_DONE = true
                 else
                     return
                 end
             end
         else
-            EXECUTING_ENRWY = false
+            EXECUTE_ENRWY = false
         end
     end
 end
@@ -1466,6 +1493,9 @@ function take_off_proc()
                     LG_Lever = 0
                     DELAY = TIME + 0.986
                     STEP = 7
+                else
+                    STEP = 7
+                    DELAY = TIME + 0.5
                 end
             else
                 return
@@ -1912,6 +1942,7 @@ function ten_thausand_feet_CLB()
             play_sound(READY[lindex])
             DELAY = TIME + 2
             STEP = 0
+            EXECUTE_10FT_CLB = false
             TEN_THAUSAND_FEET_CLB_DONE = true
         else
             return
@@ -2038,6 +2069,7 @@ function ten_thausand_feet_DES()
             play_sound(READY[rindex])
             DELAY = TIME + 3
             STEP = 0
+            EXECUTE_10FT_DES = false
             TEN_THAUSAND_FEET_DES_DONE = true
         else
             return
@@ -2053,7 +2085,8 @@ function ap_discn_behaviour()
                 DELAY_AP = TIME + 2
                 STEP_AP = 1
             else
-                STEP_AP = 9
+                STEP_AP = 0
+                AP_DISCN_PROC = true
             end
         else
             return
@@ -2111,7 +2144,7 @@ end
 ---- GO ARROUND PROCEDURE ----
 function go_arround() 
     if STEP == 0 then
-        DELAY = TIME + 0.5
+        DELAY = TIME + 0.25
         STEP = 1
         APP_CL = false
         ATO_CL = false
@@ -2167,11 +2200,51 @@ function go_arround()
                 play_sound(GEAR_UP)
                 LG_Lever = 0
                 DELAY = TIME + 0.986
-                STEP = 0
-                GA_PROC = true
+                STEP = 6
             else
                 return
             end
+        else
+            return
+        end
+    end
+    if STEP == 6 then
+        if TIME >= DELAY then
+            if ILS_APP or MLS_APP then
+                GA_PROC = true
+                STEP = 0
+            else
+                play_sound(FLIGHT_DIRECTORS)
+                DELAY = TIME + 0.5
+                DELAY_SPEACH = TIME + 1.2
+                STEP = 7
+            end
+        end
+    end
+    if STEP == 7 then
+        if TIME >= DELAY_AP then
+            command_once(FD_CAP_PB)
+            DELAY = TIME + 0.5
+            STEP = 8
+        else
+            return
+        end
+    end
+    if STEP == 8 then
+        if TIME >= DELAY_AP then
+            command_once(FD_FO_PB)
+            DELAY = TIME + 0.5
+            STEP = 9
+        else
+            return
+        end
+    end
+    if STEP == 9 then
+        if TIME >= DELAY_SPEACH then
+            play_sound(ON)
+            DELAY = TIME + 0.836
+            STEP = 0
+            GA_PROC = true
         else
             return
         end
@@ -2226,7 +2299,6 @@ function touch_down()
                 play_sound(N80_KNOTS)
                 DELAY = TIME + 1.4
                 STEP = 0
-                DECELERATION = false
             end
         end
     end
@@ -2238,6 +2310,7 @@ function after_landing_proc()
         if TIME >= DELAY then
             DELAY = TIME + 0.4
             STEP = 1
+            EXECUTE_AL_PROC = true
         else
             return
         end
@@ -2389,6 +2462,7 @@ function after_landing_proc()
            play_sound(READY[rindex])
            DELAY = TIME + 3
            STEP = 0
+           EXECUTE_AL_PROC = false
            AL_PROC = true
         else
             return
@@ -2404,6 +2478,9 @@ function brake_temp_check()
         end
         command_once(BRKFAN_PB)
         DELAY = TIME + 1.173
+        BRKTEMP_CHK_DONE = true
+    else
+        BRKTEMP_CHK_DONE = true
     end
 end
 
@@ -2522,7 +2599,7 @@ function parking_proc()
             if not speak_only_essencials then
                 play_sound(FUEL_PUMPS)
             end
-            DELAY = TIME + 1.153
+            DELAY = TIME + 0.5
             STEP = 6
         else
             return
@@ -4400,6 +4477,7 @@ end
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
 
+-- ACTUAL FLIGHT PHASE --
 function phase_check()
     if PREFLIGHT then
         if BS_CL then
@@ -4422,11 +4500,11 @@ function phase_check()
             PREFLIGHT = true
         end
     end
-    if EXECUTING_ENRWY then
+    if EXECUTE_ENRWY then
         ON_RWY = true
         EXIT_RWY_DONE = false
     end
-    if EXECUTING_EXRWY then
+    if EXECUTE_EXRWY then
         ON_RWY = false
         ENT_RWY_DONE = false
     end
@@ -4536,3 +4614,99 @@ function phase_check()
 end
 
 do_every_frame(phase_check())
+
+-- FO/PM MAIN LOGIC
+function FO_main_logic()
+    if PREFLIGHT then
+        if EXECUTE_PCP then
+            pre_cockpit_pre()
+        end
+    end
+    if ENG_START then
+        if not AS_PROC_DONE then
+            if ENG_Mode_State == 1 then
+                after_start_proc()
+            end
+        end
+    end
+    if TAXI_OUT then
+        if EXECUTE_BTP then
+            before_takeoff_proc()
+        end
+        if EXECUTE_ENRWY then
+            enter_rwy()
+        end
+        if EXECUTE_EXRWY then
+            vacating_rwy()
+        end
+    end
+    if BTO_CL and not TO_PROC_DONE then
+        take_off_proc()
+    end
+    if GNDAIR_SW == 0 then
+        if not command_FLPS_1DN or not command_FLPS_1UP then
+            gear_command()
+        end
+        if not command_GUP or not command_GDN then
+            flaps_commanded_change()
+        end
+    end
+    if TAKEOFF then
+        if THR_STATE == 1 and fo_autoperform then
+            clean_up_auto()
+        end
+    end
+    if CLIMB then
+        if fo_autoperform then
+            if not TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000 then
+                ten_thausand_feet_CLB()
+            end
+        elseif EXECUTE_10FT_CLB then
+            ten_thausand_feet_CLB()
+        end
+    end
+    if DESCEND then
+        if fo_autoperform then
+            if not TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000 then
+                ten_thausand_feet_DES()
+            end
+        elseif EXECUTE_10FT_DES then
+            ten_thausand_feet_DES()
+        end
+    end
+    if FINAL_APP then
+        ap_discn_behaviour()
+    end
+    if GA then
+        go_arround()
+    end
+    if DECELERATION then
+        touch_down()
+    end
+    if TAXI_IN then
+        if not AL_PROC and SPDBRK_State == 0 then
+            if not EXECUTE_EXRWY then
+                after_landing_proc()
+            end
+        end
+        if EXECUTE_EXRWY and not EXECUTE_AL_PROC then
+            vacating_rwy()
+        end
+        if EXECUTE_ENRWY and not EXECUTE_AL_PROC then
+            enter_rwy()
+        end
+        if CRONO >= 300 and not BRKTEMP_CHK_DONE then
+            brake_temp_check()
+        end
+    end
+    if PARKING then
+        if not BRKTEMP_CHK_DONE then
+            brake_temp_check()
+        end
+        if not PARK_PROC and BRKTEMP_CHK_DONE then
+            parking_proc()
+        end
+    end
+end
+
+do_every_frame(FO_main_logic())

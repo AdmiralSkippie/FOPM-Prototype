@@ -21,6 +21,7 @@ local TAXI_OUT = false
 local ON_RWY = false
 local TAKEOFF = false
 local REJECTED = false
+local REJECTED_DES = false
 local CLIMB = false
 local CRUISE = false
 local DESCEND = false
@@ -36,13 +37,13 @@ local PARKING = false
 --------------------------------
 
 local PF_DONE = false
-local TO_BREAFING = false
+local TO_BRIEFING = false
 local AS_PROC_DONE = false
 local BTO_PROC_DONE = false
 local TO_PROC_DONE = false
 local ACF_CLEAN = false
 local TEN_THAUSAND_FEET_CLB_DONE = false
-local DES_BREAFING = false
+local DES_BRIEFING = false
 local TEN_THAUSAND_FEET_DES_DONE = false
 local AP_DISCN_PROC = false
 local GA_PROC = false
@@ -148,6 +149,7 @@ local GREENDOT = 0
 local CHECK_SPEED = 0
 local F_TARGET = 0
 local F_ATARGET = 0
+local TXT_PHASE = nil
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -3238,7 +3240,7 @@ function checklist_before_takeoff()
     end
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
-            play_sound(BREAFING)
+            play_sound(BRIEFING)
             DELAY_CHECK = TIME + 0.845
             STEP_CHECK = 6
             response_CHECK = false
@@ -3249,7 +3251,7 @@ function checklist_before_takeoff()
     if STEP_CHECK == 6 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if TO_BREAFING then
+                if TO_BRIEFING then
                     play_sound(COMPLETED)
                     DELAY_CHECK = TIME + 0.957
                     STEP_CHECK = 7
@@ -3693,7 +3695,7 @@ function checklist_approach()
     end
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            play_sound(BREAFING)
+            play_sound(BRIEFING)
             DELAY_CHECK = TIME + 0.845
             STEP_CHECK = 2
             response_CHECK = false
@@ -3704,7 +3706,7 @@ function checklist_approach()
     if STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if DES_BREAFING then
+                if DES_BRIEFING then
                     play_sound(COMPLETED)
                     DELAY_CHECK = TIME + 0.957
                     STEP_CHECK = 3
@@ -4504,6 +4506,7 @@ end
 -- ACTUAL FLIGHT PHASE
 function phase_check()
     if PREFLIGHT then
+        TXT_PHASE = "Preflight"
         if BS_CL then
             PREFLIGHT = false
             PUSHBACK = true
@@ -4511,6 +4514,7 @@ function phase_check()
         end
     end
     if PUSHBACK then
+        TXT_PHASE = "Pushback"
         if ENG_Mode_State == 2 then
             ENG_START = true
         end
@@ -4533,6 +4537,7 @@ function phase_check()
         ENT_RWY_DONE = false
     end
     if TAXI_OUT then
+        TXT_PHASE = "Taxi Out"
         if THR_STATE >= 3 then
             TAKEOFF = true
             TAXI_OUT = false
@@ -4544,6 +4549,7 @@ function phase_check()
         end
     end
     if TAKEOFF then
+        TXT_PHASE = "Takeoff"
         if GNDAIR_SW == 0 then
             ON_RWY = false
         end
@@ -4560,18 +4566,28 @@ function phase_check()
             AL_PROC = false
         end
     end
+    if REJECTED then
+        TXT_PHASE = "Rejected"
+        if ENG_1_REV == 0 and ENG_2_REV == 0 then
+            REJECTED = false
+            REJECTED_DES = true
+        end
+    end
     if CLIMB or CRUISE or DESCEND then
         if string.find(FMA_G_STATE, "CLB") then
+            TXT_PHASE = "Climb"
             CLIMB = true
             CRUISE = false
             DESCEND = false
         end
         if string.find(FMA_G_STATE, "CRZ") then
+            TXT_PHASE = "Cruise"
             CLIMB = false
             CRUISE = true
             DESCEND = false
         end
         if string.find(FMA_G_STATE, "DES") then
+            TXT_PHASE = "Descend"
             CLIMB = false
             CRUISE = false
             DESCEND = true
@@ -4585,6 +4601,7 @@ function phase_check()
         end
     end
     if APPROACH then
+        TXT_PHASE = "Approach"
         if LND_CL then
             APPROACH = false
             FINAL_APP = true
@@ -4592,12 +4609,13 @@ function phase_check()
         end
     end
     if FINAL_APP then
+        TXT_PHASE = "Final APP"
         if THR_STATE == 3 then
             FINAL_APP = false
             GA = true
             TEN_THAUSAND_FEET_CLB_DONE = false
             TEN_THAUSAND_FEET_DES_DONE = false
-            DES_BREAFING = false
+            DES_BRIEFING = false
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
             FINAL_APP = false
@@ -4609,29 +4627,33 @@ function phase_check()
         end
     end
     if GA then
+        TXT_PHASE = "Go Arround"
         if THR_STATE == 1 then
             GA = false
             TAKEOFF = true
         end
     end
     if DECELERATION then
+        TXT_PHASE = "Decel"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
             DECELERATION = false
             TAXI_IN = true
         end
     end
     if TAXI_IN then
+        TXT_PHASE = "Taxi In"
         if PRKBRK_State == 1 and ENG_1_Master_State == 0 and ENG_2_Master_State == 0 then
             TAXI_IN = false
             PARKING = true
         end
     end
     if PARKING then
+        TXT_PHASE = "Parking"
         if PARK_CL then
             PARKING = false
             PREFLIGHT = true
             PF_DONE = false
-            TO_BREAFING = false
+            TO_BRIEFING = false
             FLTCTL_CHK = false
         end
     end
@@ -4664,8 +4686,11 @@ function FO_main_logic()
             vacating_rwy()
         end
     end
-    if BTO_CL and not TO_PROC_DONE then
+    if BTO_CL and not TO_PROC_DONE and not REJECTED then
         take_off_proc()
+    end
+    if REJECTED then
+        touch_down()
     end
     if GNDAIR_SW == 0 then
         if not command_FLPS_1DN or not command_FLPS_1UP then
@@ -4776,3 +4801,279 @@ function FO_checklist()
 end
 
 do_every_frame(FO_checklist())
+
+-- /////////////////////////////////
+-- ///////// IMGUI BUILDER /////////
+-- /////////////////////////////////
+
+-- IMGUI CHECK AVAIL
+if not SUPPORTS_FLOATING_WINDOWS then
+    logMsg("imgui not supported by your FlyWithLua version")
+    return
+end
+
+-- IMGUI VARIABLES
+local WND_SETTINGS = false
+local WND_MAIN = true
+local WND_BREAFING = false
+
+-- IMGUI BUILDER
+function myProgram_on_build(myProgram_wnd, x, y)
+    if WND_MAIN then
+        if imgui.SmallButton("Settings") then
+            WND_SETTINGS = true
+            WND_MAIN = false
+            WND_BREAFING = false
+        end
+        imgui.SameLine()
+        if imgui.SmallButton("Breafing") then
+            WND_SETTINGS = false
+            WND_MAIN = false
+            WND_BREAFING = true
+        end
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("FLT Phase:")
+        imgui.SameLine()
+        imgui.TextUnformatted(TXT_PHASE)
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        -- CHECKLIST
+        if PREFLIGHT then
+            if not BS_DTL and not EX_BS_DTL and not EX_SEC_CL and PF_DONE then
+                if imgui.SmallButton("Before Start CKL") then
+                    EX_BS_DTL = true
+                end
+            end
+            imgui.SameLine()
+            if not SEC_CL and not EX_SEC_CL and not BS_DTL and not EX_BS_DTL then
+                if imgui.SmallButton("Securing CKL") then
+                    EX_SEC_CL = true
+                end
+            end
+            if BS_DTL and not EX_BS_CL then
+                if imgui.SmallButton("Before Start CKL BTL") then
+                    EX_BS_CL = true
+                end
+            end
+        end
+        if PUSHBACK then
+            if not AS_CL and not EX_AS_CL and AS_PROC_DONE then
+                if imgui.SmallButton("After Start CKL") then
+                    EX_AS_CL = true
+                end
+            end
+        end
+        if TAXI_OUT then
+            if not BTO_DTL and not EX_BTO_DTL and BTO_PROC_DONE then
+                if imgui.SmallButton("Before Takeoff CKL") then
+                    EX_BTO_DTL = true
+                end
+            end
+            if BTO_DTL and ENT_RWY_DONE and not EX_BTO_CL then
+                if imgui.SmallButton("Before Takeoff CKL BTL") then
+                    EX_BTO_CL = true
+                end
+            end
+        end
+        if TAKEOFF then
+            if TO_PROC_DONE and not EX_ATO_CL then
+                if imgui.SmallButton("After Takeoff CKL") then
+                    EX_ATO_CL = true
+                end
+            end
+        end
+        if CLIMB then
+            if not CLB_CL and not EX_CLB_CL then
+                if imgui.SmallButton("Climb CKL") then
+                    EX_CLB_CL = true
+                end
+            end
+        end
+        if DESCEND then
+            if TEN_THAUSAND_FEET_DES_DONE and not EX_APP_CL then
+                if imgui.SmallButton("Approach CKL") then
+                    EX_APP_CL = true
+                end
+            end
+        end
+        if APPROACH then
+            if not LND_CL and not EX_LND_CL then
+                if imgui.SmallButton("Landing CKL") then
+                    EX_LND_CL = true
+                end
+            end
+        end
+        if TAXI_IN then
+            if not AL_CL and not EX_AL_CL then
+                if imgui.SmallButton("After Landing CKL") then
+                    EX_AL_CL = true
+                end
+            end
+        end
+        if PARKING then
+            if PARK_PROC and not PARK_CL and not EX_PARK_CL then
+                if imgui.SmallButton("Parking CKL") then
+                    EX_PARK_CL = true
+                end
+            end
+        end
+        -- PROCEDURES
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        if PREFLIGHT then
+            if not PF_DONE and not EXECUTE_PCP then
+                if imgui.SmallButton("Preliminary Cockpit Prep.") then
+                    EXECUTE_PCP = true
+                end
+            end
+        end
+        if TAXI_OUT then
+            if not BTO_PROC_DONE and not EXECUTE_BTP then
+                if imgui.SmallButton("Before Takeoff Proc.") then
+                    EXECUTE_BTP = true
+                end
+            end
+            imgui.SameLine()
+            if not EXECUTE_ENRWY and not ON_RWY then
+                if imgui.SmallButton("Entry RWY") then
+                    EXECUTE_ENRWY = true
+                end
+            end
+            if not EXECUTE_EXRWY and ON_RWY then
+                if imgui.SmallButton("Exit RWY") then
+                    EXECUTE_EXRWY = true
+                end
+            end
+        end
+        if REJECTED_DES then
+            if imgui.SmallButton("Taxi OUT") then
+                REJECTED_DES = false
+                TAXI_OUT = true
+            end
+            imgui.SameLine()
+            if imgui.SmallButton("Taxi IN") then
+                REJECTED_DES = false
+                TAXI_IN = true
+            end
+        end
+        if CLIMB then
+            if not TEN_THAUSAND_FEET_CLB_DONE and not EXECUTE_10FT_CLB then
+                if imgui.SmallButton("Crossing 10.000ft") then
+                    EXECUTE_10FT_CLB = true
+                end
+            end
+        end
+        if DESCEND then
+            if not TEN_THAUSAND_FEET_DES_DONE and not EXECUTE_10FT_DES then
+                if imgui.SmallButton("Crossing 10.000ft") then
+                    EXECUTE_10FT_DES = true
+                end
+            end
+        end
+        if TAXI_IN then
+            if not EXECUTE_ENRWY and not ON_RWY then
+                if imgui.SmallButton("Entry RWY") then
+                    EXECUTE_ENRWY = true
+                end
+            end
+            if not EXECUTE_EXRWY and ON_RWY then
+                if imgui.SmallButton("Exit RWY") then
+                    EXECUTE_EXRWY = true
+                end
+            end
+        end
+    end
+    if WND_BREAFING then
+        if imgui.SmallButton("Settings") then
+            WND_SETTINGS = true
+            WND_MAIN = false
+            WND_BREAFING = false
+        end
+        imgui.SameLine()
+        if imgui.SmallButton("Main") then
+            WND_SETTINGS = false
+            WND_MAIN = true
+            WND_BREAFING = false
+        end
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("FLT Phase:")
+        imgui.SameLine()
+        imgui.TextUnformatted("TXT_PHASE")
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.SmallButton("Before Start CKL")
+        imgui.SameLine()
+        imgui.SmallButton("Securing CKL")
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.SmallButton("Before Start CKL")
+        imgui.SameLine()
+        imgui.SmallButton("Securing CKL")
+    end
+    if WND_SETTINGS then
+        if imgui.SmallButton("Main") then
+            WND_SETTINGS = false
+            WND_MAIN = true
+            WND_BREAFING = false
+        end
+        imgui.SameLine()
+        if imgui.SmallButton("Breafing") then
+            WND_SETTINGS = false
+            WND_MAIN = false
+            WND_BREAFING = true
+        end
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("SETTINGS")
+    end
+end
+
+-- FLOAT WINDOWS MASTER
+myProgram_wnd = nil
+
+function myProgram_show_wnd()
+    local posX = (SCREEN_WIDTH / 1.08) - (250 / 2)
+    local posY = (SCREEN_HEIGHT / 1.15) - (125 / 2)
+    myProgram_wnd = float_wnd_create(250, 125, 1, true)
+    float_wnd_set_title(myProgram_wnd, "FO/PM")
+    float_wnd_set_position(myProgram_wnd, posX, posY)
+    float_wnd_set_imgui_builder(myProgram_wnd, "myProgram_on_build")
+end
+
+
+function myProgram_hide_wnd()
+    if myProgram_wnd then
+        float_wnd_destroy(myProgram_wnd)
+    end
+end
+
+myProgram_show_only_once = 0
+myProgram_hide_only_once = 0
+
+function toggle_myProgram_window()
+	myProgram_show_window = not myProgram_show_window
+	if myProgram_show_window then
+		if myProgram_show_only_once == 0 then
+			myProgram_show_wnd()
+			myProgram_show_only_once = 1
+			myProgram_hide_only_once = 0
+		end
+	else
+		if myProgram_hide_only_once == 0 then
+			myProgram_hide_wnd()
+			myProgram_hide_only_once = 1
+			myProgram_show_only_once = 0
+		end
+	end
+end
+
+-- IMGUI MACRO/COMMANDS
+add_macro("FO/PM", "myProgram_show_wnd()", "myProgram_hide_wnd()", "deactivate")
+create_command("myProgram_menus/show_toggle", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")

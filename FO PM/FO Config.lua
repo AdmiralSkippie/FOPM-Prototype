@@ -113,9 +113,9 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     STARTING_APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/STARTINGAPU.wav") -- 1.540
     SPEED_CHECK = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SPDCHECK.wav") -- 1.136
     TERRAIN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BW3.wav") -- 0.825
--- POST BREAFING --
-    --* OK CAPTAIN BREAFING COMPLETED
-    --* ROGER BREAFING COMPLETED
+-- POST BRIEFING --
+    --* OK CAPTAIN BRIEFING COMPLETED
+    --* ROGER BRIEFING COMPLETED
     --* UNDERSTOOD NOTHING TO ADD
     --* OK CAPTAIN
 -- SECTION 6 --
@@ -204,7 +204,7 @@ DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DISARMED.wav")
     BEFORE_TAKEOFF_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL22.wav") -- 1.425
     FLIGHT_CONTROLS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL23.wav") -- 1.008
     FLY_INSTRUMENTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL24.wav") -- 1.032
-    BREAFING = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL25.wav") -- 0.645
+    BRIEFING = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL25.wav") -- 0.645
     V1_VR_V2_FLEX_TEMP = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL26.wav") -- 1.900
     ECAM_MEMO = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL27.wav") -- 0.938
     TAKEOFF_RUNWAY = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL28.wav") -- 1.120

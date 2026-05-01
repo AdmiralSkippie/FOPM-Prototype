@@ -4816,10 +4816,11 @@ end
 local WND_SETTINGS = false
 local WND_MAIN = true
 local WND_BREAFING = false
+local DEPARTURE_BRIEFING_BLEED_OPT = 1
 
 -- IMGUI BUILDER
 function myProgram_on_build(myProgram_wnd, x, y)
-    if WND_MAIN then
+    if WND_MAIN then -- MAIN WINDOW
         if imgui.SmallButton("Settings") then
             WND_SETTINGS = true
             WND_MAIN = false
@@ -4986,7 +4987,7 @@ function myProgram_on_build(myProgram_wnd, x, y)
             end
         end
     end
-    if WND_BREAFING then
+    if WND_BREAFING then -- BREAFING WINDOW
         if imgui.SmallButton("Settings") then
             WND_SETTINGS = true
             WND_MAIN = false
@@ -5006,17 +5007,41 @@ function myProgram_on_build(myProgram_wnd, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        imgui.SmallButton("Before Start CKL")
-        imgui.SameLine()
-        imgui.SmallButton("Securing CKL")
-        imgui.Spacing()
-        imgui.Separator()
-        imgui.Spacing()
-        imgui.SmallButton("Before Start CKL")
-        imgui.SameLine()
-        imgui.SmallButton("Securing CKL")
+        if PREFLIGHT or PUSHBACK or TAXI_OUT then
+            imgui.TextUnformatted("Departure Briefing")
+            imgui.Spacing()
+            if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 1
+                PACKS_FOR_TO = false
+                APU_TO_PACKS = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("PACKS On", DEPARTURE_BRIEFING_BLEED_OPT == 2) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 2
+                PACKS_FOR_TO = true
+                APU_TO_PACKS = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("APU to PACKS", DEPARTURE_BRIEFING_BLEED_OPT == 3) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 3
+                PACKS_FOR_TO = false
+                APU_TO_PACKS = true
+            end
+            imgui.TextUnformatted("Flaps:")
+            imgui.SameLine()
+            if FLAPS_TO_CONFIG == 1 then
+                imgui.TextUnformatted("1+F")
+            else
+                imgui.TextUnformatted(FLAPS_TO_CONFIG)
+            end
+            if not TO_BRIEFING then
+                if imgui.SmallButton("CONFIRM") then
+                    TO_BRIEFING = true
+                end
+            end
+        end
     end
-    if WND_SETTINGS then
+    if WND_SETTINGS then -- SETTINGS WINDOW
         if imgui.SmallButton("Main") then
             WND_SETTINGS = false
             WND_MAIN = true

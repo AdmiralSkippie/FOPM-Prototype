@@ -99,17 +99,19 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     ROTATE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ROTATE.wav") -- 0.805
     POSITIVE_RATE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/POSITIVERATE.wav") -- 1.321
     GEAR_UP = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/GEARUP.wav") -- 0.786
-    GEAR_DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/GEARDN.wav")
-    GEAR_3GREENS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/3GREENS.wav")
+    GEAR_DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/GEARDN.wav") -- 0.696
+    GEAR_3GREENS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/3GREENS.wav") -- 0.854
     APU_MASTER = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/APUMASTER.wav") -- 1.218
     STARTING_APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/STARTINGAPU.wav") -- 1.540
     SPEED_CHECK = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SPDCHECK.wav") -- 1.136
     TERRAIN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BW3.wav") -- 0.825
 -- POST BRIEFING --
-    --* OK CAPTAIN BRIEFING COMPLETED
-    --* ROGER BRIEFING COMPLETED
-    --* UNDERSTOOD NOTHING TO ADD
-    --* OK CAPTAIN
+    BRIEFING_CONF = {
+        [1] = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BRFCMP1.wav"), --* OK CAPTAIN BRIEFING COMPLETED -- 2.034
+        [2] = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BRFCMP2.wav"), --* ROGER BRIEFING COMPLETED -- 1.601
+        [3] = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BRFCMP3.wav"), --* UNDERSTOOD NOTHING TO ADD -- 1.326
+        [4] = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/BRFCMP4.wav")  --* OK CAPTAIN -- 0.704
+    }
 -- SECTION 6 --
     SEAT_BELTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SEATBELTS.wav") -- 1.089
     LS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/LS.wav") -- 0.982
@@ -119,9 +121,9 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     REVERSE_GREEN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/REVERSEGREEN.wav") -- 0.753
     DECEL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DECEL.wav") -- 0.834
     N80_KNOTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/80.wav") -- 1.197
-    TRNS_ALT = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS ALT.wav")
-    TRNS_LVL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS LVL.wav")
-    FLIGHT_DIRECTORS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/FD.wav")
+    TRNS_ALT = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS ALT.wav") -- 1.101
+    TRNS_LVL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TRANS LVL.wav") -- 0.863
+    FLIGHT_DIRECTORS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/FD.wav") -- 1.028
 -- SECTION 7 --
     ANTI_ICE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ANTIICE1.wav") -- 1.180
     LANDING_LIGHTS = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/LNDLIGHTS.wav") -- 1.180
@@ -138,8 +140,8 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DOWN.wav") -- 0.810
     CROSS_BLEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CROSSBLEED.wav") -- 0.827
     AUTOBRAKES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/AUTOBRK.wav") --1.010
     ENGINE_2_SHUTDOWN = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ENG2SD.wav") -- 1.352
-    ECAM_RCLL = load_WAV_file(SCRIPT_DIRECTORY .. "")
-    TEN_THAUSAND_FEET = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/10000 FEET.wav")
+    ECAM_RCLL = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ECAMRCLL.wav") -- 0.866
+    TEN_THAUSAND_FEET = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/10000 FEET.wav") -- 1.006
 -- READY SPEECH --
 
 READY = {
@@ -162,8 +164,8 @@ TAKEOFF_NO_BLUE = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/TONOBLUE.wav")
 ADVISED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/ADVISED.wav") -- 0.836
 MANAGE_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/MNGSPD.wav") -- 1.180
 SELECTED_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/SELECSPD.wav") -- 1.277
-RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/RETRACTED.wav")
-DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DISARMED.wav")
+RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/RETRACTED.wav") -- 0.643
+DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DISARMED.wav") -- 0.727
 
 ---------------
 -- CHECKLIST --
@@ -213,7 +215,7 @@ DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/DISARMED.wav")
     AUTO_TRHUST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL38.wav") -- 0.983
     AOUTOBRAKES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL39.wav") -- 1.012
     AFTER_LANDING_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL40.wav") -- 1.595
-    APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL48.wav")
+    APU = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL48.wav") -- 0.987
 -- CHECKLIST 5 --
     PARKING_CHECKLIST = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL41.wav") -- 1.051
     ENGINES = load_WAV_file(SCRIPT_DIRECTORY .. "/Voices/Male/CKL42.wav") -- 0.777

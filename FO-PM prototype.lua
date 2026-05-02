@@ -2,6 +2,16 @@
 ----- //// TOLISS FO / PM PROTO //// -----
 ------------------------------------------
 
+-- PLANE CHECK
+local COMPATIBLE_ACF = {
+    A319 = true,
+    A320 = true,
+    A20N = true,
+    A321 = true,
+    A21N = true
+}
+if COMPATIBLE_ACF[PLANE_ICAO] then -- LUA START
+
 -- RANDOMIZER --
 math.randomseed(os.clock())
 
@@ -5236,3 +5246,5 @@ end
 -- IMGUI MACRO/COMMANDS
 add_macro("FO/PM", "myProgram_show_wnd()", "myProgram_hide_wnd()", "deactivate")
 create_command("myProgram_menus/show_toggle", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")
+
+end -- LUA ENDS

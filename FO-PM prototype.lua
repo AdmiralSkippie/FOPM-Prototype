@@ -555,7 +555,7 @@ function pre_cockpit_pre()
                 if not speak_only_essencials then
                     play_sound(ECAM_RCLL)
                 end
-                DELAY = TIME + 1.5
+                DELAY = TIME + 1.066
                 STEP = 8.3
             else
                 return
@@ -1889,7 +1889,7 @@ function gear_command()
         if STEP_FLT == 1 then
             if LG_State == 1 then
                 play_sound(GEAR_3GREENS)
-                DELAY = TIME + 1
+                DELAY = TIME + 1.054
                 STEP_FLT = 0
                 command_GDN = false
             else
@@ -3607,7 +3607,7 @@ function checklist_after_takeoff()
             if response_CHECK then
                 if FLAPS_LEVER_State == 0 then
                     play_sound(RETRACTED)
-                    DELAY_CHECK = TIME + 1.792
+                    DELAY_CHECK = TIME + 0.943
                     STEP_CHECK = 5
                 end
             else
@@ -4020,7 +4020,7 @@ function checklist_after_landing()
             if response_CHECK then
                 if SPDBRK_State == 0 then
                     play_sound(DISARMED)
-                    DELAY_CHECK = TIME + 1.429
+                    DELAY_CHECK = TIME + 1.027
                     STEP_CHECK = 5
                 end
             else
@@ -4033,7 +4033,7 @@ function checklist_after_landing()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             play_sound(APU)
-            DELAY_CHECK = TIME + 1.276
+            DELAY_CHECK = TIME + 1.187
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5091,7 +5091,10 @@ function myProgram_on_build(myProgram_wnd, x, y)
             end
             if not TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
+                    local bindex = math.random(4)
+                    play_sound(BRIEFING_CONF[bindex])
                     TO_BRIEFING = true
+                    DELAY = TIME + 3
                 end
             end
         end
@@ -5152,6 +5155,14 @@ function myProgram_on_build(myProgram_wnd, x, y)
             end
             if imgui.RadioButton("Raining", RAINING) then
                 RAINING = true
+            end
+            if not DES_BRIEFING then
+                if imgui.SmallButton("CONFIRM") then
+                    local bindex = math.random(4)
+                    play_sound(BRIEFING_CONF[bindex])
+                    DES_BRIEFING = true
+                    DELAY = TIME + 3
+                end
             end
         end
     end

@@ -1887,7 +1887,7 @@ function gear_command()
             end
         end
         if STEP_FLT == 1 then
-            if LG_State == 1 then
+            if LG_NG_State == 2 and LG_RG_State == 2 and LG_LG_State == 2 then
                 play_sound(GEAR_3GREENS)
                 DELAY = TIME + 1.054
                 STEP_FLT = 0

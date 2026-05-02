@@ -120,7 +120,9 @@ dataref("BEACON_STATE", "sim/cockpit2/switches/beacon_on", "readonly")
 
 ---- LEVERS ----
 dataref("LG_Lever_State", "AirbusFBW/GearLever", "readonly")
-dataref("LG_State", "", "readonly")
+dataref("LG_NG_State", "AirbusFBW/NoseGearInd", "readonly") -- 2 GREEN
+dataref("LG_LG_State", "AirbusFBW/LeftGearInd", "readonly")
+dataref("LG_RG_State", "AirbusFBW/RightGearInd", "readonly")
 dataref("FLAPS_LEVER_State", "AirbusFBW/FlapLeverRatio", "readonly") -- 0.25 = 1/ 0.5 = 2
 dataref("FLAPS_State", "AirbusFBW/FlapRequestPos", "readonly") -- -1 = on position
 dataref("FLAPS_TO_CONFIG", "AirbusFBW/TOFlapSettingMCDU", "readonly") -- 1 = 1

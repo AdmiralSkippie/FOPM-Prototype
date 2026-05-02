@@ -5,11 +5,14 @@
 -- RANDOMIZER --
 math.randomseed(os.clock())
 
--- CONFIG LOAD --
+-- CONFIG LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Config.lua")
 
--- DATAREFS LOAD --
+-- DATAREFS LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/Datarefs Reading.lua")
+
+-- VOICE LOAD
+dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Voices load.lua")
 
 ----------------
 ---- PHASES ----
@@ -87,6 +90,8 @@ local EX_SEC_CL = false
 ---- APPROACH PROCEDURES ----
 -----------------------------
 
+---- Especial Departure
+local AR_DEP = false
 ---- Precision Approach ----
 local ILS_APP = false
 local MLS_APP = false
@@ -1114,17 +1119,48 @@ function before_takeoff_proc()
                 end
             end
             if STEP == 4 then
-                if TIEM >= DELAY then
+                if TIME >= DELAY then
                     if not speak_only_essencials then
-                        play_sound(BRAKE_TEMP)
+                        play_sound(ENGINE_MODE_SELECTOR)
                     end
-                    DELAY = TIME + 1.204
+                    DELAY = TIME + 1.885
                     STEP = 4.5
                 else
                     return
                 end
             end
             if STEP == 4.5 then
+                if TIME >= DELAY then
+                    if RAINING and ENG_MODEL ~= 1 then
+                        if not speak_only_essencials then
+                            play_sound(IGNITION)
+                        end
+                        ENG_Mode = 2
+                        DELAY = TIME + 1.095
+                    else
+                        if not speak_only_essencials then
+                            play_sound(NORMAL)
+                        end
+                        ENG_Mode = 1
+                        DELAY = TIME + 1.129
+                    end
+                    STEP = 5
+                else
+                    return
+                end
+            end
+            if STEP == 5 then
+                if TIEM >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(BRAKE_TEMP)
+                    end
+                    DELAY = TIME + 1.204
+                    STEP = 5.5
+                else
+                    return
+                end
+            end
+            if STEP == 5.5 then
                 if TIME >= DELAY then
                     if BRAKE1_TEMP < 150 and BRAKE2_TEMP < 150 and BRAKE3_TEMP < 150 and BRAKE4_TEMP < 150 then
                         if BRKFAN_State == 1 then
@@ -1134,24 +1170,24 @@ function before_takeoff_proc()
                             play_sound(CHECK)
                         end
                         DELAY = TIME + 0.839
-                        STEP = 5
+                        STEP = 6
                     else
                         local rindex = math.random(3)
                         play_sound(BRAKE_WARNINGS[rindex])
                         DELAY = TIME + 5
-                        STEP = 4.6
+                        STEP = 5.6
                     end
                 else
                     return
                 end
             end
-            if STEP == 4.6 then
+            if STEP == 5.6 then
                 if TIME >= DELAY then
                     if BRAKE1_TEMP < 150 and BRAKE2_TEMP < 150 and BRAKE3_TEMP < 150 and BRAKE4_TEMP < 150 then
                         local rindex = math.random(5)
                         play_sound(READY[rindex])
                         DELAY = TIME + 2
-                        STEP = 4.7
+                        STEP = 5.7
                     else
                         return
                     end
@@ -1159,28 +1195,28 @@ function before_takeoff_proc()
                     return
                 end
             end
-            if STEP == 4.7 then
+            if STEP == 5.7 then
                 if TIME >= DELAY then
                     play_sound(BRAKE_TEMP)
                     DELAY = TIME + 1.204
-                    STEP = 4.8
+                    STEP = 5.8
                 else
                     return
                 end
             end
-            if STEP == 4.8 then
+            if STEP == 5.8 then
                 if TIME >= DELAY then
                     play_sound(CHECK)
                     if BRKFAN_State == 1 then
                         command_once(BRKFAN_PB)
                     end
                     DELAY = TIME + 0.839
-                    STEP = 5
+                    STEP = 6
                 else
                     return
                 end
             end
-            if STEP == 5 then
+            if STEP == 6 then
                 if TIME >= DELAY then
                     local rindex = math.random(5)
                     play_sound(READY[rindex])
@@ -1285,43 +1321,7 @@ function enter_rwy()
                     end
                     TCAS_SW = 4
                     DELAY = TIME + 1.792
-                    STEP = 3
-                else
-                    return
-                end
-            end
-            if STEP == 3 then
-                if not TAXI_IN then
-                    if TIME >= DELAY then
-                        if not speak_only_essencials then
-                            play_sound(ENGINE_MODE_SELECTOR)
-                        end
-                        DELAY = TIME + 1.865
-                        STEP = 3.5
-                    else
-                        return
-                    end
-                else
                     STEP = 4
-                    EXECUTE_ENRWY = false
-                    ENT_RWY_DONE = true
-                end
-            end
-            if STEP == 3.5 then
-                if TIME >= DELAY then
-                    if RAINING and ENG_MODEL ~= 1 then
-                        play_sound(IGNITION)
-                        ENG_Mode = 2
-                        DELAY = 1.095
-                        STEP = 4
-                    else
-                        if not speak_only_essencials then
-                            play_sound(NORMAL)
-                        end
-                        ENG_Mode = 1
-                        DELAY = 1.129
-                        STEP = 4
-                    end
                 else
                     return
                 end
@@ -1534,8 +1534,7 @@ function take_off_proc()
                 else
                     if THR_STATE == 1 then
                         DELAY = TIME + 3
-                        STEP = 0
-                        TO_PROC_DONE = true
+                        STEP = 8
                         return
                     else
                         return
@@ -1569,8 +1568,7 @@ function take_off_proc()
             if TIME >= DELAY then
                 command_once(PACK_2_PB)
                 DELAY = TIME +0.3
-                STEP = 0
-                TO_PROC_DONE = true
+                STEP = 8
                 return
             else
                 return
@@ -1635,6 +1633,29 @@ function take_off_proc()
                 end
                 command_once(APU_MASTER_PB)
                 DELAY = TIME + 0.928
+                STEP = 8
+            else
+                return
+            end
+        end
+        if STEP == 8 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(ENGINE_MODE_SELECTOR)
+                end
+                DELAY = TIME + 1.885
+                STEP = 8.5
+            else
+                return
+            end
+        end
+        if STEP == 8.5 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(NORMAL)
+                end
+                ENG_Mode = 1
+                DELAY = TIME + 1.129
                 STEP = 0
                 TO_PROC_DONE = true
             else
@@ -4560,6 +4581,8 @@ function phase_check()
         end
         if THR_STATE == 1 and ATO_CL then
             CLIMB = true
+            AR_DEP = false
+            RAINING = false
             TAKEOFF = false
             BTO_PROC_DONE = false
             ACF_CLEAN = false
@@ -4637,7 +4660,16 @@ function phase_check()
         TXT_PHASE = "Decel"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
             DECELERATION = false
+            RAINING = false
             TAXI_IN = true
+            ILS_APP = false
+            MLS_APP = false
+            RNAV_APP = false
+            RNAV_LNAV = false
+            RNPAR_APP = false
+            VOR_APP = false
+            NDB_APP = false
+            LDA_APP = false
         end
     end
     if TAXI_IN then
@@ -4806,6 +4838,20 @@ do_every_frame(FO_checklist())
 -- ///////// IMGUI BUILDER /////////
 -- /////////////////////////////////
 
+-- SAVE CONFIGURATION FUNCTION
+function config_save()
+    local rute = SCRIPT_DIRECTORY .. "/FO PM/FO COnfig.lua"
+    local config = io.open(rute, "w")
+    if config then
+        config:write("--------------------------\n")
+        config:write("---- FO CONFIGURATION ----\n")
+        config:write("--------------------------\n\n")
+        config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
+        config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
+        config:close()
+    end
+end
+
 -- IMGUI CHECK AVAIL
 if not SUPPORTS_FLOATING_WINDOWS then
     logMsg("imgui not supported by your FlyWithLua version")
@@ -4817,6 +4863,7 @@ local WND_SETTINGS = false
 local WND_MAIN = true
 local WND_BREAFING = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
+local setting_change = false
 
 -- IMGUI BUILDER
 function myProgram_on_build(myProgram_wnd, x, y)
@@ -5034,10 +5081,77 @@ function myProgram_on_build(myProgram_wnd, x, y)
             else
                 imgui.TextUnformatted(FLAPS_TO_CONFIG)
             end
+            imgui.SameLine()
+            if imgui.RadioButton("Raining", RAINING) then
+                RAINING = true
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("AR DEP", AR_DEP) then
+                AR_DEP = true
+            end
             if not TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
                     TO_BRIEFING = true
                 end
+            end
+        end
+        if CLIMB or CRUISE or DESCEND then
+            imgui.TextUnformatted("Arrival Breafing")
+            if imgui.RadioButton("ILS/MLS APP", ILS_APP or MLS_APP) then
+                ILS_APP = true
+                MLS_APP = true
+                RNAV_APP = false
+                RNAV_LNAV = false
+                RNPAR_APP = false
+                VOR_APP = false
+                NDB_APP = false
+                LDA_APP = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("RNAV APP", RNAV_APP or RNAV_LNAV) then
+                ILS_APP = false
+                MLS_APP = false
+                RNAV_APP = true
+                RNAV_LNAV = true
+                RNPAR_APP = false
+                VOR_APP = false
+                NDB_APP = false
+                LDA_APP = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("RNP AR", RNPAR_APP) then
+                ILS_APP = false
+                MLS_APP = false
+                RNAV_APP = false
+                RNAV_LNAV = false
+                RNPAR_APP = true
+                VOR_APP = false
+                NDB_APP = false
+                LDA_APP = false
+            end
+            if imgui.RadioButton("VOR/NDB APP", VOR_APP or NDB_APP) then
+                ILS_APP = false
+                MLS_APP = false
+                RNAV_APP = false
+                RNAV_LNAV = false
+                RNPAR_APP = false
+                VOR_APP = true
+                NDB_APP = true
+                LDA_APP = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("LDA APP", LDA_APP) then
+                ILS_APP = false
+                MLS_APP = false
+                RNAV_APP = false
+                RNAV_LNAV = false
+                RNPAR_APP = false
+                VOR_APP = false
+                NDB_APP = false
+                LDA_APP = true
+            end
+            if imgui.RadioButton("Raining", RAINING) then
+                RAINING = true
             end
         end
     end
@@ -5056,7 +5170,16 @@ function myProgram_on_build(myProgram_wnd, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        imgui.TextUnformatted("SETTINGS")
+        local setting_change, change = imgui.Checkbox("Speak Only Essencials", speak_only_essencials)
+        if setting_change then
+            speak_only_essencials = change
+            config_save()
+        end
+        local setting_change, change = imgui.Checkbox("FO Auto Perfomr", fo_autoperform)
+        if setting_change then
+            fo_autoperform = change
+            config_save()
+        end
     end
 end
 

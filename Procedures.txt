@@ -36,6 +36,7 @@ Trigger: ENG MODE SELECTOR--NORM
 1    *RADAR                   |   ON (SYS1/2)
 2    *PWS                     |   ON
 3    *TERRAIN                 |   ON
+    ENGINE MODE SELECTOR      |   AS RQRD
 4    *BRAKE TEMP  |   (CHECK BELOW 150°)
         *IF YES AND BF ON    |   BREAK FAN OFF
         *IF NO AND BF ON     |   ANNOUNCE WAIT

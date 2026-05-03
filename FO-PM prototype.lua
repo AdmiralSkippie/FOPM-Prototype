@@ -11,18 +11,23 @@ local COMPATIBLE_ACF = {
     A21N = true
 }
 if COMPATIBLE_ACF[PLANE_ICAO] then -- LUA START
-
+logMsg("XXXXX   ACF Compatible")
+dataref("TIME", "sim/time/total_running_time_sec", "readonly")
+dataref("ENG_MODEL", "AirbusFBW/EngineType", "readonly") -- 1 IAE/2 CFM/3 PW/4 LEAP
 -- RANDOMIZER --
 math.randomseed(os.clock())
 
 -- CONFIG LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Config.lua")
+logMsg("XXXXX   Config Loaded")
 
 -- DATAREFS LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/Datarefs Reading.lua")
+logMsg("XXXXX   Datarefs Readed")
 
 -- VOICE LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Voices load.lua")
+logMsg("XXXXX   Voices Loaded")
 
 ----------------
 ---- PHASES ----
@@ -188,7 +193,7 @@ function engine_math()
     end
 end
 
-do_every_frame(engine_math())
+do_every_frame("engine_math()")
 
 
 ---------------------
@@ -208,7 +213,7 @@ function flaps_voice_search()
     CONFIG_VOICE_SRCH = FLAP_VOICE_DIR[index]
 end
 
-do_every_frame(flaps_voice_search())
+do_every_frame("flaps_voice_search()")
 
 -- //////////////////////////////
 -- ///////// PROCEDURES /////////
@@ -1160,7 +1165,7 @@ function before_takeoff_proc()
                 end
             end
             if STEP == 5 then
-                if TIEM >= DELAY then
+                if TIME >= DELAY then
                     if not speak_only_essencials then
                         play_sound(BRAKE_TEMP)
                     end
@@ -4701,7 +4706,7 @@ function phase_check()
     end
 end
 
-do_every_frame(phase_check())
+do_every_frame("phase_check()")
 
 -- FO/PM MAIN LOGIC
 function FO_main_logic()
@@ -4800,7 +4805,7 @@ function FO_main_logic()
     end
 end
 
-do_every_frame(FO_main_logic())
+do_every_frame("FO_main_logic()")
 
 -- FO CHECKLIST LOGIC
 function FO_checklist()
@@ -4842,12 +4847,12 @@ function FO_checklist()
     end
 end
 
-do_every_frame(FO_checklist())
+do_every_frame("FO_checklist()")
 
 -- /////////////////////////////////
 -- ///////// IMGUI BUILDER /////////
 -- /////////////////////////////////
-
+--[[
 -- SAVE CONFIGURATION FUNCTION
 function config_save()
     local rute = SCRIPT_DIRECTORY .. "/FO PM/FO COnfig.lua"
@@ -5246,5 +5251,5 @@ end
 -- IMGUI MACRO/COMMANDS
 add_macro("FO/PM", "myProgram_show_wnd()", "myProgram_hide_wnd()", "deactivate")
 create_command("myProgram_menus/show_toggle", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")
-
+]]
 end -- LUA ENDS

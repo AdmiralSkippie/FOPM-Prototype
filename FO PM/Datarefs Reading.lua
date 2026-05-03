@@ -188,7 +188,7 @@ dataref("APU_STATE", "AirbusFBW/APUAvail", "readonly")
 dataref("ECAM_MSG_A", "AirbusFBW/EWD1aText", "readonly")
 --dataref("ECAM_UPPER_RIGHT_MSG", "", "readonly")
 --dataref("ECAM_LOWER_MSG", "", "readonly")
-dataref("PITCH_TRIM", "AirbusFBW/PitchTrimPosition  ", "readonly")
+dataref("PITCH_TRIM", "AirbusFBW/PitchTrimPosition", "readonly")
 dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
 dataref("FMA_B_STATE", "AirbusFBW/FMA1b", "readonly")
 dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
@@ -220,7 +220,7 @@ function CHECK_ENGINE_TYPE()
     end
 end
 
-do_sometimes(CHECK_ENGINE_TYPE())
+do_sometimes("CHECK_ENGINE_TYPE()")
 
 ---- FLAP LIMITS ----
 GEAR_EXTENTION_LIMIT = 250
@@ -245,4 +245,4 @@ function flaps_gear_limits()
     end
 end
 
-do_sometimes(flaps_gear_limits())
+do_sometimes("flaps_gear_limits()")

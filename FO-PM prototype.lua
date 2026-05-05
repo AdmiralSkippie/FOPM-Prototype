@@ -32,24 +32,26 @@ logMsg("XXXXX   Voices Loaded")
 ----------------
 ---- PHASES ----
 ----------------
-local PREFLIGHT = true
-local PUSHBACK = false
-local ENG_START = false
-local TAXI_OUT = false
-local ON_RWY = false
-local TAKEOFF = false
-local REJECTED = false
-local REJECTED_DES = false
-local CLIMB = false
-local CRUISE = false
-local DESCEND = false
-local APPROACH = false
-local FINAL_APP = false
-local DECELERATION = false
-local GA = false
-local TAXI_IN = false
-local PARKING = false
 
+local FLT_PHASE = {
+    PREFLIGHT = true,
+    PUSHBACK = false,
+    ENG_START = false,
+    TAXI_OUT = false,
+    ON_RWY = false,
+    TAKEOFF = false,
+    REJECTED = false,
+    REJECTED_DES = false,
+    CLIMB = false,
+    CRUISE = false,
+    DESCEND = false,
+    APPROACH = false,
+    FINAL_APP = false,
+    DECELERATION = false,
+    GA = false,
+    TAXI_IN = false,
+    PARKING = false
+}
 --------------------------------
 ---- PROCEDURES COMPLETE ----
 --------------------------------
@@ -104,20 +106,20 @@ local EX_SEC_CL = false
 -----------------------------
 ---- APPROACH PROCEDURES ----
 -----------------------------
-
----- Especial Departure
-local AR_DEP = false
----- Precision Approach ----
-local ILS_APP = false
-local MLS_APP = false
----- Non Precision Approach ----
-local RNAV_APP = false
-local RNAV_LNAV = false
-local RNPAR_APP = false
-local VOR_APP = false
-local NDB_APP = false
-local LDA_APP = false
-
+local APP_TYPE = {
+    ---- Especial Departure
+    AR_DEP = false,
+    ---- Precision APPROACH ----
+    ILS_APP = false,
+    MLS_APP = false,
+    ---- Non Precision APPROACH ----
+    RNAV_APP = false,
+    RNAV_LNAV = false,
+    RNAVAR_APP = false,
+    VOR_APP = false,
+    NDB_APP = false,
+    LDA_APP = false
+}
 ----------------------------
 ---- ONGOING PROCEDURES ----
 ----------------------------
@@ -136,11 +138,11 @@ local EXECUTE_EXRWY = false
 ---- COMMANDS ----
 ------------------
 
-local command_GUP = false
-local command_GDN = false
-local command_FLPS_1UP = false
-local command_FLPS_1DN = false
-local response_CHECK = false
+command_GUP = false
+command_GDN = false
+command_FLPS_1UP = false
+command_FLPS_1DN = false
+response_CHECK = false
 
 -------------------
 ---- VARIABLES ----
@@ -273,7 +275,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 2.25 then
-        if LALERONS == -25 and RALERONS == 25 then
+        if LALERONS == -20 and RALERONS == 25 then
             play_sound(FULL_LEFT)
             STEP_FLT = 2.5
         else
@@ -281,7 +283,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 2.5 then
-        if LALERONS == 25 and RALERONS == -25 then
+        if LALERONS == 25 and RALERONS == -20 then
             play_sound(FULL_RIGHT)
             STEP_FLT = 2.75
         else
@@ -289,7 +291,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 2.75 then
-        if LALERONS == 0 and RALERONS == 0 then
+        if LALERONS == 5 and RALERONS == 5 then
             play_sound(NEUTRAL)
             DELAY = TIME + 0.955
             STEP_FLT = 3
@@ -299,7 +301,7 @@ function flt_ctl_chk()
     end
     if STEP_FLT == 3 then
         if TIME >= DELAY then
-            play_sound(RUDDER)
+            play_sound(RDR)
             DELAY = TIME + 1
             STEP_FLT = 3.25
         else
@@ -307,7 +309,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 3.25 then
-        if RUDDER == -25 then
+        if RUDDER == -30 then
             play_sound(FULL_LEFT)
             STEP_FLT = 3.5
         else
@@ -315,7 +317,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 3.5 then
-        if RUDDER == 25 then
+        if RUDDER == 30 then
             play_sound(FULL_RIGHT)
             STEP_FLT = 3.75
         else
@@ -361,7 +363,7 @@ function pre_cockpit_pre()
         end
         if STEP == 1.5 then
             if TIME >= DELAY then
-                if ENG_1_Master_State == 0 and ENG_2_Master_State == 0 then
+                if ENG_1_Master == 0 and ENG_2_Master == 0 then
                     if not speak_only_essencials then
                         play_sound(OFF)
                     end
@@ -392,7 +394,7 @@ function pre_cockpit_pre()
         end
         if STEP == 2.5 then
             if TIME >= DELAY then
-                if ENG_Mode_State == 1 then
+                if ENG_Mode == 1 then
                     if not speak_only_essencials then
                         play_sound(NORMAL)
                     end
@@ -423,7 +425,7 @@ function pre_cockpit_pre()
         end
         if STEP == 3.5 then
             if TIME >= DELAY then
-                if RADAR_SYS_SW_State == 1 then
+                if RADAR_SYS_SW == 1 then
                     if not speak_only_essencials then
                         play_sound(OFF)
                     end
@@ -445,7 +447,7 @@ function pre_cockpit_pre()
                 if not speak_only_essencials then
                     play_sound(LANDING_GEAR)
                 end
-                DELAY = TIME + 0.95
+                DELAY = TIME + 1.125
                 DELAY_CHECK = 0
                 STEP = 4.5
             else
@@ -454,7 +456,7 @@ function pre_cockpit_pre()
         end
         if STEP == 4.5 then
             if TIME >= DELAY then
-                if LG_Lever_State == 1 then
+                if LG_Lever == 1 then
                     if not speak_only_essencials then
                         play_sound(DOWN)
                     end
@@ -485,7 +487,7 @@ function pre_cockpit_pre()
         end
         if STEP == 5.5 then
             if TIME >= DELAY then
-                if LWipers_State == 0 and RWipers_State == 0 then
+                if LWipers_Mode == 0 and RWipers_Mode == 0 then
                     if not speak_only_essencials then
                         play_sound(OFF)
                     end
@@ -587,15 +589,11 @@ function pre_cockpit_pre()
         end
         if STEP == 8.6 then
             if TIME >= DELAY then
-                if string.find(ECAM_MSG_A, "NORMAL") then
                     if not speak_only_essencials then
                         play_sound(NORMAL)
                     end
                     DELAY = TIME + 1.129
                     STEP = 9
-                else
-                    return
-                end
             else
                 return
             end
@@ -760,7 +758,7 @@ function pre_cockpit_pre()
         end
         if STEP == 12.5 then
             if TIME >= DELAY then
-                if PRKBRK_State == 1 then
+                if PRKBRK_SW == 1 then
                     if not speak_only_essencials then
                         play_sound(ON)
                     end
@@ -814,7 +812,7 @@ function pre_cockpit_pre()
         end
         if STEP == 14.5 then
             if TIME >= DELAY then
-                if LBRAKE_Press == 0.7 and RBRAKE_Press == 0.7 then
+                if LBRAKE_Press > 0.65 and RBRAKE_Press > 0.65 then
                     if not speak_only_essencials then
                         play_sound(CHECK)
                     end
@@ -848,7 +846,6 @@ end
 ---- AFTER START PROCEDURE
 function after_start_proc()
     if not AS_PROC_DONE then
-        if EXECUTE_ASP then
             if STEP == 0 then
                 STEP = 1
                 DELAY = TIME + 1
@@ -912,15 +909,15 @@ function after_start_proc()
             end
             if STEP == 3.5 then
                 if TIME >= DELAY then
-                    if FLAPS_LEVER_State == FLAPS_TO_CONFIG then
+                    if (FLAPS_LEVER_State * 4) == FLAPS_TO_CONFIG then
                         if not speak_only_essencials then
                             play_sound(FLAP_CONFIG[CONFIG_VOICE_SRCH])
                         end
-                        DELAY = 1.488
+                        DELAY = TIME + 1.488
                         STEP = 4
                     else
-                        command_once(FLAPS_1UP)
-                        DELAY = 0.8
+                        command_once(FLAPS_1DOWN)
+                        DELAY = TIME + 0.8
                         return
                     end
                 else
@@ -930,10 +927,10 @@ function after_start_proc()
             if STEP == 4 then
                 if TIME >= DELAY then
                     if not speak_only_essencials then
-                        play_sound(PITCH_TRIM)
+                        play_sound(PITCHTRM)
                     end
                     command_once(MCDU_FO_KEY_Perf)
-                    DELAY = TIME + 0.3
+                    DELAY = TIME + 1
                     STEP = 4.3
                 else
                     return
@@ -957,18 +954,20 @@ function after_start_proc()
             end
             if STEP == 4.6 then
                 if TIME >= DELAY then
-                    if PT_TO_CONFIG == PITCH_TRIM then
+                    if PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) then
                         if not speak_only_essencials then
                             play_sound(SET)
                         end
+                        command_end(PITCH_TRIM_DN)
+                        command_end(PITCH_TRIM_UP)
                         DELAY = TIME + 1
                         STEP = 5
                     else
                         if PT_TO_CONFIG < 0 then
-                            command_once(PITCH_TRIM_DN)
+                            command_begin(PITCH_TRIM_DN)
                             return
                         elseif PT_TO_CONFIG > 0 then
-                            command_once(PITCH_TRIM_UP)
+                            command_begin(PITCH_TRIM_UP)
                             return
                         end
                     end
@@ -1007,9 +1006,7 @@ function after_start_proc()
                     if FLAPS_State ~= -1 then
                         return
                     else
-                        if speak_only_essencials then
-                            play_sound(FLAP_CONFIG[CONFIG_VOICE_SRCH])
-                        end
+                        play_sound(FLAP_CONFIG[CONFIG_VOICE_SRCH])
                         DELAY = TIME + 1.5
                         STEP = 7
                     end
@@ -1045,7 +1042,6 @@ function after_start_proc()
                     return
                 end
             end
-        end
     else
         local rindex = math.random(5)
         play_sound(READY[rindex])
@@ -1075,9 +1071,11 @@ function before_takeoff_proc()
             end
             if STEP == 1.5 then
                 if TIME >= DELAY then
-                    local radar = {0,2}
-                    local radar_pos = math.random(#radar)
-                    Radar_SYS_SW = radar_pos
+                    local radar_pos = math.random(2)
+                    if radar_pos == 1 then
+                        radar_pos = 0
+                    end
+                    RADAR_SYS_SW = radar_pos
                     if not speak_only_essencials then
                         play_sound(ON)
                     end
@@ -1146,7 +1144,7 @@ function before_takeoff_proc()
             end
             if STEP == 4.5 then
                 if TIME >= DELAY then
-                    if RAINING and ENG_MODEL ~= 1 then
+                    if RAINING then
                         if not speak_only_essencials then
                             play_sound(IGNITION)
                         end
@@ -1254,7 +1252,7 @@ end
 
 ---- ENTER RWY
 function enter_rwy()
-    if ON_RWY then
+    if FLT_PHASE.ON_RWY then
         if not ENT_RWY_DONE then
             if STEP == 0 then
                 if TIME >= DELAY then
@@ -1276,10 +1274,10 @@ function enter_rwy()
                 end
             end
             if STEP == 1.2 then
-                if not TAXI_IN then
+                if not FLT_PHASE.TAXI_IN then
                     if TIME >= DELAY then
                         STROBE_SW = 2
-                        DELAY = TIME + 0.3
+                        DELAY = TIME + 0.7
                         STEP = 1.3
                     else
                         return
@@ -1292,7 +1290,7 @@ function enter_rwy()
                 if TIME >= DELAY then
                     LANDLT_L_SW = 2
                     LANDLT_R_SW = 2
-                    DELAY = TIME + 0.3
+                    DELAY = TIME + 0.7
                     STEP = 1.4
                 else
                     return
@@ -1342,7 +1340,7 @@ function enter_rwy()
                 end
             end
             if STEP == 4 then
-                if not TAXI_IN then
+                if not FLT_PHASE.TAXI_IN then
                     if TIME >= DELAY then
                         if not speak_only_essencials then
                             play_sound(PACKS)
@@ -1361,10 +1359,10 @@ function enter_rwy()
             if STEP == 4.5 then
                 if TIME >= DELAY then
                     if not PACKS_FOR_TO then
-                        if PACK_1_STATE == 0 then
+                        if PACK_1_STATE == 1 then
                             command_once(PACK_1_PB)
                         end
-                        DELAY = TIME + 0.3
+                        DELAY = TIME + 0.5
                         STEP = 4.6
                     else
                         if not speak_only_essencials then
@@ -1379,10 +1377,10 @@ function enter_rwy()
             end
             if STEP == 4.6 then
                 if TIME >= DELAY then
-                    if PACK_2_STATE == 0 then
+                    if PACK_2_STATE == 1 then
                         command_once(PACK_2_PB)
                     end
-                    DELAY = TIME + 0.3
+                    DELAY = TIME + 0.5
                     STEP = 4.7
                 else
                     return
@@ -1424,7 +1422,7 @@ function take_off_proc()
                     STABLE1_CHECK = ENG_1_THR
                     STABLE2_CHECK = ENG_2_THR
                     STEP = 1
-                    DELAY = TIME + 1
+                    DELAY = TIME + 3
                 else
                     return
                 end
@@ -1434,7 +1432,7 @@ function take_off_proc()
         end
         if STEP == 1 then
             if TIME >= DELAY then
-                if ENG_1_THR == STABLE2_CHECK and ENG_2_THR == STABLE1_CHECK then
+                if ENG_1_THR == STABLE1_CHECK and ENG_2_THR == STABLE2_CHECK then
                     play_sound(STABLE)
                     DELAY = TIME + 1
                     STEP = 2
@@ -1451,7 +1449,7 @@ function take_off_proc()
         if STEP == 2 then
             if TIME >= DELAY then
                 if ENG_1_THR == ENG_THR_Rating and ENG_2_THR == ENG_THR_Rating then
-                    DELAY = TIME + 5
+                    DELAY = TIME + 1
                     STEP = 2.5
                 else
                     return
@@ -1772,7 +1770,7 @@ end
 function flaps_commanded_change()
     if command_FLPS_1UP then
         if STEP_CLEAN == 0 then
-            DELAY_CLEAN = TIME + 1
+            DELAY_CLEAN = TIME + 0.5
             STEP_CLEAN = 1
         end 
         if STEP_CLEAN == 1 then
@@ -1870,14 +1868,10 @@ function gear_command()
     if command_GUP then
         DELAY_CHECK = TIME + 0.88
         if TIME >= DELAY_CHECK then
-            if FLAPS_State ~= -1 then
-                if IND_AIRSPEED <= GEAR_RETRACTION_LIMIT then
-                    play_sound(GEAR_UP)
-                    LG_Lever = 0
-                    command_GUP = false
-                else
-                    return
-                end
+            if IND_AIRSPEED <= GEAR_RETRACTION_LIMIT then
+                play_sound(GEAR_UP)
+                LG_Lever = 0
+                command_GUP = false
             else
                 return
             end
@@ -1886,14 +1880,10 @@ function gear_command()
         DELAY_CHECK = TIME + 1.052
         if STEP_FLT == 0 then
             if TIME >= DELAY_CHECK then
-                if FLAPS_State ~= -1 then
-                    if IND_AIRSPEED <= GEAR_EXTENTION_LIMIT then
-                        play_sound(GEAR_DOWN)
-                        LG_Lever = 1
-                        STEP_FLT = 1
-                    else
-                        return
-                    end
+                if IND_AIRSPEED <= GEAR_EXTENTION_LIMIT then
+                    play_sound(GEAR_DOWN)
+                    LG_Lever = 1
+                    STEP_FLT = 1
                 else
                     return
                 end
@@ -2072,7 +2062,7 @@ function ten_thausand_feet_DES()
     end
     if STEP == 4 then
         if TIME >= DELAY then
-            if ILS_APP or MLS_APP or VOR_APP or NDB_APP or LDA_APP then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.VOR_APP or APP_TYPE.NDB_APP or APP_TYPE.LDA_APP then
                 if not speak_only_essencials then
                     play_sound(LS)
                 end
@@ -2088,7 +2078,7 @@ function ten_thausand_feet_DES()
     end
     if STEP == 5 then
         if TIME >= DELAY then
-            if RAINING and ENG_MODEL ~= 1 then
+            if RAINING then
                 if not speak_only_essencials then
                     play_sound(ENGINE_MODE_SELECTOR)
                 end
@@ -2131,7 +2121,7 @@ end
 function ap_discn_behaviour()
     if STEP_AP == 0 then
         if AP_DISCN_ALARM == 1 then
-            if not ILS_APP or MLS_APP then
+            if not APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
                 DELAY_AP = TIME + 2
                 STEP_AP = 1
             else
@@ -2260,7 +2250,7 @@ function go_arround()
     end
     if STEP == 6 then
         if TIME >= DELAY then
-            if ILS_APP or MLS_APP then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
                 GA_PROC = true
                 STEP = 0
             else
@@ -2392,7 +2382,7 @@ function after_landing_proc()
                 play_sound(OFF)
             end
             DELAY = TIME + 0.920
-            Radar_SYS_SW = 0
+            RADAR_SYS_SW = 0
             STEP = 4
         else
             return
@@ -2846,9 +2836,9 @@ function checklist_before_start()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if SEATBELTS_SW == 2 and SIGNS_STATE == 1 then
-                    play_sound(COMPLETED)
-                    DELAY_CHECK = TIME + 0.957
+                if SEATBELTS_SW == 1 and SIGNS_STATE == 1 then
+                    play_sound(ON_AUTO)
+                    DELAY_CHECK = TIME + 1.6
                     STEP_CHECK = 11
                 end
             else
@@ -2993,7 +2983,7 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 4 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if TCAS_STATE == 2 then
+                if TCAS_SW == 2 then
                     play_sound(SET)
                     DELAY_CHECK = TIME + 0.86
                     STEP_CHECK = 5
@@ -3040,8 +3030,8 @@ function checklist_before_start_BTL()
     end
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
-            play_sound(THRUST_LEVERS)
-            DELAY_CHECK = TIME + 1.476
+            play_sound(BEACON)
+            DELAY_CHECK = TIME + 0.836
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -3051,9 +3041,11 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(IDLE)
-                DELAY_CHECK = TIME + 0.79
-                STEP_CHECK = 9
+                if BEACON_STATE == 1 then
+                    play_sound(ON)
+                    DELAY_CHECK = TIME + 0.920
+                    STEP_CHECK = 9
+                end
             else
                 return
             end
@@ -3063,8 +3055,8 @@ function checklist_before_start_BTL()
     end
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
-            play_sound(PARKING_BRAKE)
-            DELAY_CHECK = TIME + 0.836
+            play_sound(THRUST_LEVERS)
+            DELAY_CHECK = TIME + 1.476
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -3074,8 +3066,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(SET)
-                DELAY_CHECK = TIME + 0.82
+                play_sound(IDLE)
+                DELAY_CHECK = TIME + 0.79
                 STEP_CHECK = 11
             else
                 return
@@ -3085,6 +3077,29 @@ function checklist_before_start_BTL()
         end
     end
     if STEP_CHECK == 11 then
+        if TIME >= DELAY_CHECK then
+            play_sound(PARKING_BRAKE)
+            DELAY_CHECK = TIME + 0.836
+            STEP_CHECK = 12
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 12 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(SET)
+                DELAY_CHECK = TIME + 0.82
+                STEP_CHECK = 13
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
@@ -3156,7 +3171,7 @@ function checklist_after_start()
     end
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
-            play_sound(PITCH_TRIM)
+            play_sound(PITCHTRM)
             DELAY_CHECK = TIME + 1.328
             STEP_CHECK = 6
             response_CHECK = false
@@ -3167,7 +3182,7 @@ function checklist_after_start()
     if STEP_CHECK == 6 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if PT_TO_CONFIG == PITCH_TRIM then
+                if PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 then
                     play_sound(SET)
                     DELAY_CHECK = TIME + 0.920
                     STEP_CHECK = 7
@@ -3221,7 +3236,7 @@ end
 function checklist_before_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
-            play_sound(BEFORE_START_CHECKLIST)
+            play_sound(BEFORE_TAKEOFF_CHECKLIST)
             DELAY_CHECK = TIME + 1.645
             STEP_CHECK = 1
         else
@@ -3312,7 +3327,7 @@ function checklist_before_takeoff()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(FLAP_POS[CONFIG_VOICE_SRCH])
+                play_sound(FLAP_CONFIG[CONFIG_VOICE_SRCH])
                 DELAY_CHECK = TIME + 1.429
                 STEP_CHECK = 9
             else
@@ -3476,7 +3491,7 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if TCAS_STATE == 4 then
+                if TCAS_SW == 4 then
                     play_sound(TA_RA)
                     DELAY_CHECK = TIME + 1.792
                     STEP_CHECK = 9
@@ -3501,13 +3516,13 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL ~= 1 then
-                    if ENG_Mode_State == 2 then
+                if RAINING then
+                    if ENG_Mode == 2 then
                         play_sound(IGNITION)
                         DELAY_CHECK = TIME + 1.095
                         STEP_CHECK = 11
                     end
-                elseif ENG_Mode_State == 1 then
+                elseif ENG_Mode == 1 then
                     play_sound(NORMAL)
                     DELAY_CHECK = TIME + 1.129
                     STEP_CHECK = 11
@@ -3533,19 +3548,19 @@ function checklist_before_takeoff_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 if PACKS_FOR_TO then
-                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 then
+                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 then
                         play_sound(CHECK)
                         DELAY_CHECK = TIME + 0.839
                         STEP_CHECK = 13
                     end
                 elseif APU_TO_PACKS then
-                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 1 then
+                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 1 then
                         play_sound(CHECK)
                         DELAY_CHECK = TIME + 0.839
                         STEP_CHECK = 13
                     end
                 else
-                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 then
+                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 then
                         play_sound(CHECK)
                         DELAY_CHECK = TIME + 0.839
                         STEP_CHECK = 13
@@ -3595,7 +3610,7 @@ function checklist_after_takeoff()
     if STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if LG_Lever_State == 0 then
+                if LG_Lever == 0 then
                     play_sound(UP)
                     DELAY_CHECK = TIME + 0.878
                     STEP_CHECK = 3
@@ -3645,7 +3660,7 @@ function checklist_after_takeoff()
     if STEP_CHECK == 6 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if PACK_1_STATE == 0 and PACK_2_STATE == 0 then
+                if PACK_1_STATE == 1 and PACK_2_STATE == 1 then
                     play_sound(ON)
                     DELAY_CHECK = TIME + 0.920
                     STEP_CHECK = 7
@@ -3836,13 +3851,13 @@ function checklist_approach()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL ~= 1 then
-                    if ENG_Mode_State == 2 then
+                if RAINING then
+                    if ENG_Mode == 2 then
                         play_sound(IGNITION)
                         DELAY_CHECK = TIME + 1.095
                         STEP_CHECK = 9
                     end
-                elseif ENG_Mode_State == 1 then
+                elseif ENG_Mode == 1 then
                     play_sound(NORMAL)
                     DELAY_CHECK = TIME + 1.129
                     STEP_CHECK = 9
@@ -4033,7 +4048,7 @@ function checklist_after_landing()
     if STEP_CHECK == 4 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if SPDBRK_State == 0 then
+                if SPDBRK_Lever == 0 then
                     play_sound(DISARMED)
                     DELAY_CHECK = TIME + 1.027
                     STEP_CHECK = 5
@@ -4086,7 +4101,7 @@ function checklist_after_landing()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RADAR_SYS_SW_State == 1 then
+                if RADAR_SYS_SW == 1 then
                     play_sound(OFF)
                     DELAY_CHECK = TIME + 0.920
                     STEP_CHECK = 9
@@ -4111,7 +4126,7 @@ function checklist_after_landing()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if PWS_STATE == 0 then
+                if PWS_SW == 0 then
                     play_sound(OFF)
                     DELAY_CHECK = TIME + 0.920
                     STEP_CHECK = 11
@@ -4185,7 +4200,7 @@ function checklist_parking()
     if STEP_CHECK == 4 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if ENG_1_Master_State == 0 and ENG_2_Master_State == 0 then
+                if ENG_1_Master == 0 and ENG_2_Master == 0 then
                     play_sound(OFF)
                     DELAY_CHECK = TIME + 0.839
                     STEP_CHECK = 5
@@ -4288,7 +4303,7 @@ function checklist_parking()
     if STEP_CHECK == 12 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if PRKBRK_State == 1 then
+                if PRKBRK_SW == 1 then
                     play_sound(ON)
                     DELAY_CHECK = TIME + 0.839
                     STEP_CHECK = 13
@@ -4541,164 +4556,164 @@ end
 
 -- ACTUAL FLIGHT PHASE
 function phase_check()
-    if PREFLIGHT then
+    if FLT_PHASE.PREFLIGHT then
         TXT_PHASE = "Preflight"
         if BS_CL then
-            PREFLIGHT = false
-            PUSHBACK = true
+            FLT_PHASE.PREFLIGHT = false
+            FLT_PHASE.PUSHBACK = true
             PARK_PROC = false
         end
     end
-    if PUSHBACK then
+    if FLT_PHASE.PUSHBACK then
         TXT_PHASE = "Pushback"
-        if ENG_Mode_State == 2 then
-            ENG_START = true
+        if ENG_Mode == 2 then
+            FLT_PHASE.ENG_START = true
         end
         if TAXILT_SW > 0 then
-            ENG_START = false
-            PUSHBACK = false
-            TAXI_OUT = true
+            FLT_PHASE.ENG_START = false
+            FLT_PHASE.PUSHBACK = false
+            FLT_PHASE.TAXI_OUT = true
         end
-        if BEACON_STATE == 0 and not ENG_START then
-            PUSHBACK = false
-            PREFLIGHT = true
+        if BEACON_STATE == 0 and not FLT_PHASE.ENG_START then
+            FLT_PHASE.PUSHBACK = false
+            FLT_PHASE.PREFLIGHT = true
         end
     end
     if EXECUTE_ENRWY then
-        ON_RWY = true
+        FLT_PHASE.ON_RWY = true
         EXIT_RWY_DONE = false
     end
     if EXECUTE_EXRWY then
-        ON_RWY = false
+        FLT_PHASE.ON_RWY = false
         ENT_RWY_DONE = false
     end
-    if TAXI_OUT then
+    if FLT_PHASE.TAXI_OUT then
         TXT_PHASE = "Taxi Out"
-        if THR_STATE >= 3 then
-            TAKEOFF = true
-            TAXI_OUT = false
+        if THR_LEVER >= 2 then
+            FLT_PHASE.TAKEOFF = true
+            FLT_PHASE.TAXI_OUT = false
             AS_PROC_DONE = false
         end
-        if ENG_1_Master_State == 0 and ENG_2_Master_State == 0 and BEACON_STATE == 0 then
-            PARKING = true
-            TAXI_OUT = false
+        if ENG_1_Master == 0 and ENG_2_Master == 0 and BEACON_STATE == 0 then
+            FLT_PHASE.PARKING = true
+            FLT_PHASE.TAXI_OUT = false
         end
     end
-    if TAKEOFF then
+    if FLT_PHASE.TAKEOFF then
         TXT_PHASE = "Takeoff"
         if GNDAIR_SW == 0 then
-            ON_RWY = false
+            FLT_PHASE.ON_RWY = false
         end
         if ENG_1_REV ~= 0 or ENG_2_REV ~= 0 then
             STEP = 0
-            REJECTED = true
-            TAKEOFF = false
+            FLT_PHASE.REJECTED = true
+            FLT_PHASE.TAKEOFF = false
         end
         if THR_STATE == 1 and ATO_CL then
-            CLIMB = true
-            AR_DEP = false
+            FLT_PHASE.CLIMB = true
+            APP_TYPE.AR_DEP = false
             RAINING = false
-            TAKEOFF = false
+            FLT_PHASE.TAKEOFF = false
             BTO_PROC_DONE = false
             ACF_CLEAN = false
             AL_PROC = false
         end
     end
-    if REJECTED then
+    if FLT_PHASE.REJECTED then
         TXT_PHASE = "Rejected"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
-            REJECTED = false
-            REJECTED_DES = true
+            FLT_PHASE.REJECTED = false
+            FLT_PHASE.REJECTED_DES = true
         end
     end
-    if CLIMB or CRUISE or DESCEND then
+    if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND then
         if string.find(FMA_G_STATE, "CLB") then
             TXT_PHASE = "Climb"
-            CLIMB = true
-            CRUISE = false
-            DESCEND = false
+            FLT_PHASE.CLIMB = true
+            FLT_PHASE.CRUISE = false
+            FLT_PHASE.DESCEND = false
         end
         if string.find(FMA_G_STATE, "CRZ") then
             TXT_PHASE = "Cruise"
-            CLIMB = false
-            CRUISE = true
-            DESCEND = false
+            FLT_PHASE.CLIMB = false
+            FLT_PHASE.CRUISE = true
+            FLT_PHASE.DESCEND = false
         end
         if string.find(FMA_G_STATE, "DES") then
             TXT_PHASE = "Descend"
-            CLIMB = false
-            CRUISE = false
-            DESCEND = true
+            FLT_PHASE.CLIMB = false
+            FLT_PHASE.CRUISE = false
+            FLT_PHASE.DESCEND = true
         end
         if APP_CL then
-            CLIMB = false
-            CRUISE = false
-            DESCEND = false
-            APPROACH = true
+            FLT_PHASE.CLIMB = false
+            FLT_PHASE.CRUISE = false
+            FLT_PHASE.DESCEND = false
+            FLT_PHASE.APPROACH = true
             AP_DISCN_PROC = false
         end
     end
-    if APPROACH then
+    if FLT_PHASE.APPROACH then
         TXT_PHASE = "Approach"
         if LND_CL then
-            APPROACH = false
-            FINAL_APP = true
+            FLT_PHASE.APPROACH = false
+            FLT_PHASE.FINAL_APP = true
             GA_PROC = false
         end
     end
-    if FINAL_APP then
+    if FLT_PHASE.FINAL_APP then
         TXT_PHASE = "Final APP"
         if THR_STATE == 3 then
-            FINAL_APP = false
-            GA = true
+            FLT_PHASE.FINAL_APP = false
+            FLT_PHASE.GA = true
             TEN_THAUSAND_FEET_CLB_DONE = false
             TEN_THAUSAND_FEET_DES_DONE = false
             DES_BRIEFING = false
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
-            FINAL_APP = false
-            DECELERATION = true
-            ON_RWY = true
+            FLT_PHASE.FINAL_APP = false
+            FLT_PHASE.DECELERATION = true
+            FLT_PHASE.ON_RWY = true
             TO_PROC_DONE = false
             TEN_THAUSAND_FEET_CLB_DONE = false
             TEN_THAUSAND_FEET_DES_DONE = false
         end
     end
-    if GA then
+    if FLT_PHASE.GA then
         TXT_PHASE = "Go Arround"
         if THR_STATE == 1 then
-            GA = false
-            TAKEOFF = true
+            FLT_PHASE.GA = false
+            FLT_PHASE.TAKEOFF = true
         end
     end
-    if DECELERATION then
+    if FLT_PHASE.DECELERATION then
         TXT_PHASE = "Decel"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
-            DECELERATION = false
+            FLT_PHASE.DECELERATION = false
             RAINING = false
-            TAXI_IN = true
-            ILS_APP = false
-            MLS_APP = false
-            RNAV_APP = false
-            RNAV_LNAV = false
-            RNPAR_APP = false
-            VOR_APP = false
-            NDB_APP = false
-            LDA_APP = false
+            FLT_PHASE.TAXI_IN = true
+            APP_TYPE.ILS_APP = false
+            APP_TYPE.MLS_APP = false
+            APP_TYPE.RNAV_APP = false
+            APP_TYPE.RNAV_LNAV = false
+            APP_TYPE.RNAVAR_APP = false
+            APP_TYPE.VOR_APP = false
+            APP_TYPE.NDB_APP = false
+            APP_TYPE.LDA_APP = false
         end
     end
-    if TAXI_IN then
+    if FLT_PHASE.TAXI_IN then
         TXT_PHASE = "Taxi In"
-        if PRKBRK_State == 1 and ENG_1_Master_State == 0 and ENG_2_Master_State == 0 then
-            TAXI_IN = false
-            PARKING = true
+        if PRKBRK_SW == 1 and ENG_1_Master == 0 and ENG_2_Master == 0 then
+            FLT_PHASE.TAXI_IN = false
+            FLT_PHASE.PARKING = true
         end
     end
-    if PARKING then
+    if FLT_PHASE.PARKING then
         TXT_PHASE = "Parking"
         if PARK_CL then
-            PARKING = false
-            PREFLIGHT = true
+            FLT_PHASE.PARKING = false
+            FLT_PHASE.PREFLIGHT = true
             PF_DONE = false
             TO_BRIEFING = false
             FLTCTL_CHK = false
@@ -4710,19 +4725,20 @@ do_every_frame("phase_check()")
 
 -- FO/PM MAIN LOGIC
 function FO_main_logic()
-    if PREFLIGHT then
+    if FLT_PHASE.PREFLIGHT then
         if EXECUTE_PCP then
             pre_cockpit_pre()
         end
     end
-    if ENG_START then
+    if FLT_PHASE.ENG_START then
         if not AS_PROC_DONE then
-            if ENG_Mode_State == 1 then
+            if ENG_Mode == 1 then
+
                 after_start_proc()
             end
         end
     end
-    if TAXI_OUT then
+    if FLT_PHASE.TAXI_OUT then
         if EXECUTE_BTP then
             before_takeoff_proc()
         end
@@ -4733,10 +4749,10 @@ function FO_main_logic()
             vacating_rwy()
         end
     end
-    if BTO_CL and not TO_PROC_DONE and not REJECTED then
+    if BTO_CL and not TO_PROC_DONE and not FLT_PHASE.REJECTED then
         take_off_proc()
     end
-    if REJECTED then
+    if FLT_PHASE.REJECTED then
         touch_down()
     end
     if GNDAIR_SW == 0 then
@@ -4747,12 +4763,12 @@ function FO_main_logic()
             flaps_commanded_change()
         end
     end
-    if TAKEOFF then
+    if FLT_PHASE.TAKEOFF then
         if THR_STATE == 1 and fo_autoperform then
             clean_up_auto()
         end
     end
-    if CLIMB then
+    if FLT_PHASE.CLIMB then
         if fo_autoperform then
             if not TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000 then
                 ten_thausand_feet_CLB()
@@ -4761,7 +4777,7 @@ function FO_main_logic()
             ten_thausand_feet_CLB()
         end
     end
-    if DESCEND then
+    if FLT_PHASE.DESCEND then
         if fo_autoperform then
             if not TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000 then
                 ten_thausand_feet_DES()
@@ -4770,17 +4786,17 @@ function FO_main_logic()
             ten_thausand_feet_DES()
         end
     end
-    if FINAL_APP then
+    if FLT_PHASE.FINAL_APP then
         ap_discn_behaviour()
     end
-    if GA then
+    if FLT_PHASE.GA then
         go_arround()
     end
-    if DECELERATION then
+    if FLT_PHASE.DECELERATION then
         touch_down()
     end
-    if TAXI_IN then
-        if not AL_PROC and SPDBRK_State == 0 then
+    if FLT_PHASE.TAXI_IN then
+        if not AL_PROC and SPDBRK_Lever == 0 then
             if not EXECUTE_EXRWY then
                 after_landing_proc()
             end
@@ -4795,7 +4811,7 @@ function FO_main_logic()
             brake_temp_check()
         end
     end
-    if PARKING then
+    if FLT_PHASE.PARKING then
         if not BRKTEMP_CHK_DONE then
             brake_temp_check()
         end
@@ -4852,10 +4868,10 @@ do_every_frame("FO_checklist()")
 -- /////////////////////////////////
 -- ///////// IMGUI BUILDER /////////
 -- /////////////////////////////////
---[[
+
 -- SAVE CONFIGURATION FUNCTION
 function config_save()
-    local rute = SCRIPT_DIRECTORY .. "/FO PM/FO COnfig.lua"
+    local rute = SCRIPT_DIRECTORY .. "FO PM/FO COnfig.lua"
     local config = io.open(rute, "w")
     if config then
         config:write("--------------------------\n")
@@ -4903,7 +4919,7 @@ function myProgram_on_build(myProgram_wnd, x, y)
         imgui.Separator()
         imgui.Spacing()
         -- CHECKLIST
-        if PREFLIGHT then
+        if FLT_PHASE.PREFLIGHT then
             if not BS_DTL and not EX_BS_DTL and not EX_SEC_CL and PF_DONE then
                 if imgui.SmallButton("Before Start CKL") then
                     EX_BS_DTL = true
@@ -4921,61 +4937,61 @@ function myProgram_on_build(myProgram_wnd, x, y)
                 end
             end
         end
-        if PUSHBACK then
+        if FLT_PHASE.PUSHBACK then
             if not AS_CL and not EX_AS_CL and AS_PROC_DONE then
                 if imgui.SmallButton("After Start CKL") then
                     EX_AS_CL = true
                 end
             end
         end
-        if TAXI_OUT then
+        if FLT_PHASE.TAXI_OUT then
             if not BTO_DTL and not EX_BTO_DTL and BTO_PROC_DONE then
                 if imgui.SmallButton("Before Takeoff CKL") then
                     EX_BTO_DTL = true
                 end
             end
-            if BTO_DTL and ENT_RWY_DONE and not EX_BTO_CL then
+            if BTO_DTL and not BTO_CL and ENT_RWY_DONE and not EX_BTO_CL then
                 if imgui.SmallButton("Before Takeoff CKL BTL") then
                     EX_BTO_CL = true
                 end
             end
         end
-        if TAKEOFF then
+        if FLT_PHASE.TAKEOFF then
             if TO_PROC_DONE and not EX_ATO_CL then
                 if imgui.SmallButton("After Takeoff CKL") then
                     EX_ATO_CL = true
                 end
             end
         end
-        if CLIMB then
+        if FLT_PHASE.CLIMB then
             if not CLB_CL and not EX_CLB_CL then
                 if imgui.SmallButton("Climb CKL") then
                     EX_CLB_CL = true
                 end
             end
         end
-        if DESCEND then
+        if FLT_PHASE.DESCEND then
             if TEN_THAUSAND_FEET_DES_DONE and not EX_APP_CL then
                 if imgui.SmallButton("Approach CKL") then
                     EX_APP_CL = true
                 end
             end
         end
-        if APPROACH then
+        if FLT_PHASE.APPROACH then
             if not LND_CL and not EX_LND_CL then
                 if imgui.SmallButton("Landing CKL") then
                     EX_LND_CL = true
                 end
             end
         end
-        if TAXI_IN then
+        if FLT_PHASE.TAXI_IN then
             if not AL_CL and not EX_AL_CL then
                 if imgui.SmallButton("After Landing CKL") then
                     EX_AL_CL = true
                 end
             end
         end
-        if PARKING then
+        if FLT_PHASE.PARKING then
             if PARK_PROC and not PARK_CL and not EX_PARK_CL then
                 if imgui.SmallButton("Parking CKL") then
                     EX_PARK_CL = true
@@ -4986,63 +5002,63 @@ function myProgram_on_build(myProgram_wnd, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        if PREFLIGHT then
+        if FLT_PHASE.PREFLIGHT then
             if not PF_DONE and not EXECUTE_PCP then
                 if imgui.SmallButton("Preliminary Cockpit Prep.") then
                     EXECUTE_PCP = true
                 end
             end
         end
-        if TAXI_OUT then
+        if FLT_PHASE.TAXI_OUT then
             if not BTO_PROC_DONE and not EXECUTE_BTP then
                 if imgui.SmallButton("Before Takeoff Proc.") then
                     EXECUTE_BTP = true
                 end
             end
             imgui.SameLine()
-            if not EXECUTE_ENRWY and not ON_RWY then
+            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Entry RWY") then
                     EXECUTE_ENRWY = true
                 end
             end
-            if not EXECUTE_EXRWY and ON_RWY then
+            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
                 end
             end
         end
-        if REJECTED_DES then
+        if FLT_PHASE.REJECTED_DES then
             if imgui.SmallButton("Taxi OUT") then
-                REJECTED_DES = false
-                TAXI_OUT = true
+                FLT_PHASE.REJECTED_DES = false
+                FLT_PHASE.TAXI_OUT = true
             end
             imgui.SameLine()
             if imgui.SmallButton("Taxi IN") then
-                REJECTED_DES = false
-                TAXI_IN = true
+                FLT_PHASE.REJECTED_DES = false
+                FLT_PHASE.TAXI_IN = true
             end
         end
-        if CLIMB then
+        if FLT_PHASE.CLIMB then
             if not TEN_THAUSAND_FEET_CLB_DONE and not EXECUTE_10FT_CLB then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     EXECUTE_10FT_CLB = true
                 end
             end
         end
-        if DESCEND then
+        if FLT_PHASE.DESCEND then
             if not TEN_THAUSAND_FEET_DES_DONE and not EXECUTE_10FT_DES then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     EXECUTE_10FT_DES = true
                 end
             end
         end
-        if TAXI_IN then
-            if not EXECUTE_ENRWY and not ON_RWY then
+        if FLT_PHASE.TAXI_IN then
+            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Entry RWY") then
                     EXECUTE_ENRWY = true
                 end
             end
-            if not EXECUTE_EXRWY and ON_RWY then
+            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
                 end
@@ -5065,11 +5081,11 @@ function myProgram_on_build(myProgram_wnd, x, y)
         imgui.Spacing()
         imgui.TextUnformatted("FLT Phase:")
         imgui.SameLine()
-        imgui.TextUnformatted("TXT_PHASE")
+        imgui.TextUnformatted(TXT_PHASE)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        if PREFLIGHT or PUSHBACK or TAXI_OUT then
+        if FLT_PHASE.PREFLIGHT or FLT_PHASE.PUSHBACK or FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
             if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
@@ -5096,13 +5112,18 @@ function myProgram_on_build(myProgram_wnd, x, y)
             else
                 imgui.TextUnformatted(FLAPS_TO_CONFIG)
             end
+            imgui.TextUnformatted("Raining:")
             imgui.SameLine()
-            if imgui.RadioButton("Raining", RAINING) then
-                RAINING = true
+            if imgui.RadioButton("No", not RAINING) then
+                RAINING = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("AR DEP", AR_DEP) then
-                AR_DEP = true
+            if imgui.RadioButton("Yes", RAINING) then
+                RAINING = true
+            end
+            local dep_change, change = imgui.Checkbox("AR Departure", APP_TYPE.AR_DEP)
+            if dep_change then
+                APP_TYPE.AR_DEP = change
             end
             if not TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
@@ -5113,60 +5134,60 @@ function myProgram_on_build(myProgram_wnd, x, y)
                 end
             end
         end
-        if CLIMB or CRUISE or DESCEND then
+        if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND then
             imgui.TextUnformatted("Arrival Breafing")
-            if imgui.RadioButton("ILS/MLS APP", ILS_APP or MLS_APP) then
-                ILS_APP = true
-                MLS_APP = true
-                RNAV_APP = false
-                RNAV_LNAV = false
-                RNPAR_APP = false
-                VOR_APP = false
-                NDB_APP = false
-                LDA_APP = false
+            if imgui.RadioButton("ILS/MLS APP", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then
+                APP_TYPE.ILS_APP = true
+                APP_TYPE.MLS_APP = true
+                APP_TYPE.RNAV_APP = false
+                APP_TYPE.RNAV_LNAV = false
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.VOR_APP = false
+                APP_TYPE.NDB_APP = false
+                APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("RNAV APP", RNAV_APP or RNAV_LNAV) then
-                ILS_APP = false
-                MLS_APP = false
-                RNAV_APP = true
-                RNAV_LNAV = true
-                RNPAR_APP = false
-                VOR_APP = false
-                NDB_APP = false
-                LDA_APP = false
+            if imgui.RadioButton("RNAV APP", APP_TYPE.RNAV_APP or APP_TYPE.RNAV_LNAV) then
+                APP_TYPE.ILS_APP = false
+                APP_TYPE.MLS_APP = false
+                APP_TYPE.RNAV_APP = true
+                APP_TYPE.RNAV_LNAV = true
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.VOR_APP = false
+                APP_TYPE.NDB_APP = false
+                APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("RNP AR", RNPAR_APP) then
-                ILS_APP = false
-                MLS_APP = false
-                RNAV_APP = false
-                RNAV_LNAV = false
-                RNPAR_APP = true
-                VOR_APP = false
-                NDB_APP = false
-                LDA_APP = false
+            if imgui.RadioButton("RNP AR", APP_TYPE.RNAVAR_APP) then
+                APP_TYPE.ILS_APP = false
+                APP_TYPE.MLS_APP = false
+                APP_TYPE.RNAV_APP = false
+                APP_TYPE.RNAV_LNAV = false
+                APP_TYPE.RNAVAR_APP = true
+                APP_TYPE.VOR_APP = false
+                APP_TYPE.NDB_APP = false
+                APP_TYPE.LDA_APP = false
             end
-            if imgui.RadioButton("VOR/NDB APP", VOR_APP or NDB_APP) then
-                ILS_APP = false
-                MLS_APP = false
-                RNAV_APP = false
-                RNAV_LNAV = false
-                RNPAR_APP = false
-                VOR_APP = true
-                NDB_APP = true
-                LDA_APP = false
+            if imgui.RadioButton("VOR/NDB APP", APP_TYPE.VOR_APP or APP_TYPE.NDB_APP) then
+                APP_TYPE.ILS_APP = false
+                APP_TYPE.MLS_APP = false
+                APP_TYPE.RNAV_APP = false
+                APP_TYPE.RNAV_LNAV = false
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.VOR_APP = true
+                APP_TYPE.NDB_APP = true
+                APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("LDA APP", LDA_APP) then
-                ILS_APP = false
-                MLS_APP = false
-                RNAV_APP = false
-                RNAV_LNAV = false
-                RNPAR_APP = false
-                VOR_APP = false
-                NDB_APP = false
-                LDA_APP = true
+            if imgui.RadioButton("LDA APP", APP_TYPE.LDA_APP) then
+                APP_TYPE.ILS_APP = false
+                APP_TYPE.MLS_APP = false
+                APP_TYPE.RNAV_APP = false
+                APP_TYPE.RNAV_LNAV = false
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.VOR_APP = false
+                APP_TYPE.NDB_APP = false
+                APP_TYPE.LDA_APP = true
             end
             if imgui.RadioButton("Raining", RAINING) then
                 RAINING = true
@@ -5248,8 +5269,14 @@ function toggle_myProgram_window()
 	end
 end
 
--- IMGUI MACRO/COMMANDS
+-- MACRO/COMMANDS
 add_macro("FO/PM", "myProgram_show_wnd()", "myProgram_hide_wnd()", "deactivate")
-create_command("myProgram_menus/show_toggle", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")
-]]
+create_command("Toliss_A32S_FO/Show_Interface", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")
+create_command("Toliss_A32S_FO/Checklist_Response", "Confirm validation for Checklist", "response_CHECK = not response_CHECK", "", "")
+create_command("Toliss_A32S_FO/Command_GEAR_UP", "Command Gear UP", "command_GUP = not command_GUP", "", "")
+create_command("Toliss_A32S_FO/Command_GEAR_DN", "Command Gear DN", "command_GDN = not command_GDN", "", "")
+create_command("Toliss_A32S_FO/Command_FLAPS_1_UP", "Command FLAPS 1 Position UP", "command_FLPS_1UP = not command_FLPS_1UP", "", "")
+create_command("Toliss_A32S_FO/Command_FLAPS_1_DN", "Command FLAPS 1 Position DN", "command_FLPS_1DN = not command_FLPS_1DN", "", "")
+
+logMsg("XXXXX FO/PM LOADED")
 end -- LUA ENDS

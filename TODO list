@@ -1,8 +1,5 @@
 Arreglar bug que traba el FO QNH en 1013
-Arreglar las voces en el directorio (voces recopiladas y no separadas)
-Agregar los commandos para flaps y gear
 Desarrollar ONE ENGINE DEP/ARR
 Desarrollar RNP AR DEP/ARR
-Agregar V Speeds en briefing wnd
 Solucionar, desarrollar cunaodo es unicamnete neo sin no esta comprao la opcion neo
-realizar debugging de Takeoff, V Speeds, gear command, y after takeoff checklist
+realizar debugging de Takeoff

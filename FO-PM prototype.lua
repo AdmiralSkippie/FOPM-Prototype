@@ -1467,17 +1467,17 @@ function take_off_proc()
                 return
             end
         end
-        if STEP == 3 then -- speeds check --
+        if STEP == 3 then -- speeds check
             if TIME >= DELAY then
-                if IND_AIRSPEED == 100 then
+                if math.floor(IND_AIRSPEED) == 100 then
                     play_sound(N100)
                     DELAY = TIME + 1.179
                 end
-                if IND_AIRSPEED == V1_SPEED - 1 then
+                if math.floor(IND_AIRSPEED) == V1_SPEED - 1 then
                     play_sound(V1)
                     DELAY = TIME + 0.992
                 end
-                if IND_AIRSPEED >= VR_SPEED - 1 then
+                if math.floor(IND_AIRSPEED) >= VR_SPEED then
                     play_sound(ROTATE)
                     DELAY = TIME + 1.005
                     STEP = 4
@@ -1489,7 +1489,7 @@ function take_off_proc()
         end
         if STEP == 4 then
             if VERTICAL_SPEED > 300 then
-                DELAY = TIME + 2
+                DELAY = TIME + 1.5
                 STEP = 5
             else
                 return
@@ -1688,7 +1688,7 @@ function clean_up_auto()
         if TIME >= DELAY_CLEAN then
             if FLAPS_LEVER_State ~= 0.25 then
                 if STEP_SPEACH == 0 then
-                    if IND_AIRSPEED > FLAP_RETRACT_SPEED + 4 then
+                    if math.floor(IND_AIRSPEED) > FLAP_RETRACT_SPEED + 4 then
                         play_sound(SPEED_CHECK)
                         DELAY_CLEAN = TIME + 1.436
                         STEP_SPEACH = 1
@@ -1729,7 +1729,7 @@ function clean_up_auto()
     if STEP_CLEAN == 2 then
         if TIME >= DELAY_CLEAN then
             if STEP_SPEACH == 0 then
-                if IND_AIRSPEED > SLAT_RETRACT_SPEED + 5 then
+                if math.floor(IND_AIRSPEED) > SLAT_RETRACT_SPEED + 5 then
                     play_sound(SPEED_CHECK)
                     DELAY_CLEAN = TIME + 1.436
                     STEP_SPEACH = 1
@@ -1770,13 +1770,13 @@ end
 function flaps_commanded_change()
     if command_FLPS_1UP then
         if STEP_CLEAN == 0 then
-            DELAY_CLEAN = TIME + 0.5
+            DELAY_CLEAN = TIME + 0.3
             STEP_CLEAN = 1
         end 
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
                 play_sound(SPEED_CHECK)
-                DELAY_CLEAN = TIME + 1.436
+                DELAY_CLEAN = TIME + 1
                 STEP_CLEAN = 2
             else
                 return
@@ -1785,17 +1785,15 @@ function flaps_commanded_change()
         if STEP_CLEAN == 2 then
             if TIME >= DELAY_CLEAN then
                 if FLAPS_LEVER_State > 0.25 then
-                    if IND_AIRSPEED > FLAP_RETRACT_SPEED + 4 then
+                    if math.floor(IND_AIRSPEED) > FLAP_RETRACT_SPEED + 4 then
                         command_once(FLAPS_1UP)
-                        DELAY_CLEAN = TIME + 0.3
                         STEP_CLEAN = 3
                     else
                         return
                     end
                 elseif FLAPS_LEVER_State == 0.25 then
-                    if IND_AIRSPEED > SLAT_RETRACT_SPEED + 5 then
+                    if math.floor(IND_AIRSPEED) > SLAT_RETRACT_SPEED + 5 then
                         command_once(FLAPS_1UP)
-                        DELAY_CLEAN = TIME + 0.3
                         STEP_CLEAN = 3
                     else
                         return
@@ -1827,7 +1825,7 @@ function flaps_commanded_change()
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
                 play_sound(SPEED_CHECK)
-                DELAY_CLEAN = TIME + 1.536
+                DELAY_CLEAN = TIME + 1
                 STEP_CLEAN = 2
             else
                 return
@@ -1835,9 +1833,8 @@ function flaps_commanded_change()
         end
         if STEP_CLEAN == 2 then
             if TIME >= DELAY_CLEAN then
-                if IND_AIRSPEED + 3 < FLAPS_LIMIT[lindex] then
+                if math.floor(IND_AIRSPEED) < FLAPS_LIMIT[lindex] then
                     command_once(FLAPS_1DOWN)
-                    DELAY_CLEAN = TIME + 0.3
                     STEP_CLEAN = 3
                 else
                     return
@@ -1866,24 +1863,16 @@ end
 ---- GEAR CHANGE UNDER COMMAND
 function gear_command()
     if command_GUP then
-        DELAY_CHECK = TIME + 0.88
-        if TIME >= DELAY_CHECK then
-            if IND_AIRSPEED <= GEAR_RETRACTION_LIMIT then
-                play_sound(GEAR_UP)
-                LG_Lever = 0
-                command_GUP = false
-            else
-                return
-            end
-        end
-    elseif command_GDN then
-        DELAY_CHECK = TIME + 1.052
         if STEP_FLT == 0 then
+            DELAY_CHECK = TIME + 0.88
+            STEP_FLT = 1
+        end
+        if STEP_FLT == 1 then
             if TIME >= DELAY_CHECK then
-                if IND_AIRSPEED <= GEAR_EXTENTION_LIMIT then
-                    play_sound(GEAR_DOWN)
-                    LG_Lever = 1
-                    STEP_FLT = 1
+                if math.floor(IND_AIRSPEED) <= GEAR_RETRACTION_LIMIT then
+                    play_sound(GEAR_UP)
+                    LG_Lever = 0
+                    command_GUP = false
                 else
                     return
                 end
@@ -1891,7 +1880,25 @@ function gear_command()
                 return
             end
         end
+    elseif command_GDN then
+        if STEP_FLT == 0 then
+            DELAY_CHECK = TIME + 1.052
+            STEP_FLT = 1
+        end
         if STEP_FLT == 1 then
+            if TIME >= DELAY_CHECK then
+                if math.floor(IND_AIRSPEED) <= GEAR_EXTENTION_LIMIT then
+                    play_sound(GEAR_DOWN)
+                    LG_Lever = 1
+                    STEP_FLT = 2
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP_FLT == 2 then
             if LG_NG_State == 2 and LG_RG_State == 2 and LG_LG_State == 2 then
                 play_sound(GEAR_3GREENS)
                 DELAY = TIME + 1.054
@@ -1910,10 +1917,10 @@ function ten_thausand_feet_CLB()
         if fo_autoperform then
             play_sound(TEN_THAUSAND_FEET)
             DELAY = TIME + 1.2
-            STEP = 1
+            STEP = 2
         else
             DELAY = TIME + 1.2
-            STEP = 1
+            STEP = 2
         end
     end
     if STEP == 2 then
@@ -1930,7 +1937,7 @@ function ten_thausand_feet_CLB()
     if STEP == 2.3 then
         if TIME >= DELAY then
             RWYTOLT_SW = 0
-            DELAY = TIME + 0.3
+            DELAY = TIME + 0.5
             STEP = 2.4
         else
             return
@@ -1940,7 +1947,7 @@ function ten_thausand_feet_CLB()
         if TIME >= DELAY then
             LANDLT_L_SW = 0
             LANDLT_R_SW = 0
-            DELAY = TIME + 0.4
+            DELAY = TIME + 0.5
             STEP = 2.5
         else
             return
@@ -1961,7 +1968,7 @@ function ten_thausand_feet_CLB()
     if STEP == 3 then
         if TIME >= DELAY then
             EFIS_RNG = 3
-            DELAY = TIME + 0.5
+            DELAY = TIME + 0.7
             STEP = 4
         else
             return
@@ -1978,8 +1985,8 @@ function ten_thausand_feet_CLB()
     end
     if STEP == 5 then
         if TIME >= DELAY then
-            local lindex = math.random(5)
-            play_sound(READY[lindex])
+            local rindex = math.random(5)
+            play_sound(READY[rindex])
             DELAY = TIME + 2
             STEP = 0
             EXECUTE_10FT_CLB = false
@@ -2014,7 +2021,7 @@ function ten_thausand_feet_DES()
     if STEP == 1.3 then
         if TIME >= DELAY then
             RWYTOLT_SW = 1
-            DELAY = TIME + 0.3
+            DELAY = TIME + 0.5
             STEP = 1.4
         else
             return
@@ -2024,7 +2031,7 @@ function ten_thausand_feet_DES()
         if TIME >= DELAY then
             LANDLT_L_SW = 2
             LANDLT_R_SW = 2
-            DELAY = TIME + 0.4
+            DELAY = TIME + 0.5
             STEP = 1.5
         else
             return
@@ -2045,7 +2052,7 @@ function ten_thausand_feet_DES()
     if STEP == 2 then
         if TIME >= DELAY then
             EFIS_RNG = 1
-            DELAY = TIME + 0.5
+            DELAY = TIME + 0.7
             STEP = 3
         else
             return
@@ -2312,7 +2319,7 @@ function touch_down()
                 play_sound(REVERSE_GREEN)
                 DELAY = TIME + 1.053
                 STEP = 2
-                CHECK_SPEED = IND_AIRSPEED - 10
+                CHECK_SPEED = math.floor(IND_AIRSPEED) - 10
             else
                 return
             end
@@ -2322,7 +2329,7 @@ function touch_down()
     end
     if STEP == 2 then
         if TIME >= DELAY then
-            if IND_AIRSPEED < CHECK_SPEED then
+            if math.floor(IND_AIRSPEED) < CHECK_SPEED then
                 play_sound(DECEL)
                 DELAY = TIME + 1.034
                 STEP = 3
@@ -2335,7 +2342,7 @@ function touch_down()
     end
     if STEP == 3 then
         if TIME >= DELAY then
-            if IND_AIRSPEED < 78 then
+            if math.floor(IND_AIRSPEED) < 78 then
                 play_sound(N80_KNOTS)
                 DELAY = TIME + 1.4
                 STEP = 0
@@ -4610,6 +4617,7 @@ function phase_check()
             FLT_PHASE.TAKEOFF = false
         end
         if THR_STATE == 1 and ATO_CL then
+            TXT_PHASE = "Climb"
             FLT_PHASE.CLIMB = true
             APP_TYPE.AR_DEP = false
             RAINING = false
@@ -4897,7 +4905,7 @@ local DEPARTURE_BRIEFING_BLEED_OPT = 1
 local setting_change = false
 
 -- IMGUI BUILDER
-function myProgram_on_build(myProgram_wnd, x, y)
+function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_MAIN then -- MAIN WINDOW
         if imgui.SmallButton("Settings") then
             WND_SETTINGS = true
@@ -5112,6 +5120,17 @@ function myProgram_on_build(myProgram_wnd, x, y)
             else
                 imgui.TextUnformatted(FLAPS_TO_CONFIG)
             end
+            imgui.TextUnformatted("V1:")
+            imgui.SameLine()
+            imgui.TextUnformatted(V1_SPEED)
+            imgui.SameLine()
+            imgui.TextUnformatted("VR:")
+            imgui.SameLine()
+            imgui.TextUnformatted(VR_SPEED)
+            imgui.SameLine()
+            imgui.TextUnformatted("V2:")
+            imgui.SameLine()
+            imgui.TextUnformatted(V2_SPEED)
             imgui.TextUnformatted("Raining:")
             imgui.SameLine()
             if imgui.RadioButton("No", not RAINING) then
@@ -5231,47 +5250,47 @@ function myProgram_on_build(myProgram_wnd, x, y)
 end
 
 -- FLOAT WINDOWS MASTER
-myProgram_wnd = nil
+FO_INTERFACE = nil
 
-function myProgram_show_wnd()
+function show_interface()
     local posX = (SCREEN_WIDTH / 1.08) - (250 / 2)
     local posY = (SCREEN_HEIGHT / 1.15) - (125 / 2)
-    myProgram_wnd = float_wnd_create(250, 125, 1, true)
-    float_wnd_set_title(myProgram_wnd, "FO/PM")
-    float_wnd_set_position(myProgram_wnd, posX, posY)
-    float_wnd_set_imgui_builder(myProgram_wnd, "myProgram_on_build")
+    FO_INTERFACE = float_wnd_create(250, 125, 1, true)
+    float_wnd_set_title(FO_INTERFACE, "FO/PM")
+    float_wnd_set_position(FO_INTERFACE, posX, posY)
+    float_wnd_set_imgui_builder(FO_INTERFACE, "FO_imgui_builder")
 end
 
 
-function myProgram_hide_wnd()
-    if myProgram_wnd then
-        float_wnd_destroy(myProgram_wnd)
+function hide_interface()
+    if FO_INTERFACE then
+        float_wnd_destroy(FO_INTERFACE)
     end
 end
 
-myProgram_show_only_once = 0
-myProgram_hide_only_once = 0
+FOinterface_show_only_once = 0
+FOinterface_hide_only_once = 0
 
-function toggle_myProgram_window()
-	myProgram_show_window = not myProgram_show_window
-	if myProgram_show_window then
-		if myProgram_show_only_once == 0 then
-			myProgram_show_wnd()
-			myProgram_show_only_once = 1
-			myProgram_hide_only_once = 0
+function toggle_interface()
+	show_wnd = not show_wnd
+	if show_wnd then
+		if FOinterface_show_only_once == 0 then
+			show_interface()
+			FOinterface_show_only_once = 1
+			FOinterface_hide_only_once = 0
 		end
 	else
-		if myProgram_hide_only_once == 0 then
-			myProgram_hide_wnd()
-			myProgram_hide_only_once = 1
-			myProgram_show_only_once = 0
+		if FOinterface_hide_only_once == 0 then
+			hide_interface()
+			FOinterface_hide_only_once = 1
+			FOinterface_show_only_once = 0
 		end
 	end
 end
 
 -- MACRO/COMMANDS
-add_macro("FO/PM", "myProgram_show_wnd()", "myProgram_hide_wnd()", "deactivate")
-create_command("Toliss_A32S_FO/Show_Interface", "open/close myProgram Menu window", "toggle_myProgram_window()", "", "")
+add_macro("FO/PM", "show_interface()", "hide_interface()", "deactivate")
+create_command("Toliss_A32S_FO/Show_Interface", "open/close FO interface", "toggle_interface()", "", "")
 create_command("Toliss_A32S_FO/Checklist_Response", "Confirm validation for Checklist", "response_CHECK = not response_CHECK", "", "")
 create_command("Toliss_A32S_FO/Command_GEAR_UP", "Command Gear UP", "command_GUP = not command_GUP", "", "")
 create_command("Toliss_A32S_FO/Command_GEAR_DN", "Command Gear DN", "command_GDN = not command_GDN", "", "")

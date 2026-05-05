@@ -55,7 +55,7 @@ dataref("ENG_2_BLEED_PB", "AirbusFBW/ENG2BleedSwitch", "writable") -- ENG2BLEED 
 dataref("ENG_1_Master", "AirbusFBW/ENG1MasterSwitch", "writable")
 dataref("ENG_2_Master", "AirbusFBW/ENG2MasterSwitch", "writable")
 dataref("ENG_Mode", "AirbusFBW/ENGModeSwitch", "writable") -- 1 Normal --
-dataref("RADAR_SYS_SW", "ckpt/radar/sys/anim", "writable") -- 1 off --
+dataref("RADAR_SYS_SW", "AirbusFBW/WXPowerSwitch", "writable") -- 1 off --
 dataref("LWipers_Mode", "AirbusFBW/LeftWiperSwitch", "writable")
 dataref("RWipers_Mode", "AirbusFBW/RightWiperSwitch", "writable")
 dataref("PRKBRK_SW", "AirbusFBW/ParkBrake", "writable")
@@ -165,6 +165,7 @@ dataref("RUDDER", "AirbusFBW/NormLawCmd_Rud", "readonly") -- 0 NTRL/-25 LEFT/25 
 dataref("IND_AIRSPEED", "sim/cockpit2/gauges/indicators/airspeed_kts_copilot", "readonly")
 dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
 dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
+dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
 dataref("VERTICAL_SPEED", "toliss_airbus/pfdoutputs/captain/vertical_speed", "readonly")
 dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly") -- ONLY SHOWS ATHR ENGAGE --
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
@@ -221,7 +222,7 @@ function CHECK_ENGINE_TYPE()
     end
 end
 
-do_sometimes("CHECK_ENGINE_TYPE()")
+do_every_frame("CHECK_ENGINE_TYPE()")
 
 ---- FLAP LIMITS ----
 GEAR_EXTENTION_LIMIT = 250
@@ -233,7 +234,7 @@ function flaps_gear_limits()
         [2] = 200,
         [3] = 185,
         [4] = 177,
-        [0] = 0
+        [5] = 0
         }
     elseif ACF_ICAO == "A321" or ACF_ICAO == "A21N" then
         FLAPS_LIMIT = {

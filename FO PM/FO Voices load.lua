@@ -72,12 +72,12 @@ DOWN = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/DOWN.wav") -- 0.810
     ALTERNATE_BRAKES = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ALTNBRK.wav") -- 1.259
     GROUND_SPOILERS = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/GNDSPOILERS.wav") -- 1.414
     RUDDER_TRIM = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RUDDERTRIM.wav") --0.809
-    PITCH_TRIM = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/PITCHTRIM.wav") -- 1.128
+    PITCHTRM = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/PITCHTRIM.wav") -- 1.128
     ECAM_STATUS = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ECAMSTATUS.wav") -- 1.322
     FLIGHT_CONTROLS_CHECK = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/FLTCTLCHECK.wav") -- 1.414
     ELEVATOR = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ELEV.wav") --0.962
     AILERONS = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/AILERONS.wav") -- 0.907
-    RUDDER = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RUDDER.wav") -- 0.795
+    RDR = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RUDDER.wav") -- 0.795
     PWS = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/PWS.wav") -- 1.086
     BRAKE_TEMP = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/BRKTEMP.wav") -- 1.004
 -- BRKAE TEMP WARNING --

@@ -47,7 +47,7 @@ ANTI_ICE_WING_PB = "toliss_airbus/antiicecommands/WingToggle"
 dataref("Y_ELEC_PUMP_PB", "AirbusFBW/HydOHPArray", "writable", 3) -- Y HYD PUMP PB --
 AUTOBRK_MAX_PB = "AirbusFBW/AbrkMax"
 TO_CONFIG_PB = "AirbusFBW/TOConfigPress"
-dataref("FO_QNH_PUSH", "AirbusFBW/BaroStdFO", "writable") -- FO_QNH_STD --
+--dataref("FO_QNH_PUSH", "AirbusFBW/BaroStdFO", "writable") -- FO_QNH_STD --
 dataref("ENG_1_BLEED_PB", "AirbusFBW/ENG1BleedSwitch", "writable") -- ENG1BLEED -- 
 dataref("ENG_2_BLEED_PB", "AirbusFBW/ENG2BleedSwitch", "writable") -- ENG2BLEED --
 
@@ -55,7 +55,7 @@ dataref("ENG_2_BLEED_PB", "AirbusFBW/ENG2BleedSwitch", "writable") -- ENG2BLEED 
 dataref("ENG_1_Master", "AirbusFBW/ENG1MasterSwitch", "writable")
 dataref("ENG_2_Master", "AirbusFBW/ENG2MasterSwitch", "writable")
 dataref("ENG_Mode", "AirbusFBW/ENGModeSwitch", "writable") -- 1 Normal --
-dataref("Radar_SYS_SW", "ckpt/radar/sys/anim", "writable") -- 1 off --
+dataref("RADAR_SYS_SW", "ckpt/radar/sys/anim", "writable") -- 1 off --
 dataref("LWipers_Mode", "AirbusFBW/LeftWiperSwitch", "writable")
 dataref("RWipers_Mode", "AirbusFBW/RightWiperSwitch", "writable")
 dataref("PRKBRK_SW", "AirbusFBW/ParkBrake", "writable")
@@ -109,7 +109,7 @@ dataref("PWS_STATE", "AirbusFBW/WXSwitchPWS", "readonly")
 dataref("LWipers_State", "AirbusFBW/LeftWiperSwitch", "readonly")
 dataref("RWipers_State", "AirbusFBW/RightWiperSwitch", "readonly")
 dataref("PRKBRK_State", "AirbusFBW/ParkBrake", "readonly") -- 1 ON
-dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11)
+dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11) -- 1 ON 
 dataref("XBLEED_STATE", "AirbusFBW/XBleedSwitch", "readonly") -- 1 Auto --
 dataref("SIGNS_STATE", "AirbusFBW/OHPLightSwitches", "readonly", 12)
 -- ADIRS --
@@ -128,6 +128,7 @@ dataref("FLAPS_State", "AirbusFBW/FlapRequestPos", "readonly") -- -1 = on positi
 dataref("FLAPS_TO_CONFIG", "AirbusFBW/TOFlapSettingMCDU", "readonly") -- 1 = 1
 dataref("SPDBRK_State", "sim/cockpit2/controls/speedbrake_ratio", "readonly")
 dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
+dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 
 ---- MCDU ----
 dataref("MCDU_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
@@ -190,7 +191,7 @@ dataref("ECAM_MSG_A", "AirbusFBW/EWD1aText", "readonly")
 --dataref("ECAM_LOWER_MSG", "", "readonly")
 dataref("PITCH_TRIM", "AirbusFBW/PitchTrimPosition", "readonly")
 dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
-dataref("FMA_B_STATE", "AirbusFBW/FMA1b", "readonly")
+dataref("FMA_B_STATE", "AirbusFBW/FMA2b", "readonly")
 dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
 -- QNH INDICATOR --
     dataref("CM_QNH", "sim/cockpit/misc/barometer_setting", "readonly") -- convertir a qnh

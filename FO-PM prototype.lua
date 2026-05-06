@@ -67,6 +67,7 @@ local DES_BRIEFING = false
 local TEN_THAUSAND_FEET_DES_DONE = false
 local AP_DISCN_PROC = false
 local GA_PROC = false
+local DECEL_CALLOUTS = false
 local AL_PROC = false
 local PARK_PROC = false
 local FLTCTL_CHK = false
@@ -206,7 +207,7 @@ local FLAP_VOICE_DIR = {"P0", "P1", "P2", "P3", "FULL"}
 local CONFIG_VOICE_SRCH = "P1"
 local FL_VOICE_SRCH = "P0"
 local FLUP_VOICE_SRCH = "P0"
-local lindex = math.floor((FLAPS_LEVER_State * 4) + 1)
+local lindex = 1
 
 function flaps_voice_search()
     local index = math.floor((FLAPS_LEVER_State * 4) + 1)
@@ -1825,6 +1826,7 @@ function flaps_commanded_change()
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
                 play_sound(SPEED_CHECK)
+                lindex = math.floor((FLAPS_LEVER_State * 4) + 1)
                 DELAY_CLEAN = TIME + 1
                 STEP_CLEAN = 2
             else
@@ -2152,7 +2154,7 @@ function ap_discn_behaviour()
     if STEP_AP == 2 then
         if TIME >= DELAY_AP then
             command_once(FD_CAP_PB)
-            DELAY_AP = TIME + 0.5
+            DELAY_AP = TIME + 0.7
             STEP_AP = 3
         else
             return
@@ -2161,7 +2163,7 @@ function ap_discn_behaviour()
     if STEP_AP == 3 then
         if TIME >= DELAY_AP then
             command_once(FD_FO_PB)
-            DELAY_AP = TIME + 0.5
+            DELAY_AP = TIME + 0.7
             STEP_AP = 4
         else
             return
@@ -2190,69 +2192,72 @@ end
 
 ---- GO ARROUND PROCEDURE
 function go_arround() 
-    if STEP == 0 then
-        DELAY = TIME + 0.25
-        STEP = 1
-        APP_CL = false
-        ATO_CL = false
-        LND_CL = false
-    end
-    if STEP == 1 then
-        if TIME >= DELAY then
-            play_sound(GO_ARROUND)
-            DELAY = TIME + 1.2
-            STEP = 2
-        else
-            return
+    if not GA_PROC then
+        if STEP == 0 then
+            DELAY = TIME + 0.25
+            STEP = 1
+            APP_CL = false
+            ATO_CL = false
+            LND_CL = false
         end
-    end
-    if STEP == 2 then
-        if TIME >= DELAY then
-            play_sound(TOGA)
-            DELAY = TIME + 1.2
-            STEP = 3
-        else
-            return
-        end
-    end
-    if STEP == 3 then
-        if TIME >= DELAY then
-            play_sound(FLAP_POS[FLUP_VOICE_SRCH])
-            command_once(FLAPS_1UP)
-            DELAY = TIME + 1.429
-            STEP = 4
-        else
-            return
-        end
-    end
-    if STEP == 4 then
-        if TIME >= DELAY then
-            if VERTICAL_SPEED > 500 then
-                play_sound(POSITIVE_RATE)
-                DELAY = TIME + 1.721
-                STEP = 5
+        if STEP == 1 then
+            if TIME >= DELAY then
+                play_sound(GO_ARROUND)
+                DELAY = TIME + 1.2
+                STEP = 2
             else
                 return
             end
-        else
-            return
         end
-    end
-    if STEP == 5 then
-        if TIME >= DELAY then
-            if fo_autoperform then
-                command_GUP = true
-            end
-            if command_GUP then
-                play_sound(GEAR_UP)
-                LG_Lever = 0
-                DELAY = TIME + 0.986
-                STEP = 6
+        if STEP == 2 then
+            if TIME >= DELAY then
+                play_sound(TOGA)
+                DELAY = TIME + 1.2
+                STEP = 3
             else
                 return
             end
-        else
-            return
+        end
+        if STEP == 3 then
+            if TIME >= DELAY then
+                play_sound(FLAP_POS[FLUP_VOICE_SRCH])
+                command_once(FLAPS_1UP)
+                DELAY = TIME + 1.429
+                STEP = 4
+            else
+                return
+            end
+        end
+        if STEP == 4 then
+            if TIME >= DELAY then
+                if VERTICAL_SPEED > 500 then
+                    play_sound(POSITIVE_RATE)
+                    DELAY = TIME + 1.721
+                    STEP = 5
+                else
+                    return
+                end
+            else
+                return
+            end
+        end
+        if STEP == 5 then
+            if TIME >= DELAY then
+                if fo_autoperform then
+                    command_GUP = true
+                end
+                if command_GUP then
+                    play_sound(GEAR_UP)
+                    LG_Lever = 0
+                    DELAY = TIME + 0.986
+                    STEP = 6
+                    command_GUP = false
+                else
+                    return
+                end
+            else
+                return
+            end
         end
     end
     if STEP == 6 then
@@ -2262,25 +2267,25 @@ function go_arround()
                 STEP = 0
             else
                 play_sound(FLIGHT_DIRECTORS)
-                DELAY = TIME + 0.5
+                DELAY = TIME + 2
                 DELAY_SPEACH = TIME + 1.2
                 STEP = 7
             end
         end
     end
     if STEP == 7 then
-        if TIME >= DELAY_AP then
-            command_once(FD_CAP_PB)
-            DELAY = TIME + 0.5
+        if TIME >= DELAY then
+            command_once(FD_FO_PB)
+            DELAY = TIME + 0.7
             STEP = 8
         else
             return
         end
     end
     if STEP == 8 then
-        if TIME >= DELAY_AP then
-            command_once(FD_FO_PB)
-            DELAY = TIME + 0.5
+        if TIME >= DELAY then
+            command_once(FD_CAP_PB)
+            DELAY = TIME + 0.7
             STEP = 9
         else
             return
@@ -2300,52 +2305,55 @@ end
 
 ---- TOUCH DOWN PROCEDURE
 function touch_down()
-    if STEP == 0 then
-        if TIME >= DELAY then
-            if INBD_SPOILERS == 1 then
-                play_sound(SPOILERS)
-                DELAY = TIME + 1.376
-                STEP = 1
+    if not DECEL_CALLOUTS then
+        if STEP == 0 then
+            if TIME >= DELAY then
+                if INBD_SPOILERS == 1 then
+                    play_sound(SPOILERS)
+                    DELAY = TIME + 1.376
+                    STEP = 1
+                else
+                    return
+                end
             else
                 return
             end
-        else
-            return
         end
-    end
-    if STEP == 1 then
-        if TIME >= DELAY then
-            if ENG_1_REV == 2 and ENG_2_REV == 2 then
-                play_sound(REVERSE_GREEN)
-                DELAY = TIME + 1.053
-                STEP = 2
-                CHECK_SPEED = math.floor(IND_AIRSPEED) - 10
+        if STEP == 1 then
+            if TIME >= DELAY then
+                if ENG_1_REV == 2 and ENG_2_REV == 2 then
+                    play_sound(REVERSE_GREEN)
+                    DELAY = TIME + 1.053
+                    STEP = 3
+                    CHECK_SPEED = math.floor(IND_AIRSPEED) - 10
+                else
+                    return
+                end
             else
                 return
             end
-        else
-            return
         end
-    end
-    if STEP == 2 then
-        if TIME >= DELAY then
-            if math.floor(IND_AIRSPEED) < CHECK_SPEED then
-                play_sound(DECEL)
-                DELAY = TIME + 1.034
-                STEP = 3
+        if STEP == 2 then
+            if TIME >= DELAY then
+                if math.floor(IND_AIRSPEED) < CHECK_SPEED then
+                    play_sound(DECEL)
+                    DELAY = TIME + 1.034
+                    STEP = 3
+                else
+                    return
+                end
             else
                 return
             end
-        else
-            return
         end
-    end
-    if STEP == 3 then
-        if TIME >= DELAY then
-            if math.floor(IND_AIRSPEED) < 78 then
-                play_sound(N80_KNOTS)
-                DELAY = TIME + 1.4
-                STEP = 0
+        if STEP == 3 then
+            if TIME >= DELAY then
+                if math.floor(IND_AIRSPEED) < 60 then
+                    play_sound(N80_KNOTS)
+                    DELAY = TIME + 1.4
+                    STEP = 0
+                    DECEL_CALLOUTS = true
+                end
             end
         end
     end
@@ -2388,8 +2396,8 @@ function after_landing_proc()
             if not speak_only_essencials then
                 play_sound(OFF)
             end
+            RADAR_SYS_SW = 1
             DELAY = TIME + 0.920
-            RADAR_SYS_SW = 0
             STEP = 4
         else
             return
@@ -2472,7 +2480,7 @@ function after_landing_proc()
                 if not speak_only_essencials then
                     play_sound(FLAP_POS[FL_VOICE_SRCH])
                 end
-                DELAY = 1.629
+                DELAY = TIME + 1.629
                 STEP = 10
             end
         else
@@ -2491,19 +2499,19 @@ function after_landing_proc()
             return
         end
     end
-    if STEP == 12 then
+    if STEP == 11 then
         if TIME >= DELAY then
            if not speak_only_essencials then
                 play_sound(STARTING_APU)
            end
            command_once(APU_START_PB)
            DELAY = TIME + 1.750
-           STEP = 13
+           STEP = 12
         else
             return
         end
     end
-    if STEP == 13 then
+    if STEP == 12 then
         if TIME >= DELAY then
            local rindex = math.random(5)
            play_sound(READY[rindex])
@@ -2576,9 +2584,20 @@ function vacating_rwy()
             if not speak_only_essencials then
                 play_sound(SET)
             end
-            TAXI_LIGHT = 1
+            TAXILT_SW = 1
             DELAY = TIME + 0.871
             STEP = 5
+        else
+            return
+        end
+    end
+    if STEP == 5 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(TCAS)
+            end
+            DELAY = TIME + 1.218
+            STEP = 6
         else
             return
         end
@@ -2586,22 +2605,12 @@ function vacating_rwy()
     if STEP == 6 then
         if TIME >= DELAY then
             if not speak_only_essencials then
-                play_sound(TCAS)
-            end
-            DELAY = TIME + 1.218
-            STEP = 7
-        else
-            return
-        end
-    end
-    if STEP == 8 then
-        if TIME >= DELAY then
-            if not speak_only_essencials then
                 play_sound(SET)
             end
             TCAS_SW = 2
             DELAY = TIME + 0.871
             STEP = 0
+            EXECUTE_EXRWY = false
             EXIT_RWY_DONE = false
         else
             return
@@ -2630,23 +2639,44 @@ function parking_proc()
             return
         end
     end
-    if STEP == 3 then
+    if STEP == 2 then
         if TIME >= DELAY then
             if not speak_only_essencials then
                 play_sound(ON)
             end
+            command_once(APU_BLEED_PB)
             DELAY = TIME + 0.92
+            STEP = 3
+        else
+            return
+        end
+    end
+    if STEP == 3 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(FUEL_PUMPS)
+            end
+            DELAY = TIME + 0.5
             STEP = 4
+        else
+            return
+        end
+    end
+    if STEP == 4 then
+        if TIME >= DELAY then
+            command_once(FPUMP_LTANK_1_PB)
+            command_once(FPUMP_LTANK_2_PB)
+            DELAY = TIME + 0.7
+            STEP = 5
         else
             return
         end
     end
     if STEP == 5 then
         if TIME >= DELAY then
-            if not speak_only_essencials then
-                play_sound(FUEL_PUMPS)
-            end
-            DELAY = TIME + 0.5
+            command_once(FPUMP_CTANK_1_PB)
+            command_once(FPUMP_CTANK_2_PB)
+            DELAY = TIME + 0.7
             STEP = 6
         else
             return
@@ -2654,9 +2684,12 @@ function parking_proc()
     end
     if STEP == 6 then
         if TIME >= DELAY then
-            command_once(FPUMP_LTANK_1_PB)
-            command_once(FPUMP_LTANK_2_PB)
-            DELAY = TIME + 0.4
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            command_once(FPUMP_RTANK_1_PB)
+            command_once(FPUMP_RTANK_2_PB)
+            DELAY = TIME + 0.920
             STEP = 7
         else
             return
@@ -2664,9 +2697,10 @@ function parking_proc()
     end
     if STEP == 7 then
         if TIME >= DELAY then
-            command_once(FPUMP_CTANK_1_PB)
-            command_once(FPUMP_CTANK_2_PB)
-            DELAY = TIME + 0.4
+            if not speak_only_essencials then
+                play_sound(ATC)
+            end
+            DELAY = TIME + 1.039
             STEP = 8
         else
             return
@@ -2675,40 +2709,16 @@ function parking_proc()
     if STEP == 8 then
         if TIME >= DELAY then
             if not speak_only_essencials then
-                play_sound(OFF)
+                play_sound(SET)
             end
-            command_once(FPUMP_RTANK_1_PB)
-            command_once(FPUMP_RTANK_2_PB)
-            DELAY = TIME + 0.920
+            TCAS_SW = 0
+            DELAY = TIME + 0.871
             STEP = 9
         else
             return
         end
     end
     if STEP == 9 then
-        if TIME >= DELAY then
-            if not speak_only_essencials then
-                play_sound(ATC)
-            end
-            DELAY = TIME + 1.039
-            STEP = 10
-        else
-            return
-        end
-    end
-    if STEP == 10 then
-        if TIME >= DELAY then
-            if not speak_only_essencials then
-                play_sound(SET)
-            end
-            TCAS_SW = 0
-            DELAY = TIME + 0.871
-            STEP = 11
-        else
-            return
-        end
-    end
-    if STEP == 11 then
         if TIME >= DELAY then
             local rindex = math.random(5)
             play_sound(READY[rindex])
@@ -2893,7 +2903,7 @@ function checklist_before_start()
     if STEP_CHECK == 14 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                play_sound(SET)
+                play_sound(CHECK)
                 DELAY_CHECK = TIME + 0.920
                 STEP_CHECK = 15
             else
@@ -3686,7 +3696,6 @@ function checklist_after_takeoff()
             STEP_CHECK = 0
             EX_ATO_CL = false
             ATO_CL = true
-            TO_PROC_DONE = false
         else
             return
         end
@@ -4012,7 +4021,7 @@ end
 function checklist_after_landing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
-            play_sound(AFTER_START_CHECKLIST)
+            play_sound(AFTER_LANDING_CHECKLIST)
             DELAY_CHECK = TIME + 1.795
             STEP_CHECK = 1
         else
@@ -4322,7 +4331,7 @@ function checklist_parking()
             return
         end
     end
-    if STEP_CHECK == 14 then
+    if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             play_sound(EFB)
             DELAY_CHECK = TIME + 1.042
@@ -4357,7 +4366,9 @@ function checklist_parking()
             AS_CL = false
             BTO_DTL = false
             BTO_CL = false
+            TO_PROC_DONE = false
             ATO_CL = false
+            DECEL_CALLOUTS = false
             CLB_CL = false
             APP_CL = false
             LND_CL = false
@@ -4671,11 +4682,10 @@ function phase_check()
     end
     if FLT_PHASE.FINAL_APP then
         TXT_PHASE = "Final APP"
-        if THR_STATE == 3 then
+        if THR_LEVER == 3 then
             FLT_PHASE.FINAL_APP = false
             FLT_PHASE.GA = true
             TEN_THAUSAND_FEET_CLB_DONE = false
-            TEN_THAUSAND_FEET_DES_DONE = false
             DES_BRIEFING = false
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
@@ -4764,7 +4774,7 @@ function FO_main_logic()
         touch_down()
     end
     if GNDAIR_SW == 0 then
-        if not command_FLPS_1DN or not command_FLPS_1UP then
+        if not command_FLPS_1DN or not command_FLPS_1UP and not FLT_PHASE.GA then
             gear_command()
         end
         if not command_GUP or not command_GDN then
@@ -4779,9 +4789,11 @@ function FO_main_logic()
     if FLT_PHASE.CLIMB then
         if fo_autoperform then
             if not TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000 then
+                TEN_THAUSAND_FEET_DES_DONE = false
                 ten_thausand_feet_CLB()
             end
         elseif EXECUTE_10FT_CLB then
+            TEN_THAUSAND_FEET_DES_DONE = false
             ten_thausand_feet_CLB()
         end
     end
@@ -4978,7 +4990,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.DESCEND then
+        if FLT_PHASE.DESCEND or FLT_PHASE.CLIMB then
             if TEN_THAUSAND_FEET_DES_DONE and not EX_APP_CL then
                 if imgui.SmallButton("Approach CKL") then
                     EX_APP_CL = true
@@ -4993,7 +5005,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not AL_CL and not EX_AL_CL then
+            if not AL_CL and not EX_AL_CL and AL_PROC then
                 if imgui.SmallButton("After Landing CKL") then
                     EX_AL_CL = true
                 end
@@ -5153,7 +5165,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND then
+        if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND or FLT_PHASE.APPROACH then
             imgui.TextUnformatted("Arrival Breafing")
             if imgui.RadioButton("ILS/MLS APP", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then
                 APP_TYPE.ILS_APP = true

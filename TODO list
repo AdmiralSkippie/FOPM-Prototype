@@ -1,7 +1,9 @@
 Arreglar bug que traba el FO QNH en 1013
 Desarrollar ONE ENGINE DEP/ARR
 Desarrollar RNP AR DEP/ARR
-Solucionar, desarrollar cunaodo es unicamnete neo sin no esta comprao la opcion neo
-Air Phases voices, more audible (Climb Checklist)
-Desarrollar la toma del ETAR en tierra como antes del descenso **
+Air Phases voices, more audible
+Desarrollar la toma del METAR en tierra como antes del descenso **
 Desarrollar alerta proximidad al TOD **
+Desarrollar otra manera de sacar F clean y S clean
+agregar el regreso al f-pln page
+poner mas volumen a los callouts

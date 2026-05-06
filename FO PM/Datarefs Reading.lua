@@ -38,12 +38,12 @@ ANTI_ICE_ENG1_PB = "toliss_airbus/antiicecommands/ENG1Toggle"
 ANTI_ICE_ENG2_PB = "toliss_airbus/antiicecommands/ENG2Toggle"
 ANTI_ICE_WING_PB = "toliss_airbus/antiicecommands/WingToggle"
 -- FUEL PUMPS --
-    FPUMP_RTANK_1_PB = "toliss_airbus/fuelcommands/PumpLWing1Toggle"
-    FPUMP_RTANK_2_PB = "toliss_airbus/fuelcommands/PumpLWing2Toggle"
+    FPUMP_RTANK_1_PB = "toliss_airbus/fuelcommands/PumpRWing1Toggle"
+    FPUMP_RTANK_2_PB = "toliss_airbus/fuelcommands/PumpRWing2Toggle"
     FPUMP_CTANK_1_PB = "toliss_airbus/fuelcommands/PumpRCenterToggle"
     FPUMP_CTANK_2_PB = "toliss_airbus/fuelcommands/PumpLCenterToggle"
-    FPUMP_LTANK_1_PB = "toliss_airbus/fuelcommands/PumpRWing1Toggle"
-    FPUMP_LTANK_2_PB = "toliss_airbus/fuelcommands/PumpRWing2Toggle"
+    FPUMP_LTANK_1_PB = "toliss_airbus/fuelcommands/PumpLWing1Toggle"
+    FPUMP_LTANK_2_PB = "toliss_airbus/fuelcommands/PumpLWing2Toggle"
 dataref("Y_ELEC_PUMP_PB", "AirbusFBW/HydOHPArray", "writable", 3) -- Y HYD PUMP PB --
 AUTOBRK_MAX_PB = "AirbusFBW/AbrkMax"
 TO_CONFIG_PB = "AirbusFBW/TOConfigPress"
@@ -205,7 +205,7 @@ dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")
 dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
 dataref("AP_DISCN_ALARM", "AirbusFBW/APWarning", "readonly") -- 1 ON --
-dataref("OAT", "sim/cockpit2/temperature/outside_air_temp_deg", "readonly")
+dataref("OAT", "sim/cockpit2/temperature/outside_air_temp_degc", "readonly")
 -- ENG TYPE INDICATION SELECTOR -- 
 ENG_THRRate = 0
 ENG_1_POWER = 0
@@ -225,25 +225,28 @@ end
 do_every_frame("CHECK_ENGINE_TYPE()")
 
 ---- FLAP LIMITS ----
+FLAPS_LIMIT = {
+    [1] = 0,
+    [2] = 0,
+    [3] = 0,
+    [4] = 0,
+    [5] = 0
+}
 GEAR_EXTENTION_LIMIT = 250
 GEAR_RETRACTION_LIMIT = 220
 function flaps_gear_limits()
     if ACF_ICAO == "A319" or ACF_ICAO == "A320" or ACF_ICAO == "A20N" then
-        FLAPS_LIMIT = {
-        [1] = 230,
-        [2] = 200,
-        [3] = 185,
-        [4] = 177,
-        [5] = 0
-        }
+        FLAPS_LIMIT[1] = 230
+        FLAPS_LIMIT[2] = 200
+        FLAPS_LIMIT[3] = 185
+        FLAPS_LIMIT[4] = 177
+        FLAPS_LIMIT[5] = 0
     elseif ACF_ICAO == "A321" or ACF_ICAO == "A21N" then
-        FLAPS_LIMIT = {
-        [1] = 238,
-        [2] = 215,
-        [3] = 195,
-        [4] = 186,
-        [5] = 0
-        }
+        FLAPS_LIMIT[1] = 238
+        FLAPS_LIMIT[2] = 215
+        FLAPS_LIMIT[3] = 195
+        FLAPS_LIMIT[4] = 186
+        FLAPS_LIMIT[5] = 0
     end
 end
 

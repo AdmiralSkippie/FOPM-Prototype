@@ -134,6 +134,8 @@ local EXECUTE_BTP = false
 local EXECUTE_10FT_CLB = false
 local EXECUTE_10FT_DES = false
 local ONEENG_TAXI_DEP = false
+local EXECUTE_OETD = false
+local START_ENG2 = false
 local EXECUTE_AL_PROC = false
 local EXECUTE_ENRWY = false
 local EXECUTE_EXRWY = false
@@ -163,6 +165,7 @@ local STEP_CLEAN = 0
 local STEP_SPEACH = 0
 local STEP_AP = 0
 local STEP_CHECK = 0
+local STEP_ONEDEP = 0
 local PT_TO_DIRECTION = 0
 local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
@@ -1025,13 +1028,13 @@ function after_start_proc()
                             flt_ctl_chk()
                         else
                             STEP = 8
-                            DELAY = TIME + 1
                         end
                     else
                         return
                     end
                 end
             else
+                EXECUTE_OETD = true
                 STEP = 8
             end
             if STEP == 8 then
@@ -2738,6 +2741,360 @@ function parking_proc()
             DELAY = TIME + 2
             STEP = 0
             COMPLETED_PROC.PARK_PROC = true
+        else
+            return
+        end
+    end
+end
+
+function one_engine_taxi_DEP()
+    if STEP_ONEDEP == 0 then
+        if TAXILT_SW ~= 0 then
+            play_sound(YELLOW_HYDRAULIC_PUMP)
+            DELAY = TIME + 1.450
+            STEP_ONEDEP = 1
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 1 then
+        if TIME >= DELAY then
+            play_sound(ON)
+            Y_ELEC_PUMP_PB = 1
+            DELAY = TIME + 0.920
+            STEP_ONEDEP = 2
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 2 then
+        if START_ENG2 then
+            if STEARING_DEGREES <= 2 and STEARING_DEGREES >= -2 then
+                DELAY = TIME + 1.2
+                STEP_ONEDEP = 3
+            end
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 3 then
+        if TIME >= DELAY then
+            play_sound(YELLOW_HYDRAULIC_PUMP)
+            DELAY = TIME + 1.45
+            STEP_ONEDEP = 4
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 4 then
+        if TIME >= DELAY then
+            play_sound(OFF)
+            Y_ELEC_PUMP_PB = 0
+            DELAY = TIME + 0.920
+            STEP_ONEDEP = 5
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 5 then
+        if TIME >= DELAY then
+            play_sound(APU_BLEED)
+            DELAY = TIME + 1.2
+            STEP_ONEDEP = 6
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 6 then
+        if TIME >= DELAY then
+            if APU_BLEED_STATE == 0 then
+                command_once(APU_BLEED_PB)
+            end
+            play_sound(ON)
+            DELAY = TIME + 0.920
+            STEP_ONEDEP = 7
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 7 then
+        if TIME >= DELAY then
+            play_sound(ENGINE_MODE_SELECTOR)
+            DELAY = TIME + 1.885
+            STEP_ONEDEP = 8
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 8 then
+        if TIME >= DELAY then
+            play_sound(IGNITION)
+            ENG_Mode = 2
+            DELAY = TIME + 10
+            STEP_ONEDEP = 9
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 9 then
+        if TIME >= DELAY then
+            play_sound(STARTING_NUMBER_2)
+            DELAY = TIME + 1.186
+            STEP_ONEDEP = 10
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 10 then
+        if TIME >= DELAY then
+            if ENG_2_AVAIL == 1 then
+                play_sound(ENGINE2)
+                DELAY = TIME + 0.865
+                STEP_ONEDEP = 11
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 11 then
+        if TIME >= DELAY then
+            play_sound(AVAIL)
+            DELAY = TIME + 1.154
+            STEP_ONEDEP = 12
+            START_ENG2 = false
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 12 then
+        if TIME >= DELAY then
+            play_sound(CHECK_TIME)
+            command_once(CRONO_SET_PB)
+            DELAY = TIME + 1.109
+            STEP_ONEDEP = 13
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 3 then
+        if TIME >= DELAY then
+            play_sound(ENGINE_MODE_SELECTOR)
+            DELAY = TIME + 1.885
+            STEP = 14
+        else
+            return
+        end
+    end
+    if STEP == 14 then
+        if TIME >= DELAY then
+            play_sound(NORMAL)
+            ENG_Mode = 15
+            DELAY = TIME + 1.129
+            STEP = 8
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 15 then
+        if TIME >= DELAY then
+            play_sound(APU_BLEED)
+            DELAY = TIME + 0.920
+            STEP_ONEDEP = 16
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 16 then
+        if TIME >= DELAY then
+            if not APU_TO_PACKS then
+                play_sound(OFF)
+                command_once(APU_BLEED_PB)
+                DELAY = TIME + 0.920
+                STEP_ONEDEP = 17
+            else
+                play_sound(ON)
+                DELAY = TIME + 0.92
+                STEP_ONEDEP = 19
+            end
+        end
+    end
+    if STEP_ONEDEP == 17 then
+        if TIME >= DELAY then
+            play_sound(APU_MASTER)
+            DELAY = TIME + 1.418
+            STEP_ONEDEP = 18
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 18 then
+        if TIME >= DELAY then
+            play_sound(OFF)
+            command_once(APU_MASTER_PB)
+            DELAY = TIME + 0.92
+            STEP_ONEDEP = 19
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 19 then
+        if TIME >= DELAY then
+            play_sound(CROSS_BLEED)
+            DELAY = TIME + 1.027
+            STEP_ONEDEP = 20
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 20 then
+        if TIME >= DELAY then
+            play_sound(AUTO)
+            XBLEED_SW = 1
+            DELAY = TIME + 0.92
+            STEP_ONEDEP = 21
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 21 then
+        if TIME >= DELAY then
+            play_sound(ECAM_STATUS)
+            DELAY = TIME + 1.522
+            STEP_ONEDEP = 22
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 22 then
+        if TIME >= DELAY then
+            play_sound(CHECK)
+            DELAY = TIME + 0.839
+            STEP_ONEDEP = 23
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 21 then
+        if TIME >= DELAY then
+            play_sound(ENGINE2)
+            DELAY = TIME + 0.865
+            STEP_ONEDEP = 21.1
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 21.1 then
+        if TIME >= DELAY then
+            play_sound(CKL20)
+            DELAY = TIME + 1.227
+            STEP_ONEDEP = 22
+        end
+    end
+    if STEP_ONEDEP == 22 then
+        if TIME >= DELAY then
+            if RAINING and OAT < 10 then
+                command_once(ANTI_ICE_ENG2_PB)
+            end
+            play_sound(SET)
+            DELAY = TIME + 0.871
+            STEP_ONEDEP = 23
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 23 then
+        if TIME >= DELAY then
+            EX_AS_CL = true
+            STEP_ONEDEP = 24
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 24 then
+        if AS_CL then
+            if TIME >= DELAY then
+                if not COMPLETED_PROC.FLTCTL_CHK then
+                    flt_ctl_chk()
+                else
+                    STEP_ONEDEP = 25
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 25 then
+        if TIME >= DELAY then
+            play_sound(AUTOBRAKES)
+            DELAY = TIME + 1.010
+            STEP_ONEDEP = 26
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 26 then
+        if TIME >= DELAY then
+            play_sound(MAX)
+            command_once(AUTOBRK_MAX_PB)
+            DELAY = TIME + 0.5
+            STEP_ONEDEP = 27
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 27 then
+        if TIME >= DELAY then
+            command_once(TO_CONFIG_PB)
+            DELAY = TIME + 0.471
+            STEP_ONEDEP = 28
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 28 then
+        if TIME >= DELAY then
+            local rindex = math.random(5)
+            play_sound(READY[rindex])
+            DELAY = TIME + 2
+            STEP_ONEDEP = 29
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 29 then
+        if TIME >= DELAY then
+            if CRONO >= 180 then
+                local rindex = math.random(3)
+                play_sound(READY_FOR_TO[rindex])
+                DELAY = TIME + 0.5
+                STEP_ONEDEP = 30
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 30 then
+        if TIME >= DELAY then
+            command_once(CRONO_SET_PB)
+            DELAY = TIME + 0.5
+            STEP_ONEDEP = 31
+        else
+            return
+        end
+    end
+    if STEP_ONEDEP == 31 then
+        if TIME >= DELAY then
+            command_once(CRONO_RESET_PB)
+            DELAY = TIME + 0.5
+            STEP_ONEDEP = 0
+            EXECUTE_OETD = false
+            ONEENG_TAXI_DEP = false
         else
             return
         end
@@ -4867,10 +5224,12 @@ function FO_main_logic()
     if FLT_PHASE.ENG_START then
         if not COMPLETED_PROC.AS_PROC_DONE then
             if ENG_Mode == 1 then
-
                 after_start_proc()
             end
         end
+    end
+    if EXECUTE_OETD then
+        one_engine_taxi_DEP()
     end
     if FLT_PHASE.TAXI_OUT then
         if EXECUTE_BTP then
@@ -5074,7 +5433,11 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FLT_PHASE.PUSHBACK then
-            if not AS_CL and not EX_AS_CL and COMPLETED_PROC.AS_PROC_DONE then
+            if not AS_CL and
+               not EX_AS_CL and 
+               COMPLETED_PROC.AS_PROC_DONE and
+               not ONEENG_TAXI_DEP
+               then
                 if imgui.SmallButton("After Start CKL") then
                     EX_AS_CL = true
                 end
@@ -5271,6 +5634,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             local dep_change, change = imgui.Checkbox("AR Departure", APP_TYPE.AR_DEP)
             if dep_change then
                 APP_TYPE.AR_DEP = change
+            end
+            local dep_change, change = imgui.Checkbox("ONE Engine DEP", ONEENG_TAXI_DEP)
+            if dep_change then
+                ONEENG_TAXI_DEP = change
             end
             if not COMPLETED_PROC.TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then

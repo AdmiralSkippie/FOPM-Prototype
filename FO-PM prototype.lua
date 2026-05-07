@@ -74,7 +74,8 @@ local COMPLETED_PROC = {
     FLTCTL_CHK = false,
     ENT_RWY_DONE = false,
     EXIT_RWY_DONE = false,
-    BRKTEMP_CHK_DONE = false
+    BRKTEMP_CHK_DONE = false,
+    OETA_DONE = false
 }
 
 ------------------------------
@@ -139,6 +140,8 @@ local START_ENG2 = false
 local EXECUTE_AL_PROC = false
 local EXECUTE_ENRWY = false
 local EXECUTE_EXRWY = false
+local ONEENG_TAXI_ARR_AVAIL = false
+local EXECUTE_OETA = false
 
 ------------------
 ---- COMMANDS ----
@@ -165,7 +168,7 @@ local STEP_CLEAN = 0
 local STEP_SPEACH = 0
 local STEP_AP = 0
 local STEP_CHECK = 0
-local STEP_ONEDEP = 0
+local STEP_ONEENG = 0
 local PT_TO_DIRECTION = 0
 local PT_TO_ANGLE = 0
 local PT_TO_CONFIG = 0
@@ -2748,109 +2751,109 @@ function parking_proc()
 end
 
 function one_engine_taxi_DEP()
-    if STEP_ONEDEP == 0 then
+    if STEP_ONEENG == 0 then
         if TAXILT_SW ~= 0 then
             play_sound(YELLOW_HYDRAULIC_PUMP)
             DELAY = TIME + 1.450
-            STEP_ONEDEP = 1
+            STEP_ONEENG = 1
         else
             return
         end
     end
-    if STEP_ONEDEP == 1 then
+    if STEP_ONEENG == 1 then
         if TIME >= DELAY then
             play_sound(ON)
             Y_ELEC_PUMP_PB = 1
             DELAY = TIME + 0.920
-            STEP_ONEDEP = 2
+            STEP_ONEENG = 2
         else
             return
         end
     end
-    if STEP_ONEDEP == 2 then
+    if STEP_ONEENG == 2 then
         if START_ENG2 then
             if STEARING_DEGREES <= 2 and STEARING_DEGREES >= -2 then
                 DELAY = TIME + 1.2
-                STEP_ONEDEP = 3
+                STEP_ONEENG = 3
             end
         else
             return
         end
     end
-    if STEP_ONEDEP == 3 then
+    if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             play_sound(YELLOW_HYDRAULIC_PUMP)
             DELAY = TIME + 1.45
-            STEP_ONEDEP = 4
+            STEP_ONEENG = 4
         else
             return
         end
     end
-    if STEP_ONEDEP == 4 then
+    if STEP_ONEENG == 4 then
         if TIME >= DELAY then
             play_sound(OFF)
             Y_ELEC_PUMP_PB = 0
             DELAY = TIME + 0.920
-            STEP_ONEDEP = 5
+            STEP_ONEENG = 5
         else
             return
         end
     end
-    if STEP_ONEDEP == 5 then
+    if STEP_ONEENG == 5 then
         if TIME >= DELAY then
             play_sound(APU_BLEED)
             DELAY = TIME + 1.2
-            STEP_ONEDEP = 6
+            STEP_ONEENG = 6
         else
             return
         end
     end
-    if STEP_ONEDEP == 6 then
+    if STEP_ONEENG == 6 then
         if TIME >= DELAY then
             if APU_BLEED_STATE == 0 then
                 command_once(APU_BLEED_PB)
             end
             play_sound(ON)
             DELAY = TIME + 0.920
-            STEP_ONEDEP = 7
+            STEP_ONEENG = 7
         else
             return
         end
     end
-    if STEP_ONEDEP == 7 then
+    if STEP_ONEENG == 7 then
         if TIME >= DELAY then
             play_sound(ENGINE_MODE_SELECTOR)
             DELAY = TIME + 1.885
-            STEP_ONEDEP = 8
+            STEP_ONEENG = 8
         else
             return
         end
     end
-    if STEP_ONEDEP == 8 then
+    if STEP_ONEENG == 8 then
         if TIME >= DELAY then
             play_sound(IGNITION)
             ENG_Mode = 2
             DELAY = TIME + 10
-            STEP_ONEDEP = 9
+            STEP_ONEENG = 9
         else
             return
         end
     end
-    if STEP_ONEDEP == 9 then
+    if STEP_ONEENG == 9 then
         if TIME >= DELAY then
             play_sound(STARTING_NUMBER_2)
             DELAY = TIME + 1.186
-            STEP_ONEDEP = 10
+            STEP_ONEENG = 10
         else
             return
         end
     end
-    if STEP_ONEDEP == 10 then
+    if STEP_ONEENG == 10 then
         if TIME >= DELAY then
             if ENG_2_AVAIL == 1 then
                 play_sound(ENGINE2)
                 DELAY = TIME + 0.865
-                STEP_ONEDEP = 11
+                STEP_ONEENG = 11
             else
                 return
             end
@@ -2858,27 +2861,27 @@ function one_engine_taxi_DEP()
             return
         end
     end
-    if STEP_ONEDEP == 11 then
+    if STEP_ONEENG == 11 then
         if TIME >= DELAY then
             play_sound(AVAIL)
             DELAY = TIME + 1.154
-            STEP_ONEDEP = 12
+            STEP_ONEENG = 12
             START_ENG2 = false
         else
             return
         end
     end
-    if STEP_ONEDEP == 12 then
+    if STEP_ONEENG == 12 then
         if TIME >= DELAY then
             play_sound(CHECK_TIME)
             command_once(CRONO_SET_PB)
             DELAY = TIME + 1.109
-            STEP_ONEDEP = 13
+            STEP_ONEENG = 13
         else
             return
         end
     end
-    if STEP_ONEDEP == 3 then
+    if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             play_sound(ENGINE_MODE_SELECTOR)
             DELAY = TIME + 1.885
@@ -2897,128 +2900,128 @@ function one_engine_taxi_DEP()
             return
         end
     end
-    if STEP_ONEDEP == 15 then
+    if STEP_ONEENG == 15 then
         if TIME >= DELAY then
             play_sound(APU_BLEED)
             DELAY = TIME + 0.920
-            STEP_ONEDEP = 16
+            STEP_ONEENG = 16
         else
             return
         end
     end
-    if STEP_ONEDEP == 16 then
+    if STEP_ONEENG == 16 then
         if TIME >= DELAY then
             if not APU_TO_PACKS then
                 play_sound(OFF)
                 command_once(APU_BLEED_PB)
                 DELAY = TIME + 0.920
-                STEP_ONEDEP = 17
+                STEP_ONEENG = 17
             else
                 play_sound(ON)
                 DELAY = TIME + 0.92
-                STEP_ONEDEP = 19
+                STEP_ONEENG = 19
             end
         end
     end
-    if STEP_ONEDEP == 17 then
+    if STEP_ONEENG == 17 then
         if TIME >= DELAY then
             play_sound(APU_MASTER)
             DELAY = TIME + 1.418
-            STEP_ONEDEP = 18
+            STEP_ONEENG = 18
         else
             return
         end
     end
-    if STEP_ONEDEP == 18 then
+    if STEP_ONEENG == 18 then
         if TIME >= DELAY then
             play_sound(OFF)
             command_once(APU_MASTER_PB)
             DELAY = TIME + 0.92
-            STEP_ONEDEP = 19
+            STEP_ONEENG = 19
         else
             return
         end
     end
-    if STEP_ONEDEP == 19 then
+    if STEP_ONEENG == 19 then
         if TIME >= DELAY then
             play_sound(CROSS_BLEED)
             DELAY = TIME + 1.027
-            STEP_ONEDEP = 20
+            STEP_ONEENG = 20
         else
             return
         end
     end
-    if STEP_ONEDEP == 20 then
+    if STEP_ONEENG == 20 then
         if TIME >= DELAY then
             play_sound(AUTO)
             XBLEED_SW = 1
             DELAY = TIME + 0.92
-            STEP_ONEDEP = 21
+            STEP_ONEENG = 21
         else
             return
         end
     end
-    if STEP_ONEDEP == 21 then
+    if STEP_ONEENG == 21 then
         if TIME >= DELAY then
             play_sound(ECAM_STATUS)
             DELAY = TIME + 1.522
-            STEP_ONEDEP = 22
+            STEP_ONEENG = 22
         else
             return
         end
     end
-    if STEP_ONEDEP == 22 then
+    if STEP_ONEENG == 22 then
         if TIME >= DELAY then
             play_sound(CHECK)
             DELAY = TIME + 0.839
-            STEP_ONEDEP = 23
+            STEP_ONEENG = 23
         else
             return
         end
     end
-    if STEP_ONEDEP == 21 then
+    if STEP_ONEENG == 21 then
         if TIME >= DELAY then
             play_sound(ENGINE2)
             DELAY = TIME + 0.865
-            STEP_ONEDEP = 21.1
+            STEP_ONEENG = 21.1
         else
             return
         end
     end
-    if STEP_ONEDEP == 21.1 then
+    if STEP_ONEENG == 21.1 then
         if TIME >= DELAY then
             play_sound(CKL20)
             DELAY = TIME + 1.227
-            STEP_ONEDEP = 22
+            STEP_ONEENG = 22
         end
     end
-    if STEP_ONEDEP == 22 then
+    if STEP_ONEENG == 22 then
         if TIME >= DELAY then
             if RAINING and OAT < 10 then
                 command_once(ANTI_ICE_ENG2_PB)
             end
             play_sound(SET)
             DELAY = TIME + 0.871
-            STEP_ONEDEP = 23
+            STEP_ONEENG = 23
         else
             return
         end
     end
-    if STEP_ONEDEP == 23 then
+    if STEP_ONEENG == 23 then
         if TIME >= DELAY then
             EX_AS_CL = true
-            STEP_ONEDEP = 24
+            STEP_ONEENG = 24
         else
             return
         end
     end
-    if STEP_ONEDEP == 24 then
+    if STEP_ONEENG == 24 then
         if AS_CL then
             if TIME >= DELAY then
                 if not COMPLETED_PROC.FLTCTL_CHK then
                     flt_ctl_chk()
                 else
-                    STEP_ONEDEP = 25
+                    STEP_ONEENG = 25
                 end
             else
                 return
@@ -3027,51 +3030,51 @@ function one_engine_taxi_DEP()
             return
         end
     end
-    if STEP_ONEDEP == 25 then
+    if STEP_ONEENG == 25 then
         if TIME >= DELAY then
             play_sound(AUTOBRAKES)
             DELAY = TIME + 1.010
-            STEP_ONEDEP = 26
+            STEP_ONEENG = 26
         else
             return
         end
     end
-    if STEP_ONEDEP == 26 then
+    if STEP_ONEENG == 26 then
         if TIME >= DELAY then
             play_sound(MAX)
             command_once(AUTOBRK_MAX_PB)
             DELAY = TIME + 0.5
-            STEP_ONEDEP = 27
+            STEP_ONEENG = 27
         else
             return
         end
     end
-    if STEP_ONEDEP == 27 then
+    if STEP_ONEENG == 27 then
         if TIME >= DELAY then
             command_once(TO_CONFIG_PB)
             DELAY = TIME + 0.471
-            STEP_ONEDEP = 28
+            STEP_ONEENG = 28
         else
             return
         end
     end
-    if STEP_ONEDEP == 28 then
+    if STEP_ONEENG == 28 then
         if TIME >= DELAY then
             local rindex = math.random(5)
             play_sound(READY[rindex])
             DELAY = TIME + 2
-            STEP_ONEDEP = 29
+            STEP_ONEENG = 29
         else
             return
         end
     end
-    if STEP_ONEDEP == 29 then
+    if STEP_ONEENG == 29 then
         if TIME >= DELAY then
             if CRONO >= 180 then
                 local rindex = math.random(3)
                 play_sound(READY_FOR_TO[rindex])
                 DELAY = TIME + 0.5
-                STEP_ONEDEP = 30
+                STEP_ONEENG = 30
             else
                 return
             end
@@ -3079,20 +3082,20 @@ function one_engine_taxi_DEP()
             return
         end
     end
-    if STEP_ONEDEP == 30 then
+    if STEP_ONEENG == 30 then
         if TIME >= DELAY then
             command_once(CRONO_SET_PB)
             DELAY = TIME + 0.5
-            STEP_ONEDEP = 31
+            STEP_ONEENG = 31
         else
             return
         end
     end
-    if STEP_ONEDEP == 31 then
+    if STEP_ONEENG == 31 then
         if TIME >= DELAY then
             command_once(CRONO_RESET_PB)
             DELAY = TIME + 0.5
-            STEP_ONEDEP = 0
+            STEP_ONEENG = 0
             EXECUTE_OETD = false
             ONEENG_TAXI_DEP = false
         else
@@ -3101,6 +3104,59 @@ function one_engine_taxi_DEP()
     end
 end
 
+function one_engine_taxi_ARR()
+    if STEP_ONEENG == 0 then
+        if TIME >= DELAY then
+            if APU_STATE == 1 then
+                DELAY = TIME + 0.7
+                STEP_ONEENG = 1
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_ONEENG == 1 then
+        if TIME >= DELAY then
+            play_sound(ENGINE_2_SHUTDOWN)
+            DELAY = TIME + 0.7
+            STEP_ONEENG = 2
+        else
+            return
+        end
+    end
+    if STEP_ONEENG == 2 then
+        if TIME >= DELAY then
+            ENG_2_Master = 0
+            DELAY = TIME + 0.652
+            STEP_ONEENG = 3
+        else
+            return
+        end
+    end
+    if STEP_ONEENG == 3 then
+        if TIME >= DELAY then
+            play_sound(YELLOW_HYDRAULIC_PUMP)
+            DELAY = TIME + 1.450
+            STEP_ONEENG = 4
+        else
+            return
+        end
+    end
+    if STEP_ONEENG == 4 then
+        if TIME >= DELAY then
+            play_sound(OFF)
+            Y_ELEC_PUMP_PB = 0
+            DELAY = TIME + 0.920
+            STEP_ONEENG = 0
+            ONEENG_TAXI_ARR_AVAIL = false
+            EXECUTE_OETA = false
+        else
+            return
+        end
+    end
+end
 -- //////////////////////////////
 -- ///////// CHECKLISTS /////////
 -- //////////////////////////////
@@ -5195,6 +5251,9 @@ function phase_check()
     end
     if FLT_PHASE.TAXI_IN then
         TXT_PHASE = "Taxi In"
+        if CRONO > 180 and not COMPLETED_PROC.OETA_DONE then
+            ONEENG_TAXI_ARR_AVAIL = true
+        end
         if PRKBRK_SW == 1 and ENG_1_Master == 0 and ENG_2_Master == 0 then
             FLT_PHASE.TAXI_IN = false
             FLT_PHASE.PARKING = true
@@ -5301,6 +5360,9 @@ function FO_main_logic()
         end
         if EXECUTE_ENRWY and not EXECUTE_AL_PROC then
             enter_rwy()
+        end
+        if EXECUTE_OETA then
+            one_engine_taxi_ARR()
         end
         if CRONO >= 300 and not COMPLETED_PROC.BRKTEMP_CHK_DONE then
             brake_temp_check()
@@ -5560,6 +5622,11 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
+                end
+            end
+            if ONEENG_TAXI_ARR_AVAIL and not EXECUTE_OETA then
+                if imgui.SmallButton("One Engine Taxi ARR") then
+                    EXECUTE_OETA = true
                 end
             end
         end

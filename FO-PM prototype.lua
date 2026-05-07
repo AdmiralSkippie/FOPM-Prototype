@@ -5730,9 +5730,21 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
+            if imgui.RadioButton("CAT II/III", APP_TYPE.CAT_II_III) then
+                APP_TYPE.ILS_APP = true
+                APP_TYPE.MLS_APP = true
+                APP_TYPE.CAT_II_III = true
+                APP_TYPE.RNAV_APP = false
+                APP_TYPE.RNAV_LNAV = false
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.VOR_APP = false
+                APP_TYPE.NDB_APP = false
+                APP_TYPE.LDA_APP = false
+            end
             if imgui.RadioButton("RNAV APP", APP_TYPE.RNAV_APP or APP_TYPE.RNAV_LNAV) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
+                APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = true
                 APP_TYPE.RNAV_LNAV = true
                 APP_TYPE.RNAVAR_APP = false
@@ -5744,6 +5756,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("RNP AR", APP_TYPE.RNAVAR_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
+                APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
                 APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = true
@@ -5754,6 +5767,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("VOR/NDB APP", APP_TYPE.VOR_APP or APP_TYPE.NDB_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
+                APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
                 APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false
@@ -5765,6 +5779,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("LDA APP", APP_TYPE.LDA_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
+                APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
                 APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false

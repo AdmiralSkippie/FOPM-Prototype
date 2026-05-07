@@ -157,6 +157,13 @@ GPS_NAV_MODE = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/GPSNAVMODE.w
 BOTH_NAV = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/BOTHNAV.wav")
 ON_ON = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ON_ON.wav")
 
+-- READY FOR T/O
+READY_FOR_TO = {
+    [1] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO1.wav"),
+    [2] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO2.wav"),
+    [3] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO3.wav")
+}
+
 -- CHEKCLIST ANSWERS --
 COMPLETED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/COMPLT.wav") -- 0.757
 REMOVED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/REMOVED.wav") -- 0.669

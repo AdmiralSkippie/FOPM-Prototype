@@ -82,30 +82,32 @@ local COMPLETED_PROC = {
 ---- CHECKLISTS VARIABLES ----
 ------------------------------
 
-local BS_DTL = false
-local EX_BS_DTL = false
-local BS_CL = false
-local EX_BS_CL = false
-local AS_CL = false
-local EX_AS_CL = false
-local BTO_DTL = false
-local EX_BTO_DTL = false
-local BTO_CL = false
-local EX_BTO_CL = false
-local ATO_CL = false
-local EX_ATO_CL = false
-local CLB_CL = false
-local EX_CLB_CL = false
-local APP_CL = false
-local EX_APP_CL = false
-local LND_CL = false
-local EX_LND_CL = false
-local AL_CL = false
-local EX_AL_CL = false
-local PARK_CL = false
-local EX_PARK_CL = false
-local SEC_CL = false
-local EX_SEC_CL = false
+local CHECKLIST = {
+    BS_DTL = false,
+    EX_BS_DTL = false,
+    BS_CL = false,
+    EX_BS_CL = false,
+    AS_CL = false,
+    EX_AS_CL = false,
+    BTO_DTL = false,
+    EX_BTO_DTL = false,
+    BTO_CL = false,
+    EX_BTO_CL = false,
+    ATO_CL = false,
+    EX_ATO_CL = false,
+    CLB_CL = false,
+    EX_CLB_CL = false,
+    APP_CL = false,
+    EX_APP_CL = false,
+    LND_CL = false,
+    EX_LND_CL = false,
+    AL_CL = false,
+    EX_AL_CL = false,
+    PARK_CL = false,
+    EX_PARK_CL = false,
+    SEC_CL = false,
+    EX_SEC_CL = false
+}
 
 -----------------------------
 ---- APPROACH PROCEDURES ----
@@ -2206,9 +2208,9 @@ function go_arround()
         if STEP == 0 then
             DELAY = TIME + 0.25
             STEP = 1
-            APP_CL = false
-            ATO_CL = false
-            LND_CL = false
+            CHECKLIST.APP_CL = false
+            CHECKLIST.ATO_CL = false
+            CHECKLIST.LND_CL = false
         end
         if STEP == 1 then
             if TIME >= DELAY then
@@ -3009,14 +3011,14 @@ function one_engine_taxi_DEP()
     end
     if STEP_ONEENG == 23 then
         if TIME >= DELAY then
-            EX_AS_CL = true
+            CHECKLIST.EX_AS_CL = true
             STEP_ONEENG = 24
         else
             return
         end
     end
     if STEP_ONEENG == 24 then
-        if AS_CL then
+        if CHECKLIST.AS_CL then
             if TIME >= DELAY then
                 if not COMPLETED_PROC.FLTCTL_CHK then
                     flt_ctl_chk()
@@ -3396,10 +3398,10 @@ function checklist_before_start()
             play_sound(DOWN_TO_THE_LINE)
             DELAY_CHECK = TIME + 1.5
             STEP_CHECK = 0
-            EX_BS_DTL = false
-            BS_DTL = true
-            PARK_CL = false
-            SEC_CL = false
+            CHECKLIST.EX_BS_DTL = false
+            CHECKLIST.BS_DTL = true
+            CHECKLIST.PARK_CL = false
+            CHECKLIST.SEC_CL = false
         else
             return
         end
@@ -3574,8 +3576,8 @@ function checklist_before_start_BTL()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_BS_CL = false
-            BS_CL = true
+            CHECKLIST.EX_BS_CL = false
+            CHECKLIST.BS_CL = true
         else
             return
         end
@@ -3694,8 +3696,8 @@ function checklist_after_start()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_AS_CL = false
-            AS_CL = true
+            CHECKLIST.EX_AS_CL = false
+            CHECKLIST.AS_CL = true
         else
             return
         end
@@ -3858,8 +3860,8 @@ function checklist_before_takeoff()
             play_sound(DOWN_TO_THE_LINE)
             DELAY_CHECK = TIME + 1.182
             STEP_CHECK = 0
-            EX_BTO_DTL = false
-            BTO_DTL = true
+            CHECKLIST.EX_BTO_DTL = false
+            CHECKLIST.BTO_DTL = true
         else
             return
         end
@@ -4048,8 +4050,8 @@ function checklist_before_takeoff_BTL()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_BTO_CL = false
-            BTO_CL = true
+            CHECKLIST.EX_BTO_CL = false
+            CHECKLIST.BTO_CL = true
         else
             return
         end
@@ -4147,8 +4149,8 @@ function checklist_after_takeoff()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_ATO_CL = false
-            ATO_CL = true
+            CHECKLIST.EX_ATO_CL = false
+            CHECKLIST.ATO_CL = true
         else
             return
         end
@@ -4194,8 +4196,8 @@ function checklist_climb()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_CLB_CL = false
-            CLB_CL = true
+            CHECKLIST.EX_CLB_CL = false
+            CHECKLIST.CLB_CL = true
         else
             return
         end
@@ -4420,8 +4422,8 @@ function checklist_approach()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_APP_CL = false
-            APP_CL = true
+            CHECKLIST.EX_APP_CL = false
+            CHECKLIST.APP_CL = true
         else
             return
         end
@@ -4539,8 +4541,8 @@ function checklist_landing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_LND_CL = false
-            LND_CL = true
+            CHECKLIST.EX_LND_CL = false
+            CHECKLIST.LND_CL = true
         else
             return
         end
@@ -4690,8 +4692,8 @@ function checklist_after_landing()
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
             COMPLETED_PROC.TO_PROC_DONE = false
-            EX_AL_CL = false
-            AL_CL = true
+            CHECKLIST.EX_AL_CL = false
+            CHECKLIST.AL_CL = true
         else
             return
         end
@@ -4890,19 +4892,19 @@ function checklist_parking()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_PARK_CL = false
-            PARK_CL = true
-            BS_DTL = false
-            BS_CL = false
-            AS_CL = false
-            BTO_DTL = false
-            BTO_CL = false
-            ATO_CL = false
+            CHECKLIST.EX_PARK_CL = false
+            CHECKLIST.PARK_CL = true
+            CHECKLIST.BS_DTL = false
+            CHECKLIST.BS_CL = false
+            CHECKLIST.AS_CL = false
+            CHECKLIST.BTO_DTL = false
+            CHECKLIST.BTO_CL = false
+            CHECKLIST.ATO_CL = false
             COMPLETED_PROC.DECEL_CALLOUTS = false
-            CLB_CL = false
-            APP_CL = false
-            LND_CL = false
-            AL_CL = false
+            CHECKLIST.CLB_CL = false
+            CHECKLIST.APP_CL = false
+            CHECKLIST.LND_CL = false
+            CHECKLIST.AL_CL = false
         else
             return
         end
@@ -5090,8 +5092,8 @@ function checklist_securing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY_CHECK = TIME + 1.602
             STEP_CHECK = 0
-            EX_SEC_CL = false
-            SEC_CL = true
+            CHECKLIST.EX_SEC_CL = false
+            CHECKLIST.SEC_CL = true
         else
             return
         end
@@ -5106,7 +5108,7 @@ end
 function phase_check()
     if FLT_PHASE.PREFLIGHT then
         TXT_PHASE = "Preflight"
-        if BS_CL then
+        if CHECKLIST.BS_CL then
             FLT_PHASE.PREFLIGHT = false
             FLT_PHASE.PUSHBACK = true
             COMPLETED_PROC.PARK_PROC = false
@@ -5157,7 +5159,7 @@ function phase_check()
             FLT_PHASE.REJECTED = true
             FLT_PHASE.TAKEOFF = false
         end
-        if THR_STATE == 1 and ATO_CL then
+        if THR_STATE == 1 and CHECKLIST.ATO_CL then
             TXT_PHASE = "Climb"
             FLT_PHASE.CLIMB = true
             APP_TYPE.AR_DEP = false
@@ -5194,7 +5196,7 @@ function phase_check()
             FLT_PHASE.CRUISE = false
             FLT_PHASE.DESCEND = true
         end
-        if APP_CL then
+        if CHECKLIST.APP_CL then
             FLT_PHASE.CLIMB = false
             FLT_PHASE.CRUISE = false
             FLT_PHASE.DESCEND = false
@@ -5204,7 +5206,7 @@ function phase_check()
     end
     if FLT_PHASE.APPROACH then
         TXT_PHASE = "Approach"
-        if LND_CL then
+        if CHECKLIST.LND_CL then
             FLT_PHASE.APPROACH = false
             FLT_PHASE.FINAL_APP = true
             COMPLETED_PROC.GA_PROC = false
@@ -5261,7 +5263,7 @@ function phase_check()
     end
     if FLT_PHASE.PARKING then
         TXT_PHASE = "Parking"
-        if PARK_CL then
+        if CHECKLIST.PARK_CL then
             FLT_PHASE.PARKING = false
             FLT_PHASE.PREFLIGHT = true
             COMPLETED_PROC.PF_DONE = false
@@ -5301,7 +5303,7 @@ function FO_main_logic()
             vacating_rwy()
         end
     end
-    if BTO_CL and not COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+    if CHECKLIST.BTO_CL and not COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
         take_off_proc()
     end
     if FLT_PHASE.REJECTED then
@@ -5382,40 +5384,40 @@ do_every_frame("FO_main_logic()")
 
 -- FO CHECKLIST LOGIC
 function FO_checklist()
-    if EX_BS_DTL then
+    if CHECKLIST.EX_BS_DTL then
         checklist_before_start()
     end
-    if EX_BS_CL then
+    if CHECKLIST.EX_BS_CL then
         checklist_before_start_BTL()
     end
-    if EX_AS_CL then
+    if CHECKLIST.EX_AS_CL then
         checklist_after_start()
     end
-    if EX_BTO_DTL then
+    if CHECKLIST.EX_BTO_DTL then
         checklist_before_takeoff()
     end
-    if EX_BTO_CL then
+    if CHECKLIST.EX_BTO_CL then
         checklist_before_takeoff_BTL()
     end
-    if EX_ATO_CL then
+    if CHECKLIST.EX_ATO_CL then
         checklist_after_takeoff()
     end
-    if EX_CLB_CL then
+    if CHECKLIST.EX_CLB_CL then
         checklist_climb()
     end
-    if EX_APP_CL then
+    if CHECKLIST.EX_APP_CL then
         checklist_approach()
     end
-    if EX_LND_CL then
+    if CHECKLIST.EX_LND_CL then
         checklist_landing()
     end
-    if EX_AL_CL then
+    if CHECKLIST.EX_AL_CL then
         checklist_after_landing()
     end
-    if EX_PARK_CL then
+    if CHECKLIST.EX_PARK_CL then
         checklist_parking()
     end
-    if EX_SEC_CL then
+    if CHECKLIST.EX_SEC_CL then
         checklist_securing()
     end
 end
@@ -5477,85 +5479,85 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         -- CHECKLIST
         if FLT_PHASE.PREFLIGHT then
-            if not BS_DTL and not EX_BS_DTL and not EX_SEC_CL and COMPLETED_PROC.PF_DONE then
+            if not CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_DTL and not CHECKLIST.EX_SEC_CL and COMPLETED_PROC.PF_DONE then
                 if imgui.SmallButton("Before Start CKL") then
-                    EX_BS_DTL = true
+                    CHECKLIST.EX_BS_DTL = true
                 end
             end
             imgui.SameLine()
-            if not SEC_CL and not EX_SEC_CL and not BS_DTL and not EX_BS_DTL then
+            if not CHECKLIST.SEC_CL and not CHECKLIST.EX_SEC_CL and not CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_DTL then
                 if imgui.SmallButton("Securing CKL") then
-                    EX_SEC_CL = true
+                    CHECKLIST.EX_SEC_CL = true
                 end
             end
-            if BS_DTL and not EX_BS_CL then
+            if CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_CL then
                 if imgui.SmallButton("Before Start CKL BTL") then
-                    EX_BS_CL = true
+                    CHECKLIST.EX_BS_CL = true
                 end
             end
         end
         if FLT_PHASE.PUSHBACK then
-            if not AS_CL and
-               not EX_AS_CL and 
+            if not CHECKLIST.AS_CL and
+               not CHECKLIST.EX_AS_CL and 
                COMPLETED_PROC.AS_PROC_DONE and
                not ONEENG_TAXI_DEP
                then
                 if imgui.SmallButton("After Start CKL") then
-                    EX_AS_CL = true
+                    CHECKLIST.EX_AS_CL = true
                 end
             end
         end
         if FLT_PHASE.TAXI_OUT then
-            if not BTO_DTL and not EX_BTO_DTL and COMPLETED_PROC.BTO_PROC_DONE then
+            if not CHECKLIST.BTO_DTL and not CHECKLIST.EX_BTO_DTL and COMPLETED_PROC.BTO_PROC_DONE then
                 if imgui.SmallButton("Before Takeoff CKL") then
-                    EX_BTO_DTL = true
+                    CHECKLIST.EX_BTO_DTL = true
                 end
             end
-            if BTO_DTL and not BTO_CL and COMPLETED_PROC.ENT_RWY_DONE and not EX_BTO_CL then
+            if CHECKLIST.BTO_DTL and not CHECKLIST.BTO_CL and COMPLETED_PROC.ENT_RWY_DONE and not CHECKLIST.EX_BTO_CL then
                 if imgui.SmallButton("Before Takeoff CKL BTL") then
-                    EX_BTO_CL = true
+                    CHECKLIST.EX_BTO_CL = true
                 end
             end
         end
         if FLT_PHASE.TAKEOFF then
-            if COMPLETED_PROC.TO_PROC_DONE and not EX_ATO_CL then
+            if COMPLETED_PROC.TO_PROC_DONE and not CHECKLIST.EX_ATO_CL then
                 if imgui.SmallButton("After Takeoff CKL") then
-                    EX_ATO_CL = true
+                    CHECKLIST.EX_ATO_CL = true
                 end
             end
         end
         if FLT_PHASE.CLIMB then
-            if not CLB_CL and not EX_CLB_CL then
+            if not CHECKLIST.CLB_CL and not CHECKLIST.EX_CLB_CL then
                 if imgui.SmallButton("Climb CKL") then
-                    EX_CLB_CL = true
+                    CHECKLIST.EX_CLB_CL = true
                 end
             end
         end
         if FLT_PHASE.DESCEND or FLT_PHASE.CLIMB then
-            if COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not EX_APP_CL then
+            if COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not CHECKLIST.EX_APP_CL then
                 if imgui.SmallButton("Approach CKL") then
-                    EX_APP_CL = true
+                    CHECKLIST.EX_APP_CL = true
                 end
             end
         end
         if FLT_PHASE.APPROACH then
-            if not LND_CL and not EX_LND_CL then
+            if not CHECKLIST.LND_CL and not CHECKLIST.EX_LND_CL then
                 if imgui.SmallButton("Landing CKL") then
-                    EX_LND_CL = true
+                    CHECKLIST.EX_LND_CL = true
                 end
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not AL_CL and not EX_AL_CL and COMPLETED_PROC.AL_PROC then
+            if not CHECKLIST.AL_CL and not CHECKLIST.EX_AL_CL and COMPLETED_PROC.AL_PROC then
                 if imgui.SmallButton("After Landing CKL") then
-                    EX_AL_CL = true
+                    CHECKLIST.EX_AL_CL = true
                 end
             end
         end
         if FLT_PHASE.PARKING then
-            if COMPLETED_PROC.PARK_PROC and not PARK_CL and not EX_PARK_CL then
+            if COMPLETED_PROC.PARK_PROC and not CHECKLIST.PARK_CL and not CHECKLIST.EX_PARK_CL then
                 if imgui.SmallButton("Parking CKL") then
-                    EX_PARK_CL = true
+                    CHECKLIST.EX_PARK_CL = true
                 end
             end
         end

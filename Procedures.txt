@@ -175,8 +175,8 @@ OPTION AVAIL BEFORE PUSHBACK
     *AUTOBRAKES              |   MAX
     *TO CONFIG P/B           |   PRESS
     *CHECK TIME
-        IF < 2min   |   RETURN
-        IF > 2min   |   READY FOR T/O
+        IF < 3min   |   RETURN
+        IF > 3min   |   READY FOR T/O
 
 //// ONE ENGINE TAXI ARRIVAL ////
     *CHECK APU AVAIL

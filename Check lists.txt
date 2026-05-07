@@ -7,6 +7,7 @@
     * EFB PREP                  |   COMPLETED
     * AIRCRAFT PBN CAPABILITY   |   CHECK
     +COCKPIT PREPARATION         |   COMPLETED   |   ****CHECK PF CKPT PREPARATION****
+    NAVAIDS DESELECTION         |  CHEKED       (AR ONLY)
     * GEAR PINS AND COVERS      |   REMOVED
     +SIGNS                       |   ON/AUTO
     +ADIRS                       |   NAV
@@ -57,8 +58,11 @@
 +BARO REF                        |   STD SET (Check standar)
 
 //// APPROACH ////
+NAVAIDS DESELECTION              |   CHEKED         (AR ONLY)
+GPS NAV MODE                     |   BOTH IN NAV    (AR ONLY)
 +BREAFING                        |   CONFIRM
 +ECAM STATUS                     |   CHECK
+SIGNS                            |   ON AND ON
 **BARO REF                      |   SET
 +MINIMUM                         |   SET
 +ENG MODE                        |   AS RQRD

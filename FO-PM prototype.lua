@@ -115,6 +115,7 @@ local APP_TYPE = {
     ---- Precision APPROACH ----
     ILS_APP = false,
     MLS_APP = false,
+    CAT_II_III = false,
     ---- Non Precision APPROACH ----
     RNAV_APP = false,
     RNAV_LNAV = false,
@@ -2820,8 +2821,35 @@ function checklist_before_start()
                 if COMPLETED_PROC.PF_DONE then
                     play_sound(COMPLETED)
                     DELAY_CHECK = TIME + 0.957
-                    STEP_CHECK = 7
+                    if APP_TYPE.AR_DEP then
+                        STEP_CHECK = 6.1
+                    else
+                        STEP_CHECK = 7
+                    end
                 end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6.1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(NAVAIDS_DESELECTION)
+            DELAY_CHECK = TIME + 1.7
+            STEP_CHECK = 6.2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 6.2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 7
             else
                 return
             end
@@ -3767,7 +3795,57 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             play_sound(APPROACH_CHECKLIST)
             DELAY_CHECK = TIME + 1.515
-            STEP_CHECK = 1
+            if APP_TYPE.RNAVAR_APP then
+                STEP_CHECK = 0.1
+            else
+                STEP_CHECK = 1
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 0.1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(NAVAIDS_DESELECTION)
+            DELAY_CHECK = TIME + 1.7
+            STEP_CHECK = 0.2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 0.2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(CHECK)
+                DELAY_CHECK = TIME + 0.839
+                STEP_CHECK = 0.3
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 0.3 then
+        if TIME >= DELAY_CHECK then
+            play_sound(GPS_NAV_MODE)
+            DELAY_CHECK = TIME + 1.7
+            STEP_CHECK = 0.4
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 0.4 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(BOTH_NAV)
+                DELAY_CHECK = TIME + 1.2
+                STEP_CHECK = 1
+            else
+                return
+            end
         else
             return
         end
@@ -3812,6 +3890,33 @@ function checklist_approach()
             if response_CHECK then
                 play_sound(CHECK)
                 DELAY_CHECK = TIME + 0.839
+                if APP_TYPE.CAT_II_III then
+                    STEP_CHECK = 4.1
+                else
+                    STEP_CHECK = 5
+                end
+            else
+                return
+            end
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4.1 then
+        if TIME >= DELAY_CHECK then
+            play_sound(SIGNS)
+            DELAY_CHECK = TIME + 0.872
+            STEP_CHECK = 4.2
+            response_CHECK = false
+        else
+            return
+        end
+    end
+    if STEP_CHECK == 4.2 then
+        if TIME >= DELAY_CHECK then
+            if response_CHECK then
+                play_sound(ON_ON)
+                DELAY_CHECK = TIME + 0.8
                 STEP_CHECK = 5
             else
                 return

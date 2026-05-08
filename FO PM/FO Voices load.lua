@@ -152,16 +152,16 @@ READY = {
 }
 
 -- SPECIAL PROCEDURES (AR-CAT II/III)
-NAVAIDS_DESELECTION = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/NAVAIDS.wav")
-GPS_NAV_MODE = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/GPSNAVMODE.wav")
-BOTH_NAV = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/BOTHNAV.wav")
-ON_ON = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ON_ON.wav")
+NAVAIDS_DESELECTION = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/NAVAIDS.wav") -- 1.236
+GPS_NAV_MODE = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/GPSNAVMODE.wav") -- 1.072
+BOTH_NAV = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/BOTHNAV.wav") -- 0.739
+ON_ON = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ON_ON.wav") -- 0.770
 
 -- READY FOR T/O
 READY_FOR_TO = {
-    [1] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO1.wav"),
-    [2] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO2.wav"),
-    [3] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO3.wav")
+    [1] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO1.wav"), -- 1.181
+    [2] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO2.wav"), -- 1.649
+    [3] = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RDYTO3.wav") -- 1.068
 }
 
 -- CHEKCLIST ANSWERS --
@@ -178,6 +178,7 @@ MANAGE_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/MNGSPD.wav")
 SELECTED_SPEED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/SELECSPD.wav") -- 1.277
 RETRACTED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/RETRACTED.wav") -- 0.643
 DISARMED = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/DISARMED.wav") -- 0.727
+AUTO = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/AUTO.wav") -- 0.480
 
 ---------------
 -- CHECKLIST --

@@ -2957,7 +2957,7 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             play_sound(AUTO)
             XBLEED_SW = 1
-            DELAY = TIME + 0.92
+            DELAY = TIME + 0.68
             STEP_ONEENG = 21
         else
             return
@@ -3075,7 +3075,7 @@ function one_engine_taxi_DEP()
             if CRONO >= 180 then
                 local rindex = math.random(3)
                 play_sound(READY_FOR_TO[rindex])
-                DELAY = TIME + 0.5
+                DELAY = TIME + 1.649
                 STEP_ONEENG = 30
             else
                 return
@@ -3252,7 +3252,7 @@ function checklist_before_start()
     if STEP_CHECK == 6.1 then
         if TIME >= DELAY_CHECK then
             play_sound(NAVAIDS_DESELECTION)
-            DELAY_CHECK = TIME + 1.7
+            DELAY_CHECK = TIME + 1.436
             STEP_CHECK = 6.2
             response_CHECK = false
         else
@@ -4222,7 +4222,7 @@ function checklist_approach()
     if STEP_CHECK == 0.1 then
         if TIME >= DELAY_CHECK then
             play_sound(NAVAIDS_DESELECTION)
-            DELAY_CHECK = TIME + 1.7
+            DELAY_CHECK = TIME + 1.436
             STEP_CHECK = 0.2
             response_CHECK = false
         else
@@ -4245,7 +4245,7 @@ function checklist_approach()
     if STEP_CHECK == 0.3 then
         if TIME >= DELAY_CHECK then
             play_sound(GPS_NAV_MODE)
-            DELAY_CHECK = TIME + 1.7
+            DELAY_CHECK = TIME + 1.272
             STEP_CHECK = 0.4
             response_CHECK = false
         else
@@ -4256,7 +4256,7 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 play_sound(BOTH_NAV)
-                DELAY_CHECK = TIME + 1.2
+                DELAY_CHECK = TIME + 0.939
                 STEP_CHECK = 1
             else
                 return
@@ -4331,7 +4331,7 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 play_sound(ON_ON)
-                DELAY_CHECK = TIME + 0.8
+                DELAY_CHECK = TIME + 0.97
                 STEP_CHECK = 5
             else
                 return

@@ -234,7 +234,7 @@ do_every_frame("flaps_voice_search()")
 -- ///////// PROCEDURES /////////
 -- //////////////////////////////
 
----- Flight Controls Check
+---- FLIGHT_CONTROLS_CHECK
 function flt_ctl_chk()
     if STEP_FLT == 0 then
         if TIME >= DELAY then
@@ -536,7 +536,7 @@ function pre_cockpit_pre()
                         play_sound(ON)
                     end
                     DELAY = TIME + 0.870
-                    STEP = 7
+                    STEP = 6.6
                 else
                     if TIME >= DELAY_CHECK then
                         play_sound(BATTERIES)
@@ -548,6 +548,13 @@ function pre_cockpit_pre()
                 return
             end
         end
+        if STEP == 6.6 then
+            if EXTPWR_State ~= 0 then
+                STEP = 7
+            else
+                STEP = 7.5
+            end
+        end
         if STEP == 7 then
             if TIME >= DELAY then
                 if not speak_only_essencials then
@@ -555,12 +562,12 @@ function pre_cockpit_pre()
                 end
                 DELAY = TIME + 1.486
                 DELAY_CHECK = 0
-                STEP = 7.5
+                STEP = 7.1
             else
                 return
             end
         end
-        if STEP == 7.5 then
+        if STEP == 7.1 then
             if TIME >= DELAY then
                 if EXTPWR_State == 1 then
                     if not speak_only_essencials then
@@ -572,7 +579,7 @@ function pre_cockpit_pre()
                     -- possible future change --
                     if TIME >= DELAY_CHECK then
                         play_sound(EXTERNAL_POWER)
-                        DELAY_CHECK = TIME + 10
+                        DELAY_CHECK = TIME + 15
                     end
                     return
                 end
@@ -580,7 +587,40 @@ function pre_cockpit_pre()
                 return
             end
         end
-                if STEP == 8 then
+        if STEP == 7.5 then
+            if TIME >= DELAY then
+                if not speak_only_essencials then
+                    play_sound(APU)
+                end
+                STEP = 7.6
+                DELAY = TIME + 1.187
+            else
+                return
+            end
+        end
+        if  STEP == 7.6 then
+            if TIME >= DELAY then
+                if APU_STATE == 1 then
+                    if not speak_only_essencials then
+                        play_sound(AVAIL)
+                    end
+                    DELAY = TIME + 1.154
+                    STEP = 8
+                else
+                    if TIME >= DELAY_CHECK then
+                        play_sound(APU)
+                        DELAY_CHECK = TIME + 15
+                        DELAY = TIME + 0.987
+                        return
+                    else
+                        return
+                    end
+                end
+            else
+                return
+            end
+        end
+        if STEP == 8 then
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     play_sound(ECAM_RCLL)
@@ -799,7 +839,7 @@ function pre_cockpit_pre()
         end
         if STEP == 13.5 then
             if TIME >= DELAY then
-                if BRK_ACCU_Press >= 0.93 then
+                if BRK_ACCU_Press >= 0.9 then
                     if not speak_only_essencials then
                         play_sound(CHECK)
                     end

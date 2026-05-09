@@ -156,6 +156,7 @@ NAVAIDS_DESELECTION = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/NAVAI
 GPS_NAV_MODE = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/GPSNAVMODE.wav") -- 1.072
 BOTH_NAV = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/BOTHNAV.wav") -- 0.739
 ON_ON = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/ON_ON.wav") -- 0.770
+CRONO3 = load_WAV_file(SCRIPT_DIRECTORY .. "FO PM/Voices/Male/3MINUTES.wav")
 
 -- READY FOR T/O
 READY_FOR_TO = {

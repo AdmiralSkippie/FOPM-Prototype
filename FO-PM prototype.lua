@@ -34,8 +34,8 @@ logMsg("XXXXX   Voices Loaded")
 ----------------
 
 local FLT_PHASE = {
-    PREFLIGHT = true,
-    PUSHBACK = false,
+    PREFLIGHT = false,
+    PUSHBACK = true,
     ENG_START = false,
     TAXI_OUT = false,
     ON_RWY = false,
@@ -184,6 +184,7 @@ local CHECK_SPEED = 0
 local F_TARGET = 0
 local F_ATARGET = 0
 local TXT_PHASE = nil
+local MINUTE3 = false
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -987,8 +988,8 @@ function after_start_proc()
                     return
                 end
             end
-            if not ONEENG_TAXI_DEP then
-                if STEP == 5 then
+            if STEP == 5 then
+                if not ONEENG_TAXI_DEP then
                     if TIME >= DELAY then
                         if not speak_only_essencials then
                             play_sound(ECAM_STATUS)
@@ -998,20 +999,20 @@ function after_start_proc()
                     else
                         return
                     end
+                else
+                    STEP = 6
                 end
-                if STEP == 5.5 then
-                    if TIME >= DELAY then
-                        if not speak_only_essencials then
-                            play_sound(CHECK)
-                        end
-                        DELAY = TIME + 0.839
-                        STEP = 6
-                    else
-                        return
+            end
+            if STEP == 5.5 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        play_sound(CHECK)
                     end
+                    DELAY = TIME + 0.839
+                    STEP = 6
+                else
+                    return
                 end
-            else
-                STEP = 6
             end
             if STEP == 6 then
                 if TIME >= DELAY then
@@ -1026,8 +1027,8 @@ function after_start_proc()
                     return
                 end
             end
-            if not ONEENG_TAXI_DEP then
-                if STEP == 7 then
+            if STEP == 7 then
+                if not ONEENG_TAXI_DEP then
                     if TIME >= DELAY then
                         if not COMPLETED_PROC.FLTCTL_CHK then
                             flt_ctl_chk()
@@ -1037,10 +1038,10 @@ function after_start_proc()
                     else
                         return
                     end
+                else
+                    EXECUTE_OETD = true
+                    STEP = 8
                 end
-            else
-                EXECUTE_OETD = true
-                STEP = 8
             end
             if STEP == 8 then
                 if TIME >= DELAY then
@@ -2844,6 +2845,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 9 then
         if TIME >= DELAY then
             play_sound(STARTING_NUMBER_2)
+            ENG_2_Master = 1
             DELAY = TIME + 1.186
             STEP_ONEENG = 10
         else
@@ -2883,21 +2885,21 @@ function one_engine_taxi_DEP()
             return
         end
     end
-    if STEP_ONEENG == 3 then
+    if STEP_ONEENG == 13 then
         if TIME >= DELAY then
             play_sound(ENGINE_MODE_SELECTOR)
             DELAY = TIME + 1.885
-            STEP = 14
+            STEP_ONEENG = 14
         else
             return
         end
     end
-    if STEP == 14 then
+    if STEP_ONEENG == 14 then
         if TIME >= DELAY then
             play_sound(NORMAL)
-            ENG_Mode = 15
+            ENG_Mode = 1
             DELAY = TIME + 1.129
-            STEP = 8
+            STEP_ONEENG = 15
         else
             return
         end
@@ -3154,6 +3156,7 @@ function one_engine_taxi_ARR()
             STEP_ONEENG = 0
             ONEENG_TAXI_ARR_AVAIL = false
             EXECUTE_OETA = false
+            MINUTE3 = false
         else
             return
         end
@@ -3396,7 +3399,7 @@ function checklist_before_start()
     if STEP_CHECK == 17 then
         if TIME >= DELAY_CHECK then
             play_sound(DOWN_TO_THE_LINE)
-            DELAY_CHECK = TIME + 1.5
+            DELAY = TIME + 1.5
             STEP_CHECK = 0
             CHECKLIST.EX_BS_DTL = false
             CHECKLIST.BS_DTL = true
@@ -3574,7 +3577,7 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_BS_CL = false
             CHECKLIST.BS_CL = true
@@ -3694,7 +3697,7 @@ function checklist_after_start()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_AS_CL = false
             CHECKLIST.AS_CL = true
@@ -3858,7 +3861,7 @@ function checklist_before_takeoff()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             play_sound(DOWN_TO_THE_LINE)
-            DELAY_CHECK = TIME + 1.182
+            DELAY = TIME + 1.182
             STEP_CHECK = 0
             CHECKLIST.EX_BTO_DTL = false
             CHECKLIST.BTO_DTL = true
@@ -4048,7 +4051,7 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_BTO_CL = false
             CHECKLIST.BTO_CL = true
@@ -4147,7 +4150,7 @@ function checklist_after_takeoff()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_ATO_CL = false
             CHECKLIST.ATO_CL = true
@@ -4194,7 +4197,7 @@ function checklist_climb()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_CLB_CL = false
             CHECKLIST.CLB_CL = true
@@ -4420,7 +4423,7 @@ function checklist_approach()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_APP_CL = false
             CHECKLIST.APP_CL = true
@@ -4539,7 +4542,7 @@ function checklist_landing()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_LND_CL = false
             CHECKLIST.LND_CL = true
@@ -4689,7 +4692,7 @@ function checklist_after_landing()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             COMPLETED_PROC.TO_PROC_DONE = false
             CHECKLIST.EX_AL_CL = false
@@ -4890,7 +4893,7 @@ function checklist_parking()
     if STEP_CHECK == 16 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_PARK_CL = false
             CHECKLIST.PARK_CL = true
@@ -4905,6 +4908,7 @@ function checklist_parking()
             CHECKLIST.APP_CL = false
             CHECKLIST.LND_CL = false
             CHECKLIST.AL_CL = false
+            MINUTE3 = false
         else
             return
         end
@@ -5090,7 +5094,7 @@ function checklist_securing()
     if STEP_CHECK == 15 then
         if TIME >= DELAY_CHECK then
             play_sound(CHECKLIST_COMPLETED)
-            DELAY_CHECK = TIME + 1.602
+            DELAY = TIME + 1.602
             STEP_CHECK = 0
             CHECKLIST.EX_SEC_CL = false
             CHECKLIST.SEC_CL = true
@@ -5253,8 +5257,10 @@ function phase_check()
     end
     if FLT_PHASE.TAXI_IN then
         TXT_PHASE = "Taxi In"
-        if CRONO > 180 and not COMPLETED_PROC.OETA_DONE then
+        if CRONO > 180 and not COMPLETED_PROC.OETA_DONE and not MINUTE3 then
+            play_sound(CRONO3)
             ONEENG_TAXI_ARR_AVAIL = true
+            MINUTE3 = true
         end
         if PRKBRK_SW == 1 and ENG_1_Master == 0 and ENG_2_Master == 0 then
             FLT_PHASE.TAXI_IN = false
@@ -5289,7 +5295,7 @@ function FO_main_logic()
             end
         end
     end
-    if EXECUTE_OETD then
+    if EXECUTE_OETD and not CHECKLIST.EX_BTO_DTL and not EXECUTE_BTP then
         one_engine_taxi_DEP()
     end
     if FLT_PHASE.TAXI_OUT then
@@ -5587,6 +5593,11 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
+                end
+            end
+            if not START_ENG2 and ONEENG_TAXI_DEP and ENG_2_AVAIL ~= 1 then
+                if imgui.SmallButton("Start ENG 2") then
+                    START_ENG2 = true
                 end
             end
         end

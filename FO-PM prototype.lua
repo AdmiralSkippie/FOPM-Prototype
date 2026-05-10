@@ -3190,7 +3190,7 @@ function one_engine_taxi_ARR()
     end
     if STEP_ONEENG == 4 then
         if TIME >= DELAY then
-            play_sound(OFF)
+            play_sound(ON)
             Y_ELEC_PUMP_PB = 0
             DELAY = TIME + 0.920
             STEP_ONEENG = 0

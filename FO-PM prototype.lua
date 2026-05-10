@@ -2797,7 +2797,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 0 then
         if TAXILT_SW ~= 0 then
             play_sound(YELLOW_HYDRAULIC_PUMP)
-            DELAY = TIME + 1.450
+            DELAY = TIME + 1.250
             STEP_ONEENG = 1
         else
             return
@@ -2826,7 +2826,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             play_sound(YELLOW_HYDRAULIC_PUMP)
-            DELAY = TIME + 1.45
+            DELAY = TIME + 1.25
             STEP_ONEENG = 4
         else
             return
@@ -2845,7 +2845,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 5 then
         if TIME >= DELAY then
             play_sound(APU_BLEED)
-            DELAY = TIME + 1.2
+            DELAY = TIME + 1.003
             STEP_ONEENG = 6
         else
             return
@@ -2866,7 +2866,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 7 then
         if TIME >= DELAY then
             play_sound(ENGINE_MODE_SELECTOR)
-            DELAY = TIME + 1.885
+            DELAY = TIME + 1.685
             STEP_ONEENG = 8
         else
             return
@@ -2928,7 +2928,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 13 then
         if TIME >= DELAY then
             play_sound(ENGINE_MODE_SELECTOR)
-            DELAY = TIME + 1.885
+            DELAY = TIME + 1.685
             STEP_ONEENG = 14
         else
             return
@@ -2947,7 +2947,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 15 then
         if TIME >= DELAY then
             play_sound(APU_BLEED)
-            DELAY = TIME + 0.920
+            DELAY = TIME + 1.003
             STEP_ONEENG = 16
         else
             return
@@ -2970,7 +2970,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 17 then
         if TIME >= DELAY then
             play_sound(APU_MASTER)
-            DELAY = TIME + 1.418
+            DELAY = TIME + 1.218
             STEP_ONEENG = 18
         else
             return
@@ -2989,7 +2989,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 19 then
         if TIME >= DELAY then
             play_sound(CROSS_BLEED)
-            DELAY = TIME + 1.027
+            DELAY = TIME + 0.827
             STEP_ONEENG = 20
         else
             return
@@ -3008,7 +3008,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 21 then
         if TIME >= DELAY then
             play_sound(ECAM_STATUS)
-            DELAY = TIME + 1.522
+            DELAY = TIME + 1.322
             STEP_ONEENG = 22
         else
             return
@@ -3034,7 +3034,7 @@ function one_engine_taxi_DEP()
     end
     if STEP_ONEENG == 21.1 then
         if TIME >= DELAY then
-            play_sound(CKL20)
+            play_sound(ANTI_ICE)
             DELAY = TIME + 1.227
             STEP_ONEENG = 22
         end

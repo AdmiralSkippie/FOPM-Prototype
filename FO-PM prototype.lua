@@ -34,8 +34,8 @@ logMsg("XXXXX   Voices Loaded")
 ----------------
 
 local FLT_PHASE = {
-    PREFLIGHT = false,
-    PUSHBACK = true,
+    PREFLIGHT = true,
+    PUSHBACK = false,
     ENG_START = false,
     TAXI_OUT = false,
     ON_RWY = false,
@@ -993,9 +993,9 @@ function after_start_proc()
                 if TIME >= DELAY then
                     PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
                     PT_TO_ANGLE = string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)")
-                    FLAP_RETRACT_SPEED = string.match(MCDU_GLINE_1, "(%d+)")
-                    SLAT_RETRACT_SPEED = string.match(MCDU_GLINE_2, "(%d+)")
-                    GREENDOT = string.match(MCDU_GLINE_3,"(%d+)")
+                    FLAP_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_1, "(%d+)"))
+                    SLAT_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_2, "(%d+)"))
+                    GREENDOT = tonumber(string.match(MCDU_GLINE_3,"(%d+)"))
                     if PT_TO_DIRECTION == "UP" then
                         PT_TO_CONFIG = PT_TO_ANGLE * 1
                     elseif PT_TO_DIRECTION == "DN" then
@@ -1087,6 +1087,7 @@ function after_start_proc()
                 if TIME >= DELAY then
                     local rindex = math.random(5)
                     play_sound(READY[rindex])
+                    command_once(MCDU_FO_KEY_Fpln)
                     DELAY = TIME + 3
                     STEP = 0
                     COMPLETED_PROC.AS_PROC_DONE = true
@@ -2386,7 +2387,7 @@ function touch_down()
                 if ENG_1_REV == 2 and ENG_2_REV == 2 then
                     play_sound(REVERSE_GREEN)
                     DELAY = TIME + 1.053
-                    STEP = 3
+                    STEP = 2
                     CHECK_SPEED = math.floor(IND_AIRSPEED) - 10
                 else
                     return
@@ -3018,28 +3019,28 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             play_sound(CHECK)
             DELAY = TIME + 0.839
-            STEP_ONEENG = 23
+            STEP_ONEENG = 22.1
         else
             return
         end
     end
-    if STEP_ONEENG == 21 then
+    if STEP_ONEENG == 22.1 then
         if TIME >= DELAY then
             play_sound(ENGINE2)
             DELAY = TIME + 0.865
-            STEP_ONEENG = 21.1
+            STEP_ONEENG = 22.2
         else
             return
         end
     end
-    if STEP_ONEENG == 21.1 then
+    if STEP_ONEENG == 22.2 then
         if TIME >= DELAY then
             play_sound(ANTI_ICE)
             DELAY = TIME + 1.227
-            STEP_ONEENG = 22
+            STEP_ONEENG = 22.3
         end
     end
-    if STEP_ONEENG == 22 then
+    if STEP_ONEENG == 22.3 then
         if TIME >= DELAY then
             if RAINING and OAT < 10 then
                 command_once(ANTI_ICE_ENG2_PB)
@@ -3182,6 +3183,7 @@ function one_engine_taxi_ARR()
     if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             play_sound(YELLOW_HYDRAULIC_PUMP)
+            Y_ELEC_PUMP_PB = 1
             DELAY = TIME + 1.450
             STEP_ONEENG = 4
         else
@@ -3196,7 +3198,6 @@ function one_engine_taxi_ARR()
             STEP_ONEENG = 0
             ONEENG_TAXI_ARR_AVAIL = false
             EXECUTE_OETA = false
-            MINUTE3 = false
         else
             return
         end
@@ -4734,7 +4735,6 @@ function checklist_after_landing()
             play_sound(CHECKLIST_COMPLETED)
             DELAY = TIME + 1.602
             STEP_CHECK = 0
-            COMPLETED_PROC.TO_PROC_DONE = false
             CHECKLIST.EX_AL_CL = false
             CHECKLIST.AL_CL = true
         else
@@ -4943,6 +4943,7 @@ function checklist_parking()
             CHECKLIST.BTO_DTL = false
             CHECKLIST.BTO_CL = false
             CHECKLIST.ATO_CL = false
+            COMPLETED_PROC.TO_PROC_DONE = false
             COMPLETED_PROC.DECEL_CALLOUTS = false
             CHECKLIST.CLB_CL = false
             CHECKLIST.APP_CL = false
@@ -5310,6 +5311,7 @@ function phase_check()
     if FLT_PHASE.PARKING then
         TXT_PHASE = "Parking"
         if CHECKLIST.PARK_CL then
+            MINUTE3 = false
             FLT_PHASE.PARKING = false
             FLT_PHASE.PREFLIGHT = true
             COMPLETED_PROC.PF_DONE = false

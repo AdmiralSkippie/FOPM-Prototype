@@ -133,9 +133,10 @@ dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA
 ---- MCDU ----
 dataref("MCDU_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
 MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
-dataref("MCDU_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly") -- text line FLP retract to FLP1 --
-dataref("MCDU_GLINE_2", "AirbusFBW/MCDU1cont2g", "readonly") -- text line SLAT retract to 0 --
-dataref("MCDU_GLINE_3", "AirbusFBW/MCDU1cont3g", "readonly") -- text line Green DOT --
+MCDU_FO_KEY_Fpln = "AirbusFBW/MCDU2Fpln"
+dataref("MCDU_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --
+dataref("MCDU_GLINE_2", "AirbusFBW/MCDU2cont2g", "readonly") -- text line SLAT retract to 0 --
+dataref("MCDU_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green DOT --
 
 ---- INDICATIONS ----
 -- dataref("OXY_Press", "", "readonly")

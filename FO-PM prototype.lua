@@ -13,7 +13,6 @@ local COMPATIBLE_ACF = {
 if COMPATIBLE_ACF[PLANE_ICAO] then -- LUA START
 logMsg("XXXXX   ACF Compatible")
 dataref("TIME", "sim/time/total_running_time_sec", "readonly")
-dataref("ENG_MODEL", "AirbusFBW/EngineType", "readonly") -- 1 IAE/2 CFM/3 PW/4 LEAP
 -- RANDOMIZER --
 math.randomseed(os.clock())
 
@@ -5616,6 +5615,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_MAIN = false
             WND_BREAFING = true
         end
+        imgui.SameLine()
         imgui.TextUnformatted("     ")
         imgui.SameLine()
         if imgui.SmallButton("X") then

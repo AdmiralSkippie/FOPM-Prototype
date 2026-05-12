@@ -121,11 +121,12 @@ local APP_TYPE = {
     CAT_II_III = false,
     ---- Non Precision APPROACH ----
     RNAV_APP = false,
-    RNAV_LNAV = false,
     RNAVAR_APP = false,
     VOR_APP = false,
     NDB_APP = false,
-    LDA_APP = false
+    LDA_APP = false,
+    ---- Especial feature
+    FLS = false
 }
 ----------------------------
 ---- ONGOING PROCEDURES ----
@@ -144,6 +145,8 @@ local EXECUTE_ENRWY = false
 local EXECUTE_EXRWY = false
 local ONEENG_TAXI_ARR_AVAIL = false
 local EXECUTE_OETA = false
+local EXECUTE_FLP = false
+local EXECUTE_GEAR = false
 
 ------------------
 ---- COMMANDS ----
@@ -1824,6 +1827,7 @@ end
 function flaps_commanded_change()
     if command_FLPS_1UP then
         if STEP_CLEAN == 0 then
+            EXECUTE_FLP = true  
             DELAY_CLEAN = TIME + 0.3
             STEP_CLEAN = 1
         end 
@@ -1864,6 +1868,7 @@ function flaps_commanded_change()
                     DELAY_CLEAN = TIME + 0.3
                     STEP_CLEAN = 0
                     command_FLPS_1UP = false
+                    EXECUTE_FLP = false
                 else
                     return
                 end
@@ -1873,6 +1878,7 @@ function flaps_commanded_change()
         end
     elseif command_FLPS_1DN then
         if STEP_CLEAN == 0 then
+            EXECUTE_FLP = true
             DELAY_CLEAN = TIME + 0.3
             STEP_CLEAN = 1
         end
@@ -1904,6 +1910,7 @@ function flaps_commanded_change()
                     play_sound(FLAP_POS[FL_VOICE_SRCH])
                     DELAY_CLEAN = TIME + 0.3
                     STEP_CLEAN = 0
+                    EXECUTE_FLP = false
                     command_FLPS_1DN = false
                 else
                     return
@@ -1919,6 +1926,7 @@ end
 function gear_command()
     if command_GUP then
         if STEP_FLT == 0 then
+            EXECUTE_GEAR = true
             DELAY_CHECK = TIME + 0.88
             STEP_FLT = 1
         end
@@ -1928,6 +1936,7 @@ function gear_command()
                     play_sound(GEAR_UP)
                     LG_Lever = 0
                     command_GUP = false
+                    EXECUTE_GEAR = false
                     STEP_FLT = 0
                 else
                     return
@@ -1938,6 +1947,7 @@ function gear_command()
         end
     elseif command_GDN then
         if STEP_FLT == 0 then
+            EXECUTE_GEAR = true
             DELAY_CHECK = TIME + 1.052
             STEP_FLT = 1
         end
@@ -1958,7 +1968,9 @@ function gear_command()
             if LG_NG_State == 2 and LG_RG_State == 2 and LG_LG_State == 2 then
                 play_sound(GEAR_3GREENS)
                 DELAY = TIME + 1.054
+                DELAY_CLEAN = TIME + 1.054
                 STEP_FLT = 0
+                EXECUTE_GEAR = false
                 command_GDN = false
             else
                 return
@@ -2125,7 +2137,7 @@ function ten_thausand_feet_DES()
     end
     if STEP == 4 then
         if TIME >= DELAY then
-            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.VOR_APP or APP_TYPE.NDB_APP or APP_TYPE.LDA_APP then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.LDA_APP or APP_TYPE.FLS then
                 if not speak_only_essencials then
                     play_sound(LS)
                 end
@@ -2245,7 +2257,7 @@ function ap_discn_behaviour()
 end
 
 ---- GO ARROUND PROCEDURE
-function go_arround() 
+function go_arround()
     if not COMPLETED_PROC.GA_PROC then
         if STEP == 0 then
             DELAY = TIME + 0.25
@@ -2284,7 +2296,7 @@ function go_arround()
         end
         if STEP == 4 then
             if TIME >= DELAY then
-                if VERTICAL_SPEED > 500 then
+                if VERTICAL_SPEED > 700 then
                     play_sound(POSITIVE_RATE)
                     DELAY = TIME + 1.721
                     STEP = 5
@@ -2313,55 +2325,57 @@ function go_arround()
                 return
             end
         end
-    end
-    if STEP == 6 then
-        if TIME >= DELAY then
-            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
-                COMPLETED_PROC.GA_PROC = true
-                STEP = 0
+        if STEP == 6 then
+            if TIME >= DELAY then
+                if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+                    COMPLETED_PROC.GA_PROC = true
+                    STEP = 0
+                else
+                    play_sound(FLIGHT_DIRECTORS)
+                    DELAY = TIME + 2
+                    DELAY_SPEACH = TIME + 1.2
+                    STEP = 7
+                end
             else
-                play_sound(FLIGHT_DIRECTORS)
-                DELAY = TIME + 2
-                DELAY_SPEACH = TIME + 1.2
-                STEP = 7
+                return
             end
         end
-    end
-    if STEP == 7 then
-        if TIME >= DELAY then
-            command_once(FD_FO_PB)
-            DELAY = TIME + 0.7
-            STEP = 8
-        else
-            return
+        if STEP == 7 then
+            if TIME >= DELAY then
+                command_once(FD_FO_PB)
+                DELAY = TIME + 0.7
+                STEP = 8
+            else
+                return
+            end
         end
-    end
-    if STEP == 8 then
-        if TIME >= DELAY then
-            command_once(FD_CAP_PB)
-            DELAY = TIME + 0.7
-            STEP = 9
-        else
-            return
+        if STEP == 8 then
+            if TIME >= DELAY then
+                command_once(FD_CAP_PB)
+                DELAY = TIME + 0.7
+                STEP = 9
+            else
+                return
+            end
         end
-    end
-    if STEP == 9 then
-        if TIME >= DELAY_AP then
-            command_once(HDGTRK_TOGGLE)
-            DELAY_AP = TIME + 0.5
-            STEP = 10
-        else
-            return
+        if STEP == 9 then
+            if TIME >= DELAY then
+                command_once(HDGTRK_TOGGLE)
+                DELAY = TIME + 0.5
+                STEP = 10
+            else
+                return
+            end
         end
-    end
-    if STEP == 9 then
-        if TIME >= DELAY_SPEACH then
-            play_sound(ON)
-            DELAY = TIME + 0.836
-            STEP = 0
-            COMPLETED_PROC.GA_PROC = true
-        else
-            return
+        if STEP == 10 then
+            if TIME >= DELAY_SPEACH then
+                play_sound(ON)
+                DELAY = TIME + 0.836
+                STEP = 0
+                COMPLETED_PROC.GA_PROC = true
+            else
+                return
+            end
         end
     end
 end
@@ -2575,6 +2589,68 @@ function after_landing_proc()
         end
     end
     if STEP == 12 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(TERRAIN)
+            end
+            DELAY = TIME + 0.825
+            STEP = 13
+        else
+            return
+        end
+    end
+    if STEP == 13 then
+        if TIME >= DELAY then
+            if not speak_only_essencials then
+                play_sound(OFF)
+            end
+            command_once(TERRAIN_FO_PB)
+            DELAY = TIME + 0.92
+            STEP = 14
+        else
+            return
+        end
+    end
+    if STEP == 14 then
+        if TIME >= DELAY then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+                command_once(FD_FO_PB)
+                DELAY = TIME + 0.5
+                STEP = 15
+            else
+                STEP = 15
+            end
+        else
+            return
+        end
+    end
+    if STEP == 15 then
+        if TIME >= DELAY then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.FLS then
+                command_once(LS_FO_PB)
+                DELAY = TIME + 0.7
+                STEP = 16
+            else
+                STEP = 16
+            end
+        else
+            return
+        end
+    end
+    if  STEP == 16 then
+        if TIME >= DELAY then
+            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+                STEP = 17
+            else
+                command_once(HDGTRK_TOGGLE)
+                DELAY = TIME + 0.5
+                STEP = 17
+            end
+        else
+            return
+        end
+    end
+    if STEP == 17 then
         if TIME >= DELAY then
            local rindex = math.random(5)
            play_sound(READY[rindex])
@@ -5286,14 +5362,6 @@ function phase_check()
             FLT_PHASE.DECELERATION = false
             RAINING = false
             FLT_PHASE.TAXI_IN = true
-            APP_TYPE.ILS_APP = false
-            APP_TYPE.MLS_APP = false
-            APP_TYPE.RNAV_APP = false
-            APP_TYPE.RNAV_LNAV = false
-            APP_TYPE.RNAVAR_APP = false
-            APP_TYPE.VOR_APP = false
-            APP_TYPE.NDB_APP = false
-            APP_TYPE.LDA_APP = false
         end
     end
     if FLT_PHASE.TAXI_IN then
@@ -5317,6 +5385,15 @@ function phase_check()
             COMPLETED_PROC.PF_DONE = false
             COMPLETED_PROC.TO_BRIEFING = false
             COMPLETED_PROC.FLTCTL_CHK = false
+            APP_TYPE.ILS_APP = false
+            APP_TYPE.MLS_APP = false
+            APP_TYPE.RNAV_APP = false
+            APP_TYPE.RNAVAR_APP = false
+            APP_TYPE.VOR_APP = false
+            APP_TYPE.NDB_APP = false
+            APP_TYPE.LDA_APP = false
+            APP_TYPE.FLS = false
+            APP_TYPE.CAT_II_III = false
         end
     end
 end
@@ -5358,10 +5435,10 @@ function FO_main_logic()
         touch_down()
     end
     if GNDAIR_SW == 0 then
-        if not command_FLPS_1DN and not command_FLPS_1UP and not FLT_PHASE.GA then
+        if not FLT_PHASE.GA or not EXECUTE_FLP then
             gear_command()
         end
-        if not command_GUP and not command_GDN then
+        if not EXECUTE_GEAR then
             flaps_commanded_change()
         end
     end
@@ -5517,6 +5594,11 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_MAIN = false
             WND_BREAFING = true
         end
+        imgui.TextUnformatted("     ")
+        imgui.SameLine()
+        if imgui.SmallButton("X") then
+            response_CHECK = true
+        end
         imgui.Separator()
         imgui.Spacing()
         imgui.TextUnformatted("FLT Phase:")
@@ -5647,6 +5729,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.SmallButton("Taxi OUT") then
                 FLT_PHASE.REJECTED_DES = false
                 FLT_PHASE.TAXI_OUT = true
+                COMPLETED_PROC.DECEL_CALLOUTS = false
+                CHECKLIST.BTO_CL = false
             end
             imgui.SameLine()
             if imgui.SmallButton("Taxi IN") then
@@ -5772,15 +5856,15 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND or FLT_PHASE.APPROACH then
             imgui.TextUnformatted("Arrival Breafing")
-            if imgui.RadioButton("ILS/MLS APP", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then
+            if imgui.RadioButton("ILS/MLS", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then
                 APP_TYPE.ILS_APP = true
                 APP_TYPE.MLS_APP = true
                 APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false
                 APP_TYPE.VOR_APP = false
                 APP_TYPE.NDB_APP = false
                 APP_TYPE.LDA_APP = false
+                APP_TYPE.FLS = false
             end
             imgui.SameLine()
             if imgui.RadioButton("CAT II/III", APP_TYPE.CAT_II_III) then
@@ -5788,57 +5872,62 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 APP_TYPE.MLS_APP = true
                 APP_TYPE.CAT_II_III = true
                 APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false
                 APP_TYPE.VOR_APP = false
                 APP_TYPE.NDB_APP = false
                 APP_TYPE.LDA_APP = false
+                APP_TYPE.FLS = false
             end
-            if imgui.RadioButton("RNAV APP", APP_TYPE.RNAV_APP or APP_TYPE.RNAV_LNAV) then
+            if imgui.RadioButton("RNAV", APP_TYPE.RNAV_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
                 APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = true
-                APP_TYPE.RNAV_LNAV = true
                 APP_TYPE.RNAVAR_APP = false
                 APP_TYPE.VOR_APP = false
                 APP_TYPE.NDB_APP = false
                 APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
+            if imgui.RadioButton("FLS", APP_TYPE.FLS) then
+                APP_TYPE.ILS_APP = false
+                APP_TYPE.MLS_APP = false
+                APP_TYPE.CAT_II_III = false
+                APP_TYPE.RNAVAR_APP = false
+                APP_TYPE.FLS = true
+            end
             if imgui.RadioButton("RNP AR", APP_TYPE.RNAVAR_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
                 APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = true
                 APP_TYPE.VOR_APP = false
                 APP_TYPE.NDB_APP = false
                 APP_TYPE.LDA_APP = false
+                APP_TYPE.FLS = false
             end
-            if imgui.RadioButton("VOR/NDB APP", APP_TYPE.VOR_APP or APP_TYPE.NDB_APP) then
+            if imgui.RadioButton("VOR/NDB", APP_TYPE.VOR_APP or APP_TYPE.NDB_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
                 APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false
                 APP_TYPE.VOR_APP = true
                 APP_TYPE.NDB_APP = true
                 APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("LDA APP", APP_TYPE.LDA_APP) then
+            if imgui.RadioButton("LDA", APP_TYPE.LDA_APP) then
                 APP_TYPE.ILS_APP = false
                 APP_TYPE.MLS_APP = false
                 APP_TYPE.CAT_II_III = false
                 APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAV_LNAV = false
                 APP_TYPE.RNAVAR_APP = false
                 APP_TYPE.VOR_APP = false
                 APP_TYPE.NDB_APP = false
                 APP_TYPE.LDA_APP = true
+                APP_TYPE.FLS = false
             end
             if imgui.RadioButton("Raining", RAINING) then
                 RAINING = true

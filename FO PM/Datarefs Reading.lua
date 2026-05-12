@@ -4,7 +4,7 @@
 
 --|||| GENERAL |||||--
 dataref("TIME", "sim/time/total_running_time_sec", "readonly")
-dataref("ENG_MODEL", "AirbusFBW/EngineType", "readonly") -- 1 IAE/2 CFM/3 PW/4 LEAP
+dataref("ENG_MODEL", "AirbusFBW/EngineTypeIndex", "readonly") -- 0 IAE/1 CFM/2 PW/3 LEAP
 dataref("ACF_ICAO", "sim/aircraft/view/acf_ICAO", "readonly") -- 
 
 --|||| COMMAND/CHANGE ||||--
@@ -32,6 +32,9 @@ LS_FO_PB = "toliss_airbus/dispcommands/CoLSButtonPush"
 HDGTRK_TOGGLE = "toliss_airbus/hdgtrk_button_push"
 FD_CAP_PB = "toliss_airbus/fd1_push"
 FD_FO_PB = "toliss_airbus/fd2_push"
+dataref("FO_FD_STATE", "AirbusFBW/FD2Engage", "readonly")
+FO_ND_CSTR_PB = "toliss_airbus/dispcommands/CoCstrPushButton"
+dataref("FO_CSTR_STATE", "AirbusFBW/NDShowCSTRFO", "readonly")
 CRONO_SET_PB = "toliss_airbus/chrono/ChronoStartStopPush"
 CRONO_RESET_PB= "toliss_airbus/chrono/ChronoResetPush"
 ANTI_ICE_ENG1_PB = "toliss_airbus/antiicecommands/ENG1Toggle"
@@ -212,7 +215,7 @@ ENG_THRRate = 0
 ENG_1_POWER = 0
 ENG_2_POWER = 0
 function CHECK_ENGINE_TYPE()
-    if ENG_MODEL ~= 1 then
+    if ENG_MODEL ~= 0 then
         ENG_THRRate = ENG_THRRating_N1
         ENG_1_POWER = ENG_1_N1
         ENG_2_POWER = ENG_2_N1

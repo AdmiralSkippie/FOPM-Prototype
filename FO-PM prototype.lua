@@ -883,28 +883,6 @@ function pre_cockpit_pre()
         end
         if STEP == 15 then
             if TIME >= DELAY then
-                if FO_FD_STATE ~= 1 then
-                    command_once(FD_FO_PB)
-                    STEP = 16
-                    DELAY = TIME + 0.7
-                else
-                    STEP = 16
-                end
-            end
-        end
-        if STEP == 16 then
-            if TIME >= DELAY then
-                if FO_CSTR_STATE ~= 1 then
-                    command_once(FO_ND_CSTR_PB)
-                    STEP = 17
-                    DELAY = TIME + 0.7
-                else
-                    STEP = 17
-                end
-            end
-        end
-        if STEP == 17 then
-            if TIME >= DELAY then
                 local rindex = math.random(5)
                 play_sound(READY[rindex])
                 DELAY = TIME + 3
@@ -1223,7 +1201,7 @@ function before_takeoff_proc()
             end
             if STEP == 4.5 then
                 if TIME >= DELAY then
-                    if RAINING and ENG_MODEL == 0 then
+                    if RAINING then
                         if not speak_only_essencials then
                             play_sound(IGNITION)
                         end
@@ -2175,7 +2153,7 @@ function ten_thausand_feet_DES()
     end
     if STEP == 5 then
         if TIME >= DELAY then
-            if RAINING and ENG_MODEL == 0 then
+            if RAINING then
                 if not speak_only_essencials then
                     play_sound(ENGINE_MODE_SELECTOR)
                 end
@@ -4130,7 +4108,7 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL == 0 then
+                if RAINING then
                     if ENG_Mode == 2 then
                         play_sound(IGNITION)
                         DELAY_CHECK = TIME + 1.095
@@ -4541,7 +4519,7 @@ function checklist_approach()
     if STEP_CHECK == 8 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL == 0 then
+                if RAINING then
                     if ENG_Mode == 2 then
                         play_sound(IGNITION)
                         DELAY_CHECK = TIME + 1.095

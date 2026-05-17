@@ -30,8 +30,7 @@ READY_FOR_TO = {
 
 -- VOICES AVAILABLE CONFIG
 FO_voice_config = {
-    [1] = "Male",
-    [2] = "Female"
+    [1] = "Active",
 }
 
 -- VOICES DIRECTORY
@@ -80,8 +79,6 @@ FO_voices_directory = {
                         Male = 0.445,
                         Female = 0.818}},
 -- SECTION 1 --
-    FULL = {code = "FULL", del = {
-                        Male = 0.454}},
     RETRACT_AND_DISARM = {code = "RETRACT & DISARM", del = {
                         Male = 1.528,
                         Female = 1.137}},
@@ -324,7 +321,7 @@ FO_voices_directory = {
                         Female = 0.884}},
     YELLOW_HYDRAULIC_PUMP = {code = "YHYDPUMP", del = {
                         Male = 1.170,
-                        Female = 1.702}},
+                        Female = 1.695}},
     STARTING_NUMBER_2 = {code = "START2", del = {
                         Male = 1.186,
                         Female = 1.242}},

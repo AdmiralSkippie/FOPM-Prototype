@@ -6190,7 +6190,6 @@ function config_save()
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
         config:write("fo_speed = ".. fo_speed.."\n")
-        config:write("fo_config_voice = "..'"'..fo_config_voice..'"')
         config:close()
     end
 end
@@ -6593,21 +6592,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             fo_autoperform = change
             config_save()
         end
-        imgui.TextUnformatted("FO Voice Pack:")
-        if imgui.RadioButton("Male", fo_config_voice == "Male") then
-            fo_config_voice = "Male"
-            config_save()
-        end
-        imgui.SameLine()
-        if imgui.RadioButton("Female", fo_config_voice == "Female") then
-            fo_config_voice = "Female"
-            config_save()
-        end
-        --[[imgui.SameLine()
-        if imgui.RadioButton("Custom", fo_config_voice == "Custom") then
-            fo_config_voice = "Custom"
-            config_save()
-        end]]
         imgui.TextUnformatted("Speak Only Essencials: ")
         imgui.SameLine()
         if imgui.RadioButton("Yes", speak_only_essencials) then

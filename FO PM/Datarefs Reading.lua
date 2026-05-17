@@ -30,9 +30,11 @@ TERRAIN_FO_PB = "toliss_airbus/dispcommands/TerrOnND2Toggle"
 GPWS_FLAP3_PB = "toliss_airbus/gpwscommands/Flap3Toggle"
 LS_FO_PB = "toliss_airbus/dispcommands/CoLSButtonPush"
 HDGTRK_TOGGLE = "toliss_airbus/hdgtrk_button_push"
+dataref("HDGTRK_MODE", "AirbusFBW/HDGTRKmode", "readonly") -- 0 = HDG
 FD_CAP_PB = "toliss_airbus/fd1_push"
 FD_FO_PB = "toliss_airbus/fd2_push"
 dataref("FO_FD_STATE", "AirbusFBW/FD2Engage", "readonly")
+dataref("CP_FD_STATE", "AirbusFBW/FD1Engage", "readonly")
 FO_ND_CSTR_PB = "toliss_airbus/dispcommands/CoCstrPushButton"
 dataref("FO_CSTR_STATE", "AirbusFBW/NDShowCSTRFO", "readonly")
 CRONO_SET_PB = "toliss_airbus/chrono/ChronoStartStopPush"
@@ -149,10 +151,10 @@ dataref("B_HYD_RESVR", "AirbusFBW/HydSysQtyArray", "readonly", 2) -- 0.75 min
 -- dataref("ENG_1_OILQTY", "", "readonly")
 -- dataref("ENG_2_OILQTY", "", "readonly")
 dataref("BRK_ACCU_Press", "AirbusFBW/AccuNeedle", "readonly") -- 1 green / 0.93 min
-dataref("ELEVATORS", "AirbusFBW/NormLawCmd_Elev", "readonly") -- 0 NEUTRAL/15 DOWN/-30 UP
-dataref("LALERONS", "AirbusFBW/NormLawCmd_LAil", "readonly") -- 0 NTRL/-25 LEFT/25 RIGHT
-dataref("RALERONS", "AirbusFBW/NormLawCmd_RAil", "readonly") -- 0 NTRL/25 LEFT/-25 RIGHT
-dataref("RUDDER", "AirbusFBW/NormLawCmd_Rud", "readonly") -- 0 NTRL/-25 LEFT/25 RIGHT
+dataref("ELEVATORS", "sim/flightmodel2/wing/elevator1_deg", "readonly",8) -- 0 NEUTRAL/15 DOWN/-30 UP
+dataref("LALERONS", "sim/flightmodel2/wing/aileron1_deg", "readonly",7) -- 0 NTRL/-25 LEFT/25 RIGHT
+dataref("RALERONS", "sim/flightmodel2/wing/aileron1_deg", "readonly",6) -- 0 NTRL/25 LEFT/-25 RIGHT
+dataref("RUDDER", "sim/flightmodel2/wing/rudder1_deg", "readonly", 10) -- 0 NTRL/-25 LEFT/25 RIGHT
 -- ENG INDICATIONS --
     -- CFM/LEAP/PW --       
         dataref("ENG_THRRating_N1", "AirbusFBW/THRRatingN1", "readonly")
@@ -207,6 +209,8 @@ dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
 dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRESS
 dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")
+dataref("TRANSITION_ALT", "toliss_airbus/performance/DeptTrans", "readonly")
+dataref("TRANSITION_LVL", "toliss_airbus/performance/DestTrans", "readonly")
 dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
 dataref("AP_DISCN_ALARM", "AirbusFBW/APWarning", "readonly") -- 1 ON --
 dataref("OAT", "sim/cockpit2/temperature/outside_air_temp_degc", "readonly")

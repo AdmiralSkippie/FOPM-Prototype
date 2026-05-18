@@ -1,11 +1,10 @@
 Arreglar bug que traba el FO QNH en 1013
 Desarrollar la toma del METAR en tierra como antes del descenso **
 Desarrollar alerta proximidad al TOD **
-poner mas volumen a los callouts
 Arreglar APU BLEED speach
-Cambiar Positive Rate por Climb
 Arreglar el speach "All id done here"
 identificar mangspd o selspd
+hacer procedimientos o cortarlos si es necesario
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra

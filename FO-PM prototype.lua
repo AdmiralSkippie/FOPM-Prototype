@@ -28,6 +28,10 @@ logMsg("XXXXX   Datarefs Readed")
 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Voices load.lua")
 logMsg("XXXXX   Voices Loaded")
 
+-- VOICE PACK CONFIG LOAD
+dofile(SCRIPT_DIRECTORY.."/FO PM/Voices/Active/FO Voicepack conf.lua")
+logMsg("XXXXX   Voices Pack Config Loaded")
+
 ----------------
 ---- PHASES ----
 ----------------
@@ -244,8 +248,8 @@ function flt_ctl_chk()
     if STEP_FLT == 0 then
         if TIME >= DELAY then
             local speach = "FLIGHT_CONTROLS_CHECK"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_FLT = 1
         else
             return
@@ -254,7 +258,7 @@ function flt_ctl_chk()
     if STEP_FLT == 1 then
         if TIME >= DELAY then
             local speach = "ELEVATOR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 1.25
         else
             return
@@ -263,7 +267,7 @@ function flt_ctl_chk()
     if STEP_FLT == 1.25 then
         if math.floor(ELEVATORS + 0.3) == -30 then
             local speach = "FULL_UP"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 1.5
         else
             return
@@ -272,7 +276,7 @@ function flt_ctl_chk()
     if STEP_FLT == 1.5 then
         if math.floor(ELEVATORS + 0.3) == 15 then
             local speach = "FULL_DOWN"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 1.75
         else
             return
@@ -281,8 +285,8 @@ function flt_ctl_chk()
     if STEP_FLT == 1.75 then
         if math.floor(ELEVATORS + 0.3) == 0 then
             local speach = "NEUTRAL"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_FLT = 2
         else
             return
@@ -291,8 +295,8 @@ function flt_ctl_chk()
     if STEP_FLT == 2 then
         if TIME >= DELAY then
             local speach = "AILERONS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_FLT = 2.25
         else
             return
@@ -301,7 +305,7 @@ function flt_ctl_chk()
     if STEP_FLT == 2.25 then
         if math.floor(LALERONS + 0.3) == 25 and math.floor(RALERONS + 0.3) == -20 then
             local speach = "FULL_LEFT"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 2.5
         else
             return
@@ -310,7 +314,7 @@ function flt_ctl_chk()
     if STEP_FLT == 2.5 then
         if math.floor(LALERONS + 0.3) == -20 and math.floor(RALERONS + 0.3) == 25 then
             local speach = "FULL_RIGHT"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 2.75
         else
             return
@@ -319,7 +323,7 @@ function flt_ctl_chk()
     if STEP_FLT == 2.75 then
         if math.floor(LALERONS + 0.3) == 5 and math.floor(RALERONS + 0.3) == 5 then
             local speach = "NEUTRAL"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             DELAY = TIME + 0.955
             STEP_FLT = 3
         else
@@ -329,8 +333,8 @@ function flt_ctl_chk()
     if STEP_FLT == 3 then
         if TIME >= DELAY then
             local speach = "RDR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_FLT = 3.25
         else
             return
@@ -339,7 +343,7 @@ function flt_ctl_chk()
     if STEP_FLT == 3.25 then
         if math.floor(RUDDER + 0.3) == -30 then
             local speach = "FULL_LEFT"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 3.5
         else
             return
@@ -348,7 +352,7 @@ function flt_ctl_chk()
     if STEP_FLT == 3.5 then
         if math.floor(RUDDER + 0.3) == 30 then
             local speach = "FULL_RIGHT"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             STEP_FLT = 3.75
         else
             return
@@ -357,8 +361,8 @@ function flt_ctl_chk()
     if STEP_FLT == 3.75 then
         if math.floor(RUDDER + 0.3) == 0 then
             local speach = "NEUTRAL"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_FLT = 4
         else
             return
@@ -385,8 +389,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "ENGINE_MASTERS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -400,8 +404,8 @@ function pre_cockpit_pre()
                 if ENG_1_Master == 0 and ENG_2_Master == 0 then
                     if not speak_only_essencials then
                         local speach = "OFF"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -409,7 +413,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "ENGINE_MASTERS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -422,8 +426,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "ENGINE_MODE_SELECTOR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -438,8 +442,8 @@ function pre_cockpit_pre()
                 if ENG_Mode == 1 then
                     if not speak_only_essencials then
                         local speach = "NORMAL"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -447,7 +451,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "ENGINE_MODE_SELECTOR"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -460,8 +464,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "WEATHER_RADAR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -476,8 +480,8 @@ function pre_cockpit_pre()
                 if RADAR_SYS_SW == 1 then
                     if not speak_only_essencials then
                         local speach = "OFF"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -485,7 +489,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "WEATHER_RADAR"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -498,8 +502,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "LANDING_GEAR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -514,8 +518,8 @@ function pre_cockpit_pre()
                 if LG_Lever == 1 then
                     if not speak_only_essencials then
                         local speach = "DOWN"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -523,7 +527,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "LANDING_GEAR"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -536,8 +540,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "WIPERS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -552,8 +556,8 @@ function pre_cockpit_pre()
                 if LWipers_Mode == 0 and RWipers_Mode == 0 then
                     if not speak_only_essencials then
                         local speach = "OFF"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -561,7 +565,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "WIPERS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -574,8 +578,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "BATTERIES"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -590,8 +594,8 @@ function pre_cockpit_pre()
                 if BAT_1_State == 1 and BAT_2_State == 1 then
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -599,7 +603,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "BATTERIES"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -619,8 +623,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "EXTERNAL_POWER"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -635,8 +639,8 @@ function pre_cockpit_pre()
                 if EXTPWR_State == 1 then
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -645,7 +649,7 @@ function pre_cockpit_pre()
                     -- possible future change --
                     if TIME >= DELAY_CHECK then
                         local speach = "EXTERNAL_POWER"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 15
                     end
                     return
@@ -658,8 +662,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "APU"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -673,8 +677,8 @@ function pre_cockpit_pre()
                 if APU_STATE == 1 then
                     if not speak_only_essencials then
                         local speach = "AVAIL"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -682,9 +686,9 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "APU"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 15
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         return
                     else
                         return
@@ -698,8 +702,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "ECAM_RCLL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -721,8 +725,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "NORMAL"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -735,8 +739,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "SYSTEMS_CHECK"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -749,8 +753,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "OXYGEN"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed + 0.3
                 end
@@ -764,8 +768,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "CHECK"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -778,8 +782,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "HYDRAULICS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed + 0.3
                 end
@@ -794,8 +798,8 @@ function pre_cockpit_pre()
                 if Y_HYD_RESVR >= 0.8 and G_HYD_RESVR >= 0.8 and B_HYD_RESVR >= 0.75 then
                     if not speak_only_essencials then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -811,8 +815,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "OIL_QUANTITY"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed + 0.3
                 end
@@ -826,8 +830,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -841,8 +845,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "FLAPS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -856,8 +860,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if FLAPS_LEVER_State <= 0.25 then
                     if not speak_only_essencials then
-                        play_sound(FOPM_Talk[fo_config_voice][FL_VOICE_SRCH])
-                        DELAY = TIME + (FLAP_POS[FL_VOICE_SRCH].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[FL_VOICE_SRCH])
+                        DELAY = TIME + (FLAP_POS[FL_VOICE_SRCH].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -865,7 +869,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "FLAPS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -878,8 +882,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "SPEED_BRAKE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -894,8 +898,8 @@ function pre_cockpit_pre()
                 if SPDBRK_Lever == 0 then
                     if not speak_only_essencials then
                         local speach = "RETRACT_AND_DISARM"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -903,7 +907,7 @@ function pre_cockpit_pre()
                 else
                     if TIME >= DELAY_CHECK then
                         local speach = "SPEED_BRAKE"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
+                        play_sound(FOPM_Talk[speach])
                         DELAY_CHECK = TIME + 10
                     end
                     return
@@ -916,8 +920,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "PARKING_BRAKE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -931,8 +935,8 @@ function pre_cockpit_pre()
                 if PRKBRK_SW == 1 then
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -950,8 +954,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "BRAKE_ACCUMULATOR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -965,8 +969,8 @@ function pre_cockpit_pre()
                 if BRK_ACCU_Press >= 0.9 then
                     if not speak_only_essencials then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -982,8 +986,8 @@ function pre_cockpit_pre()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "ALTERNATE_BRAKES"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -997,8 +1001,8 @@ function pre_cockpit_pre()
                 if LBRAKE_Press > 0.65 and RBRAKE_Press > 0.65 then
                     if not speak_only_essencials then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1035,8 +1039,8 @@ function pre_cockpit_pre()
         if STEP == 17 then
             if TIME >= DELAY then
                 local rindex = math.random(5)
-                play_sound(READY[fo_config_voice][rindex])
-                DELAY = TIME + (RDY[rindex].del[fo_config_voice]) + fo_speed
+                play_sound(READY[rindex])
+                DELAY = TIME + (RDY[rindex].del) + fo_speed
                 STEP = 0
                 COMPLETED_PROC.PF_DONE = true
                 EXECUTE_PCP = false
@@ -1044,8 +1048,8 @@ function pre_cockpit_pre()
         end
     else
         local rindex = math.random(5)
-        play_sound(READY[fo_config_voice][rindex])
-        DELAY = TIME + (RDY[rindex].del[fo_config_voice]) + fo_speed
+        play_sound(READY[rindex])
+        DELAY = TIME + (RDY[rindex].del) + fo_speed
         EXECUTE_PCP = false
     end
 end
@@ -1061,8 +1065,8 @@ function after_start_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "GROUND_SPOILERS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1076,8 +1080,8 @@ function after_start_proc()
                     SPDBRK_Lever = -0.5
                     if not speak_only_essencials then
                         local speach = "ARM"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1090,8 +1094,8 @@ function after_start_proc()
                 if  TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "RUDDER_TRIM"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1105,8 +1109,8 @@ function after_start_proc()
                     command_once(RUDDER_TRIM_RESET)
                     if not speak_only_essencials then
                         local speach = "N0"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1119,8 +1123,8 @@ function after_start_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "FLAPS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1134,8 +1138,8 @@ function after_start_proc()
                     if (FLAPS_LEVER_State * 4) == FLAPS_TO_CONFIG then
                         if not speak_only_essencials then
                             local speach = CONFIG_VOICE_SRCH
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FLAP_CONFIG[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FLAP_CONFIG[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1153,8 +1157,8 @@ function after_start_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "PITCHTRM"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1185,8 +1189,8 @@ function after_start_proc()
                     if PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) then
                         if not speak_only_essencials then
                             local speach = "SET"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1211,8 +1215,8 @@ function after_start_proc()
                     if TIME >= DELAY then
                         if not speak_only_essencials then
                             local speach = "ECAM_STATUS"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del)
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1228,8 +1232,8 @@ function after_start_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1244,8 +1248,8 @@ function after_start_proc()
                         return
                     else
                         local speach = CONFIG_VOICE_SRCH
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FLAP_CONFIG[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FLAP_CONFIG[speach].del)
                         STEP = 7
                     end
                 else
@@ -1271,9 +1275,9 @@ function after_start_proc()
             if STEP == 8 then
                 if TIME >= DELAY then
                     local rindex = math.random(5)
-                    play_sound(READY[fo_config_voice][rindex])
+                    play_sound(READY[rindex])
                     command_once(MCDU_FO_KEY_Fpln)
-                    DELAY = TIME + (RDY[rindex].del[fo_config_voice]) + fo_speed
+                    DELAY = TIME + (RDY[rindex].del) + fo_speed
                     STEP = 0
                     COMPLETED_PROC.AS_PROC_DONE = true
                     EXECUTE_ASP = false
@@ -1283,8 +1287,8 @@ function after_start_proc()
             end
     else
         local rindex = math.random(5)
-        play_sound(READY[fo_config_voice][rindex])
-        DELAY = TIME + (RDY[rindex].del[fo_config_voice]) + fo_speed
+        play_sound(READY[rindex])
+        DELAY = TIME + (RDY[rindex].del) + fo_speed
         EXECUTE_ASP = false
     end
 end
@@ -1301,8 +1305,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "WEATHER_RADAR"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1320,8 +1324,8 @@ function before_takeoff_proc()
                     RADAR_SYS_SW = radar_pos
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1334,8 +1338,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "PWS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1348,8 +1352,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1363,8 +1367,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "TERRAIN"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1377,8 +1381,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "ON"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1392,8 +1396,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "ENGINE_MODE_SELECTOR"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1407,8 +1411,8 @@ function before_takeoff_proc()
                     if RAINING and ENG_MODEL == 0 then
                         if not speak_only_essencials then
                             local speach = "IGNITION"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1416,8 +1420,8 @@ function before_takeoff_proc()
                     else
                         if not speak_only_essencials then
                             local speach = "NORMAL"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1432,8 +1436,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "BRAKE_TEMP"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1450,16 +1454,16 @@ function before_takeoff_proc()
                         end
                         if not speak_only_essencials then
                             local speach = "CHECK"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
                         STEP = 6
                     else
                         local rindex = math.random(3)
-                        play_sound(BRAKE_WARNINGS[fo_config_voice][rindex])
-                        DELAY = TIME + (BRAKE_WARN[rindex].del[fo_config_voice])
+                        play_sound(BRAKE_WARNINGS[rindex])
+                        DELAY = TIME + (BRAKE_WARN[rindex].del)
                         STEP = 5.6
                     end
                 else
@@ -1470,8 +1474,8 @@ function before_takeoff_proc()
                 if TIME >= DELAY then
                     if BRAKE1_TEMP < 150 and BRAKE2_TEMP < 150 and BRAKE3_TEMP < 150 and BRAKE4_TEMP < 150 then
                         local rindex = math.random(5)
-                        play_sound(READY[fo_config_voice][rindex])
-                        DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+                        play_sound(READY[rindex])
+                        DELAY = TIME + (RDY[rindex].del)
                         STEP = 5.7
                     else
                         return
@@ -1483,8 +1487,8 @@ function before_takeoff_proc()
             if STEP == 5.7 then
                 if TIME >= DELAY then
                     local speach = "BRAKE_TEMP"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                     STEP = 5.8
                 else
                     return
@@ -1493,8 +1497,8 @@ function before_takeoff_proc()
             if STEP == 5.8 then
                 if TIME >= DELAY then
                     local speach = "CHECK"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     if BRKFAN_State == 1 then
                         command_once(BRKFAN_PB)
                     end
@@ -1506,8 +1510,8 @@ function before_takeoff_proc()
             if STEP == 6 then
                 if TIME >= DELAY then
                     local rindex = math.random(5)
-                    play_sound(READY[fo_config_voice][rindex])
-                    DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+                    play_sound(READY[rindex])
+                    DELAY = TIME + (RDY[rindex].del)
                     STEP = 0
                     EXECUTE_BTP = false
                     COMPLETED_PROC.BTO_PROC_DONE = true
@@ -1519,8 +1523,8 @@ function before_takeoff_proc()
         end
     else
         local rindex = math.random(5)
-        play_sound(READY[fo_config_voice][rindex])
-        DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+        play_sound(READY[rindex])
+        DELAY = TIME + (RDY[rindex].del)
         EXECUTE_BTP = false
     end
 end
@@ -1541,8 +1545,8 @@ function enter_rwy()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "EXTERIOR_LIGHTS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
                     end
                     DELAY = TIME + fo_speed
                     STEP = 1.2
@@ -1587,8 +1591,8 @@ function enter_rwy()
                     if not speak_only_essencials then
                         if TIME >= DELAY_SPEACH then
                             local speach = "SET"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         end
                     else
                         DELAY = TIME + fo_speed
@@ -1602,8 +1606,8 @@ function enter_rwy()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "TCAS"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1616,8 +1620,8 @@ function enter_rwy()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "TA_RA"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1632,8 +1636,8 @@ function enter_rwy()
                     if TIME >= DELAY then
                         if not speak_only_essencials then
                             local speach = "PACKS"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del)
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1658,8 +1662,8 @@ function enter_rwy()
                     else
                         if not speak_only_essencials then
                             local speach = "ON"
-                            play_sound(FOPM_Talk[fo_config_voice][speach])
-                            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
                         end
@@ -1684,8 +1688,8 @@ function enter_rwy()
                 if TIME >= DELAY then
                     if not speak_only_essencials then
                         local speach = "OFF"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     else
                         DELAY = TIME + fo_speed
                     end
@@ -1695,8 +1699,8 @@ function enter_rwy()
             if STEP == 5 then
                 if TIME >= DELAY then
                     local rindex = math.random(5)
-                    play_sound(READY[fo_config_voice][rindex])
-                    DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+                    play_sound(READY[rindex])
+                    DELAY = TIME + (RDY[rindex].del)
                     STEP = 0
                     EXECUTE_ENRWY = false
                     COMPLETED_PROC.ENT_RWY_DONE = true
@@ -1731,8 +1735,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if ENG_1_THR == STABLE1_CHECK and ENG_2_THR == STABLE2_CHECK then
                     local speach = "STABLE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                     STEP = 2
                 else
                     STABLE1_CHECK = ENG_1_THR
@@ -1759,8 +1763,8 @@ function take_off_proc()
         if STEP == 2.5 then
             if TIME >= DELAY then
                 local speach = "TRHUST_SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
                 STEP = 3
             else
                 return
@@ -1770,18 +1774,18 @@ function take_off_proc()
             if TIME >= DELAY then
                 if math.floor(IND_AIRSPEED) == 100 then
                     local speach = "N100"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 end
                 if math.floor(IND_AIRSPEED) == V1_SPEED - 1 then
                     local speach = "V1"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 end
                 if math.floor(IND_AIRSPEED) >= VR_SPEED then
                     local speach = "ROTATE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                     STEP = 4
                 end
                 return
@@ -1802,8 +1806,8 @@ function take_off_proc()
                 if GNDAIR_SW == 0 then
                     if VERTICAL_SPEED > 500 then
                         local speach = "POSITIVE_RATE"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del)
                         STEP = 6
                     else
                         DELAY = TIME + 1
@@ -1820,8 +1824,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if fo_autoperform then
                     local speach = "GEAR_UP"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                     LG_Lever = 0
                     STEP = 7
                 else
@@ -1865,8 +1869,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "PACKS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1916,8 +1920,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "APU_BLEED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1930,8 +1934,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1945,8 +1949,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "APU_MASTER"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1959,8 +1963,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1974,8 +1978,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "ENGINE_MODE_SELECTOR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -1988,8 +1992,8 @@ function take_off_proc()
             if TIME >= DELAY then
                 if not speak_only_essencials then
                     local speach = "NORMAL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -2016,8 +2020,8 @@ function clean_up_auto()
                 if STEP_SPEACH == 0 then
                     if math.floor(IND_AIRSPEED) > FLAP_RETRACT_SPEED + 2 then
                         local speach = "SPEED_CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CLEAN = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
                         STEP_SPEACH = 1
                         return
                     else
@@ -2031,8 +2035,8 @@ function clean_up_auto()
                 if STEP_SPEACH == 2 then
                     if FLAPS_State ~= -1 then
                         local speach = FL_VOICE_SRCH
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CLEAN = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
                         STEP_SPEACH = 3
                     else
                         return
@@ -2049,8 +2053,8 @@ function clean_up_auto()
                 end
             else
                 local speach = FL_VOICE_SRCH
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CLEAN = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
                 STEP_CLEAN = 2
             end
         else
@@ -2062,8 +2066,8 @@ function clean_up_auto()
             if STEP_SPEACH == 0 then
                 if math.floor(IND_AIRSPEED) > SLAT_RETRACT_SPEED + 2 then
                     local speach = "SPEED_CHECK"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CLEAN = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
                     DELAY_CLEAN = TIME + 1.436
                     STEP_SPEACH = 1
                     return
@@ -2078,8 +2082,8 @@ function clean_up_auto()
             if STEP_SPEACH == 2 then
                 if FLAPS_State ~= -1 then
                     local speach = FL_VOICE_SRCH
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
                     STEP_SPEACH = 3
                 else
                     return
@@ -2112,8 +2116,8 @@ function flaps_commanded_change()
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
                 local speach = "SPEED_CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
                 STEP_CLEAN = 2
             else
                 return
@@ -2144,8 +2148,8 @@ function flaps_commanded_change()
             if TIME >= DELAY_CLEAN then
                 if FLAPS_State ~= -1 then
                     local speach = FL_VOICE_SRCH
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
                     STEP_CLEAN = 0
                     command_FLPS_1UP = false
                     EXECUTE_FLP = false
@@ -2165,8 +2169,8 @@ function flaps_commanded_change()
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
                 local speach = "SPEED_CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
                 lindex = math.floor((FLAPS_LEVER_State * 4) + 1)
                 STEP_CLEAN = 2
             else
@@ -2189,8 +2193,8 @@ function flaps_commanded_change()
             if TIME >= DELAY_CLEAN then
                 if FLAPS_State ~= -1 then
                     local speach = FL_VOICE_SRCH
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
                     STEP_CLEAN = 0
                     EXECUTE_FLP = false
                     command_FLPS_1DN = false
@@ -2216,8 +2220,8 @@ function gear_command()
             if TIME >= DELAY_CHECK then
                 if math.floor(IND_AIRSPEED) <= GEAR_RETRACTION_LIMIT then
                     local speach = "GEAR_UP"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     LG_Lever = 0
                     command_GUP = false
                     EXECUTE_GEAR = false
@@ -2239,8 +2243,8 @@ function gear_command()
             if TIME >= DELAY_CHECK then
                 if math.floor(IND_AIRSPEED) <= GEAR_EXTENTION_LIMIT then
                     local speach = "GEAR_DOWN"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del) + fo_speed
                     LG_Lever = 1
                     STEP_FLT = 2
                 else
@@ -2253,9 +2257,9 @@ function gear_command()
         if STEP_FLT == 2 then
             if LG_NG_State == 2 and LG_RG_State == 2 and LG_LG_State == 2 then
                 local speach = "GEAR_3GREENS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del[fo_config_voice])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
+                DELAY = TIME + (FO_voices_directory[speach].del)
                 STEP_FLT = 0
                 EXECUTE_GEAR = false
                 command_GDN = false
@@ -2271,8 +2275,8 @@ function ten_thausand_feet_CLB()
     if STEP == 0 then
         if fo_autoperform then
             local speach = "TEN_THAUSAND_FEET"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP = 2
         else
             DELAY = TIME + fo_speed
@@ -2283,8 +2287,8 @@ function ten_thausand_feet_CLB()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "EXTERIOR_LIGHTS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
             end
             DELAY = TIME + fo_speed
             STEP = 2.3
@@ -2317,8 +2321,8 @@ function ten_thausand_feet_CLB()
             if not speak_only_essencials then
                 if TIME >= DELAY_SPEACH then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 end
             else
                 DELAY = TIME + fo_speed
@@ -2349,8 +2353,8 @@ function ten_thausand_feet_CLB()
     if STEP == 5 then
         if TIME >= DELAY then
             local rindex = math.random(5)
-            play_sound(READY[fo_config_voice][rindex])
-            DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+            play_sound(READY[rindex])
+            DELAY = TIME + (RDY[rindex].del)
             STEP = 0
             EXECUTE_10FT_CLB = false
             COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = true
@@ -2374,8 +2378,8 @@ function ten_thausand_feet_DES()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "EXTERIOR_LIGHTS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
             end
             DELAY = TIME + fo_speed
             STEP = 1.3
@@ -2408,8 +2412,8 @@ function ten_thausand_feet_DES()
             if not speak_only_essencials then
                 if TIME >= DELAY_SPEACH then
                 local speach = "ON"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 end
             else
                 DELAY = TIME + fo_speed
@@ -2442,8 +2446,8 @@ function ten_thausand_feet_DES()
             if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.LDA_APP or APP_TYPE.FLS then
                 if not speak_only_essencials then
                     local speach = "LS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -2461,8 +2465,8 @@ function ten_thausand_feet_DES()
             if RAINING and ENG_MODEL == 0 then
                 if not speak_only_essencials then
                     local speach = "ENGINE_MODE_SELECTOR"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -2478,8 +2482,8 @@ function ten_thausand_feet_DES()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "IGNITION"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -2492,8 +2496,8 @@ function ten_thausand_feet_DES()
     if STEP == 6 then
         if TIME >= DELAY then
             local rindex = math.random(5)
-            play_sound(READY[fo_config_voice][rindex])
-            DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+            play_sound(READY[rindex])
+            DELAY = TIME + (RDY[rindex].del)
             STEP = 0
             EXECUTE_10FT_DES = false
             COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = true
@@ -2521,8 +2525,8 @@ function ap_discn_behaviour()
     if STEP_AP == 1 then
         if TIME >= DELAY_AP then
             local speach = "FLIGHT_DIRECTORS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
             DELAY_AP = TIME + fo_speed
             STEP_AP = 2
         else
@@ -2550,8 +2554,8 @@ function ap_discn_behaviour()
     if STEP_AP == 4 then
         if TIME >= DELAY_SPEACH then
             local speach = "OFF"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_AP = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY_AP = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_AP = 5
         else
             return
@@ -2582,8 +2586,8 @@ function go_arround()
         if STEP == 1 then
             if TIME >= DELAY then
                 local speach = "GO_ARROUND"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
                 STEP = 2
             else
                 return
@@ -2592,8 +2596,8 @@ function go_arround()
         if STEP == 2 then
             if TIME >= DELAY then
                 local speach = "TOGA"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + 0.5
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + 0.5
                 STEP = 3
             else
                 return
@@ -2602,8 +2606,8 @@ function go_arround()
         if STEP == 3 then
             if TIME >= DELAY then
                 local speach = FLUP_VOICE_SRCH
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FLAP_POS[speach].del) + fo_speed
                 command_once(FLAPS_1UP)
                 STEP = 4
             else
@@ -2614,8 +2618,8 @@ function go_arround()
             if TIME >= DELAY then
                 if VERTICAL_SPEED > 700 then
                     local speach = "POSITIVE_RATE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del)
                     STEP = 5
                 else
                     return
@@ -2631,8 +2635,8 @@ function go_arround()
                 end
                 if command_GUP then
                     local speach = "GEAR_UP"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     LG_Lever = 0
                     STEP = 6
                     EXECUTE_GEAR = false
@@ -2654,8 +2658,8 @@ function go_arround()
                     command_GUP = false
                 else
                     local speach = "FLIGHT_DIRECTORS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
                     DELAY = TIME + fo_speed
                     STEP = 7
                 end
@@ -2699,8 +2703,8 @@ function go_arround()
         if STEP == 10 then
             if TIME >= DELAY_SPEACH then
                 local speach = "ON"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 STEP = 0
                 command_GUP = false
                 EXECUTE_GEAR = false
@@ -2720,8 +2724,8 @@ function touch_down()
             if TIME >= DELAY then
                 if INBD_SPOILERS == 1 then
                     local speach = "SPOILERS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     STEP = 1
                 else
                     return
@@ -2734,8 +2738,8 @@ function touch_down()
             if TIME >= DELAY then
                 if ENG_1_REV == 2 and ENG_2_REV == 2 then
                     local speach = "REVERSE_GREEN"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     STEP = 2
                     CHECK_SPEED = math.floor(IND_AIRSPEED) - 10
                 else
@@ -2749,8 +2753,8 @@ function touch_down()
             if TIME >= DELAY then
                 if math.floor(IND_AIRSPEED) < CHECK_SPEED then
                     local speach = "DECEL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     STEP = 3
                 else
                     return
@@ -2763,8 +2767,8 @@ function touch_down()
             if TIME >= DELAY then
                 if math.floor(IND_AIRSPEED) < 60 then
                     local speach = "N60_KNOTS"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                     STEP = 0
                     COMPLETED_PROC.DECEL_CALLOUTS = true
                 end
@@ -2787,8 +2791,8 @@ function after_landing_proc()
     if STEP == 1 then
         if TIME >= DELAY then
             local speach = "CHECK_TIME"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             command_once(CRONO_SET_PB)
             STEP = 2
         else
@@ -2799,8 +2803,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "WEATHER_RADAR"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -2813,8 +2817,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -2828,8 +2832,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "PWS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -2842,8 +2846,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -2857,8 +2861,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "ENGINE_MODE_SELECTOR"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -2871,8 +2875,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "NORMAL"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -2886,8 +2890,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "FLAPS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -2915,8 +2919,8 @@ function after_landing_proc()
             else
                 if not speak_only_essencials then
                     local speach = FL_VOICE_SRCH
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FLAP_POS[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FLAP_POS[speach].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
                 end
@@ -2930,7 +2934,7 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "APU_MASTER"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
+                play_sound(FOPM_Talk[speach])
             end
             command_once(APU_MASTER_PB)
             DELAY = TIME + 6
@@ -2943,8 +2947,8 @@ function after_landing_proc()
         if TIME >= DELAY then
            if not speak_only_essencials then
                 local speach = "STARTING_APU"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
            else
                 DELAY = TIME + fo_speed
            end
@@ -2958,8 +2962,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "TERRAIN"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -2972,8 +2976,8 @@ function after_landing_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -3025,8 +3029,8 @@ function after_landing_proc()
     if STEP == 17 then
         if TIME >= DELAY then
            local rindex = math.random(5)
-           play_sound(READY[fo_config_voice][rindex])
-           DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+           play_sound(READY[rindex])
+           DELAY = TIME + (RDY[rindex].del)
            STEP = 0
            EXECUTE_AL_PROC = false
            COMPLETED_PROC.AL_PROC = true
@@ -3041,8 +3045,8 @@ function brake_temp_check()
     if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
         if not speak_only_essencials then
             local speach = "BRAKE_FAN"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
         else
             DELAY = TIME + fo_speed
         end
@@ -3067,8 +3071,8 @@ function vacating_rwy()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "EXTERIOR_LIGHTS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
             end
             DELAY = TIME + fo_speed
             STEP = 2
@@ -3100,8 +3104,8 @@ function vacating_rwy()
             if not speak_only_essencials then
                 if TIME >= DELAY_SPEACH then
                     local speach = "SET"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                    play_sound(FOPM_Talk[speach])
+                    DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 else
                     return
                 end
@@ -3118,8 +3122,8 @@ function vacating_rwy()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "TCAS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -3132,8 +3136,8 @@ function vacating_rwy()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -3161,8 +3165,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "APU_BLEED"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -3175,8 +3179,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "ON"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -3190,8 +3194,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "FUEL_PUMPS"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME + fo_speed
             end
@@ -3224,8 +3228,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -3240,8 +3244,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "ATC"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
             else
                 DELAY = TIME +fo_speed
             end
@@ -3254,8 +3258,8 @@ function parking_proc()
         if TIME >= DELAY then
             if not speak_only_essencials then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             else
                 DELAY = TIME + fo_speed
             end
@@ -3268,8 +3272,8 @@ function parking_proc()
     if STEP == 9 then
         if TIME >= DELAY then
             local rindex = math.random(5)
-            play_sound(READY[fo_config_voice][rindex])
-            DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+            play_sound(READY[rindex])
+            DELAY = TIME + (RDY[rindex].del)
             STEP = 0
             COMPLETED_PROC.PARK_PROC = true
         else
@@ -3282,8 +3286,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 0 then
         if TAXILT_SW ~= 0 then
             local speach = "YELLOW_HYDRAULIC_PUMP"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 1
         else
             return
@@ -3292,8 +3296,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 1 then
         if TIME >= DELAY then
             local speach = "ON"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             Y_ELEC_PUMP_PB = 1
             STEP_ONEENG = 2
         else
@@ -3313,8 +3317,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             local speach = "YELLOW_HYDRAULIC_PUMP"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 4
         else
             return
@@ -3324,8 +3328,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "OFF"
             Y_ELEC_PUMP_PB = 0
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 5
         else
             return
@@ -3334,8 +3338,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 5 then
         if TIME >= DELAY then
             local speach = "APU_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 6
         else
             return
@@ -3347,8 +3351,8 @@ function one_engine_taxi_DEP()
                 command_once(APU_BLEED_PB)
             end
             local speach = "ON"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 7
         else
             return
@@ -3357,8 +3361,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 7 then
         if TIME >= DELAY then
             local speach = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 8
         else
             return
@@ -3367,7 +3371,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 8 then
         if TIME >= DELAY then
             local speach = "IGNITION"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
+            play_sound(FOPM_Talk[speach])
             ENG_Mode = 2
             DELAY = TIME + 10
             STEP_ONEENG = 9
@@ -3379,8 +3383,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "STARTING_NUMBER_2"
             ENG_2_Master = 1
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 10
         else
             return
@@ -3390,8 +3394,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             if ENG_2_AVAIL == 1 then
                 local speach = "ENGINE2"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
                 STEP_ONEENG = 11
             else
                 return
@@ -3403,8 +3407,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 11 then
         if TIME >= DELAY then
             local speach = "AVAIL"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 12
             START_ENG2 = false
         else
@@ -3415,8 +3419,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "CHECK_TIME"
             command_once(CRONO_SET_PB)
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 13
         else
             return
@@ -3425,8 +3429,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 13 then
         if TIME >= DELAY then
             local speach = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 14
         else
             return
@@ -3436,8 +3440,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "NORMAL"
             ENG_Mode = 1
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 15
         else
             return
@@ -3446,8 +3450,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 15 then
         if TIME >= DELAY then
             local speach = "APU_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 16
         else
             return
@@ -3458,13 +3462,13 @@ function one_engine_taxi_DEP()
             if not APU_TO_PACKS then
                 local speach = "OFF"
                 command_once(APU_BLEED_PB)
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 STEP_ONEENG = 17
             else
                 local speach = "ON"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
                 STEP_ONEENG = 19
             end
         end
@@ -3472,8 +3476,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 17 then
         if TIME >= DELAY then
             local speach = "APU_MASTER"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 18
         else
             return
@@ -3483,8 +3487,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "OFF"
             command_once(APU_MASTER_PB)
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 19
         else
             return
@@ -3493,8 +3497,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 19 then
         if TIME >= DELAY then
             local speach = "CROSS_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 20
         else
             return
@@ -3504,8 +3508,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "AUTO"
             XBLEED_SW = 1
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 21
         else
             return
@@ -3514,8 +3518,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 21 then
         if TIME >= DELAY then
             local speach = "ECAM_STATUS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 22
         else
             return
@@ -3524,8 +3528,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 22 then
         if TIME >= DELAY then
             local speach = "CHECK"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             DELAY = TIME + 0.839
             STEP_ONEENG = 22.1
         else
@@ -3535,8 +3539,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 22.1 then
         if TIME >= DELAY then
             local speach = "ENGINE2"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 22.2
         else
             return
@@ -3545,8 +3549,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 22.2 then
         if TIME >= DELAY then
             local speach = "ANTI_ICE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 22.3
         end
     end
@@ -3556,8 +3560,8 @@ function one_engine_taxi_DEP()
                 command_once(ANTI_ICE_ENG2_PB)
             end
             local speach = "SET"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 23
         else
             return
@@ -3589,8 +3593,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 25 then
         if TIME >= DELAY then
             local speach = "AUTOBRAKES"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 26
         else
             return
@@ -3600,8 +3604,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             local speach = "MAX"
             command_once(AUTOBRK_MAX_PB)
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 27
         else
             return
@@ -3619,8 +3623,8 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 28 then
         if TIME >= DELAY then
             local rindex = math.random(5)
-            play_sound(READY[fo_config_voice][rindex])
-            DELAY = TIME + (RDY[rindex].del[fo_config_voice])
+            play_sound(READY[rindex])
+            DELAY = TIME + (RDY[rindex].del)
             STEP_ONEENG = 29
         else
             return
@@ -3630,8 +3634,8 @@ function one_engine_taxi_DEP()
         if TIME >= DELAY then
             if CRONO >= 180 then
                 local rindex = math.random(3)
-                play_sound(READY_FOR_TO[fo_config_voice][rindex])
-                DELAY = TIME + (RDY_TO_DIR[rindex].del[fo_config_voice]) + fo_speed
+                play_sound(READY_FOR_TO[rindex])
+                DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
                 STEP_ONEENG = 30
             else
                 return
@@ -3678,8 +3682,8 @@ function one_engine_taxi_ARR()
     if STEP_ONEENG == 1 then
         if TIME >= DELAY then
             local speach = "ENGINE_2_SHUTDOWN"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_ONEENG = 2
         else
             return
@@ -3697,8 +3701,8 @@ function one_engine_taxi_ARR()
     if STEP_ONEENG == 3 then
         if TIME >= DELAY then
             local speach = "YELLOW_HYDRAULIC_PUMP"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 4
         else
             return
@@ -3708,8 +3712,8 @@ function one_engine_taxi_ARR()
         if TIME >= DELAY then
             local speach = "ON"
             Y_ELEC_PUMP_PB = 1
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice]) + fo_speed
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
             STEP_ONEENG = 0
             ONEENG_TAXI_ARR_AVAIL = false
             EXECUTE_OETA = false
@@ -3727,8 +3731,8 @@ function checklist_before_start()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "BEFORE_START_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -3737,8 +3741,8 @@ function checklist_before_start()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "EFB_PREPARATION"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -3749,8 +3753,8 @@ function checklist_before_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "COMPLETED"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -3762,8 +3766,8 @@ function checklist_before_start()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "AIRCRAFT_PBN_CAPABILITY"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -3774,8 +3778,8 @@ function checklist_before_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -3787,8 +3791,8 @@ function checklist_before_start()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "COCKPIT_PREPARATION"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -3800,8 +3804,8 @@ function checklist_before_start()
             if response_CHECK then
                 if COMPLETED_PROC.PF_DONE then
                     local speach = "COMPLETED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     if APP_TYPE.AR_DEP then
                         STEP_CHECK = 6.1
                     else
@@ -3818,8 +3822,8 @@ function checklist_before_start()
     if STEP_CHECK == 6.1 then
         if TIME >= DELAY_CHECK then
             local speach = "NAVAIDS_DESELECTION"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6.2
             response_CHECK = false
         else
@@ -3830,8 +3834,8 @@ function checklist_before_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 7
             else
                 return
@@ -3843,8 +3847,8 @@ function checklist_before_start()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "GEAR_PINS_AND_COVERS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -3855,8 +3859,8 @@ function checklist_before_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "REMOVED"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 9
             else
                 return
@@ -3868,8 +3872,8 @@ function checklist_before_start()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "SIGNS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -3881,8 +3885,8 @@ function checklist_before_start()
             if response_CHECK then
                 if SEATBELTS_SW == 1 and SIGNS_STATE == 1 then
                     local speach = "ON_AUTO"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 11
                 end
             else
@@ -3895,8 +3899,8 @@ function checklist_before_start()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "ADIRS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -3908,8 +3912,8 @@ function checklist_before_start()
             if response_CHECK then
                 if ADIR_1_STATE == 1 and ADIR_2_STATE == 1 and ADIR_3_STATE == 1 then
                     local speach = "NAV"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 13
                 end
             else
@@ -3922,8 +3926,8 @@ function checklist_before_start()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "FUEL_QUANTITY"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 14
             response_CHECK = false
         else
@@ -3934,8 +3938,8 @@ function checklist_before_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 15
             else
                 return
@@ -3947,8 +3951,8 @@ function checklist_before_start()
     if STEP_CHECK == 15 then
         if TIME >= DELAY_CHECK then
             local speach = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 16
             response_CHECK = false
         else
@@ -3960,8 +3964,8 @@ function checklist_before_start()
             if response_CHECK then
                 if CM_QNH == FO_QNH then
                     local speach = "SET"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 17
                 end
             else
@@ -3974,8 +3978,8 @@ function checklist_before_start()
     if STEP_CHECK == 17 then
         if TIME >= DELAY_CHECK then
             local speach = "DOWN_TO_THE_LINE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_BS_DTL = false
             CHECKLIST.BS_DTL = true
@@ -3992,8 +3996,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "BEFORE_START_CHECKLIST_BELOW_THE_LINE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4002,8 +4006,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "EFB"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4014,8 +4018,8 @@ function checklist_before_start_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -4027,8 +4031,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "ATC"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4040,8 +4044,8 @@ function checklist_before_start_BTL()
             if response_CHECK then
                 if TCAS_SW == 2 then
                     local speach = "SET"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 5
                 end
             else
@@ -4054,8 +4058,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "WINDOWS_AND_DOORS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -4075,8 +4079,8 @@ function checklist_before_start_BTL()
                 DOOR_4L == 0 and
                 DOOR_4R == 0 then
                     local speach = "CLOSE"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -4089,8 +4093,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "BEACON"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -4102,8 +4106,8 @@ function checklist_before_start_BTL()
             if response_CHECK then
                 if BEACON_STATE == 1 then
                     local speach = "ON"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 9
                 end
             else
@@ -4116,8 +4120,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "THRUST_LEVERS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -4128,8 +4132,8 @@ function checklist_before_start_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "IDLE"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 11
             else
                 return
@@ -4141,8 +4145,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "PARKING_BRAKE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -4153,8 +4157,8 @@ function checklist_before_start_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 13
             else
                 return
@@ -4166,8 +4170,8 @@ function checklist_before_start_BTL()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_BS_CL = false
             CHECKLIST.BS_CL = true
@@ -4182,8 +4186,8 @@ function checklist_after_start()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "AFTER_START_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4192,8 +4196,8 @@ function checklist_after_start()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "ANTI_ICE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4204,8 +4208,8 @@ function checklist_after_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -4217,8 +4221,8 @@ function checklist_after_start()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "ECAM_STATUS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4229,8 +4233,8 @@ function checklist_after_start()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -4242,8 +4246,8 @@ function checklist_after_start()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "PITCHTRM"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -4255,8 +4259,8 @@ function checklist_after_start()
             if response_CHECK then
                 if PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 then
                     local speach = "SET"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -4269,8 +4273,8 @@ function checklist_after_start()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "RUDDER_TRIM"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -4282,8 +4286,8 @@ function checklist_after_start()
             if response_CHECK then
                 if RUDDER_TRIM_POS < 0.2 and RUDDER_TRIM_POS > -0.2 then
                     local speach = "N0"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 9
                 end
             else
@@ -4296,8 +4300,8 @@ function checklist_after_start()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_AS_CL = false
             CHECKLIST.AS_CL = true
@@ -4312,8 +4316,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "BEFORE_TAKEOFF_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4322,8 +4326,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "FLIGHT_CONTROLS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4334,8 +4338,8 @@ function checklist_before_takeoff()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -4347,8 +4351,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "FLY_INSTRUMENTS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4359,8 +4363,8 @@ function checklist_before_takeoff()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -4372,8 +4376,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "BRIEFING"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -4385,8 +4389,8 @@ function checklist_before_takeoff()
             if response_CHECK then
                 if COMPLETED_PROC.TO_BRIEFING then
                     local speach = "COMPLETED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -4399,8 +4403,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "FLAPS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -4411,8 +4415,8 @@ function checklist_before_takeoff()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = CONFIG_VOICE_SRCH
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FLAP_CONFIG[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FLAP_CONFIG[speach].del)
                 STEP_CHECK = 9
             else
                 return
@@ -4424,8 +4428,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "V1_VR_V2_FLEX_TEMP"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -4436,8 +4440,8 @@ function checklist_before_takeoff()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 11
             else
                 return
@@ -4449,8 +4453,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "ECAM_MEMO"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -4461,8 +4465,8 @@ function checklist_before_takeoff()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "TAKEOFF_NO_BLUE"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 13
             else
                 return
@@ -4474,8 +4478,8 @@ function checklist_before_takeoff()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "DOWN_TO_THE_LINE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_BTO_DTL = false
             CHECKLIST.BTO_DTL = true
@@ -4490,8 +4494,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4500,8 +4504,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "TAKEOFF_RUNWAY"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4512,8 +4516,8 @@ function checklist_before_takeoff_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CONFIRM"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -4525,8 +4529,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "NAV_ON_FMA"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4538,8 +4542,8 @@ function checklist_before_takeoff_BTL()
             if response_CHECK then
                 if string.find(FMA_B_STATE, "NAV") then
                     local speach = "CHECK"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 5
                 end
             else
@@ -4552,8 +4556,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "CABIN_CREW"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -4564,8 +4568,8 @@ function checklist_before_takeoff_BTL()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "ADVISED"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 7
             else
                 return
@@ -4577,8 +4581,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "TCAS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -4590,8 +4594,8 @@ function checklist_before_takeoff_BTL()
             if response_CHECK then
                 if TCAS_SW == 4 then
                     local speach = "TA_RA"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 9
                 end
             else
@@ -4604,8 +4608,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -4618,14 +4622,14 @@ function checklist_before_takeoff_BTL()
                 if RAINING and ENG_MODEL == 0 then
                     if ENG_Mode == 2 then
                         local speach = "IGNITION"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                         STEP_CHECK = 11
                     end
                 elseif ENG_Mode == 1 then
                     local speach = "NORMAL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 11
                 end
             else
@@ -4638,8 +4642,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "PACKS_AND_APU_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -4652,22 +4656,22 @@ function checklist_before_takeoff_BTL()
                 if PACKS_FOR_TO then
                     if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                         STEP_CHECK = 13
                     end
                 elseif APU_TO_PACKS then
                     if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 1 then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                         STEP_CHECK = 13
                     end
                 else
                     if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 then
                         local speach = "CHECK"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                         STEP_CHECK = 13
                     end
                 end
@@ -4681,8 +4685,8 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_BTO_CL = false
             CHECKLIST.BTO_CL = true
@@ -4697,8 +4701,8 @@ function checklist_after_takeoff()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "AFTER_TAKEOFF_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4707,8 +4711,8 @@ function checklist_after_takeoff()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "LANDING_GEAR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4720,8 +4724,8 @@ function checklist_after_takeoff()
             if response_CHECK then
                 if LG_Lever == 0 then
                     local speach = "UP"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 3
                 end
             else
@@ -4734,8 +4738,8 @@ function checklist_after_takeoff()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "FLAPS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4747,8 +4751,8 @@ function checklist_after_takeoff()
             if response_CHECK then
                 if FLAPS_LEVER_State == 0 then
                     local speach = "RETRACTED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 5
                 end
             else
@@ -4761,8 +4765,8 @@ function checklist_after_takeoff()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "PACKS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -4774,8 +4778,8 @@ function checklist_after_takeoff()
             if response_CHECK then
                 if PACK_1_STATE == 1 and PACK_2_STATE == 1 then
                     local speach = "ON"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -4788,8 +4792,8 @@ function checklist_after_takeoff()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_ATO_CL = false
             CHECKLIST.ATO_CL = true
@@ -4804,8 +4808,8 @@ function checklist_climb()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "CLIMB_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -4814,8 +4818,8 @@ function checklist_climb()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4826,8 +4830,8 @@ function checklist_climb()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -4839,8 +4843,8 @@ function checklist_climb()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_CLB_CL = false
             CHECKLIST.CLB_CL = true
@@ -4855,8 +4859,8 @@ function checklist_approach()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "APPROACH_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             if APP_TYPE.RNAVAR_APP then
                 STEP_CHECK = 0.1
             else
@@ -4869,8 +4873,8 @@ function checklist_approach()
     if STEP_CHECK == 0.1 then
         if TIME >= DELAY_CHECK then
             local speach = "NAVAIDS_DESELECTION"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0.2
             response_CHECK = false
         else
@@ -4881,8 +4885,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 0.3
             else
                 return
@@ -4894,8 +4898,8 @@ function checklist_approach()
     if STEP_CHECK == 0.3 then
         if TIME >= DELAY_CHECK then
             local speach = "GPS_NAV_MODE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0.4
             response_CHECK = false
         else
@@ -4906,8 +4910,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "BOTH_NAV"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 1
             else
                 return
@@ -4919,8 +4923,8 @@ function checklist_approach()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "BRIEFING"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -4932,8 +4936,8 @@ function checklist_approach()
             if response_CHECK then
                 if COMPLETED_PROC.DES_BRIEFING then
                     local speach = "COMPLETED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 3
                 end
             else
@@ -4946,8 +4950,8 @@ function checklist_approach()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "ECAM_STATUS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -4958,8 +4962,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 if APP_TYPE.CAT_II_III then
                     STEP_CHECK = 4.1
                 else
@@ -4975,8 +4979,8 @@ function checklist_approach()
     if STEP_CHECK == 4.1 then
         if TIME >= DELAY_CHECK then
             local speach = "SIGNS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4.2
             response_CHECK = false
         else
@@ -4987,8 +4991,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "ON_ON"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -5000,8 +5004,8 @@ function checklist_approach()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5012,8 +5016,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 7
             else
                 return
@@ -5025,8 +5029,8 @@ function checklist_approach()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "MINIMUMS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -5037,8 +5041,8 @@ function checklist_approach()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 9
             else
                 return
@@ -5050,8 +5054,8 @@ function checklist_approach()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -5064,14 +5068,14 @@ function checklist_approach()
                 if RAINING and ENG_MODEL == 0 then
                     if ENG_Mode == 2 then
                         local speach = "IGNITION"
-                        play_sound(FOPM_Talk[fo_config_voice][speach])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                         STEP_CHECK = 11
                     end
                 elseif ENG_Mode == 1 then
                     local speach = "NORMAL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 11
                 end
             else
@@ -5084,8 +5088,8 @@ function checklist_approach()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_APP_CL = false
             CHECKLIST.APP_CL = true
@@ -5100,8 +5104,8 @@ function checklist_landing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "LANDING_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -5110,8 +5114,8 @@ function checklist_landing()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "CABIN_CREW"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -5122,8 +5126,8 @@ function checklist_landing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "ADVISED"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -5135,8 +5139,8 @@ function checklist_landing()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "AUTO_TRHUST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -5147,8 +5151,8 @@ function checklist_landing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "CHECK"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -5160,8 +5164,8 @@ function checklist_landing()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "AUTOBRAKES"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5173,12 +5177,12 @@ function checklist_landing()
             if response_CHECK then
                 if AUTOBRK_LOW == 1 then
                     local speach = "LOW"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 elseif AUTOBRK_MED == 1 then
                     local speach = "MEDIUM"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 end
                 STEP_CHECK = 7
             else
@@ -5191,8 +5195,8 @@ function checklist_landing()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "ECAM_MEMO"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -5214,8 +5218,8 @@ function checklist_landing()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_LND_CL = false
             CHECKLIST.LND_CL = true
@@ -5230,8 +5234,8 @@ function checklist_after_landing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "AFTER_LANDING_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -5240,8 +5244,8 @@ function checklist_after_landing()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "FLAPS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -5252,8 +5256,8 @@ function checklist_after_landing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = FL_VOICE_SRCH
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FLAP_POS[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FLAP_POS[speach].del)
                 STEP_CHECK = 3
             else
                 return
@@ -5265,8 +5269,8 @@ function checklist_after_landing()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "SPOILERS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -5278,8 +5282,8 @@ function checklist_after_landing()
             if response_CHECK then
                 if SPDBRK_Lever == 0 then
                     local speach = "DISARMED"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 5
                 end
             else
@@ -5292,8 +5296,8 @@ function checklist_after_landing()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "APU"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5305,12 +5309,12 @@ function checklist_after_landing()
             if response_CHECK then
                 if APU_STATE == 1 then
                     local speach = "AVAIL"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 else
                     local speach = "STARTING_APU"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 end
                 STEP_CHECK = 7
             else
@@ -5323,8 +5327,8 @@ function checklist_after_landing()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "WEATHER_RADAR"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -5336,8 +5340,8 @@ function checklist_after_landing()
             if response_CHECK then
                 if RADAR_SYS_SW == 1 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 9
                 end
             else
@@ -5350,8 +5354,8 @@ function checklist_after_landing()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "PWS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -5363,8 +5367,8 @@ function checklist_after_landing()
             if response_CHECK then
                 if PWS_SW == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 11
                 end
             else
@@ -5377,8 +5381,8 @@ function checklist_after_landing()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_AL_CL = false
             CHECKLIST.AL_CL = true
@@ -5393,8 +5397,8 @@ function checklist_parking()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "PARKING_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -5403,8 +5407,8 @@ function checklist_parking()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "APU_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -5416,8 +5420,8 @@ function checklist_parking()
             if response_CHECK then
                 if APU_BLEED_STATE == 1 then
                     local speach = "ON"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 3
                 end
             else
@@ -5430,8 +5434,8 @@ function checklist_parking()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "ENGINES"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -5443,8 +5447,8 @@ function checklist_parking()
             if response_CHECK then
                 if ENG_1_Master == 0 and ENG_2_Master == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 5
                 end
             else
@@ -5457,8 +5461,8 @@ function checklist_parking()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "SEAT_BELTS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5470,8 +5474,8 @@ function checklist_parking()
             if response_CHECK then
                 if SEATBELTS_SW == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -5484,8 +5488,8 @@ function checklist_parking()
    if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "EXTERIOR_LIGHTS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -5496,8 +5500,8 @@ function checklist_parking()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 9
             else
                 return
@@ -5509,8 +5513,8 @@ function checklist_parking()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "FUEL_PUMPS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -5527,8 +5531,8 @@ function checklist_parking()
                    FPUMP_LTANK_1_STATE == 0 and
                    FPUMP_LTANK_2_STATE == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 11
                 end
             else
@@ -5541,8 +5545,8 @@ function checklist_parking()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "PARKING_BRAKE"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -5554,8 +5558,8 @@ function checklist_parking()
             if response_CHECK then
                 if PRKBRK_SW == 1 then
                     local speach = "ON"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 13
                 end
             else
@@ -5568,8 +5572,8 @@ function checklist_parking()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "EFB"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 15
             response_CHECK = false
         else
@@ -5580,8 +5584,8 @@ function checklist_parking()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "SET"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 16
             else
                 return
@@ -5593,8 +5597,8 @@ function checklist_parking()
     if STEP_CHECK == 16 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_PARK_CL = false
             CHECKLIST.PARK_CL = true
@@ -5622,8 +5626,8 @@ function checklist_securing()
     if STEP_CHECK == 0 then
         if TIME >= DELAY_CHECK then
             local speach = "SECURING_CHECKLIST"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 1
         else
             return
@@ -5632,8 +5636,8 @@ function checklist_securing()
     if STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
             local speach = "ADIRS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 2
             response_CHECK = false
         else
@@ -5645,8 +5649,8 @@ function checklist_securing()
             if response_CHECK then
                 if ADIR_1_STATE == 0 and ADIR_2_STATE == 0 and ADIR_3_STATE == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 3
                 end
             else
@@ -5659,8 +5663,8 @@ function checklist_securing()
     if STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
             local speach = "OXYGEN"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 4
             response_CHECK = false
         else
@@ -5671,8 +5675,8 @@ function checklist_securing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 5
             else
                 return
@@ -5684,8 +5688,8 @@ function checklist_securing()
     if STEP_CHECK == 5 then
         if TIME >= DELAY_CHECK then
             local speach = "APU_BLEED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 6
             response_CHECK = false
         else
@@ -5697,8 +5701,8 @@ function checklist_securing()
             if response_CHECK then
                 if APU_BLEED_STATE == 0 then
                     local speach = "OFF"
-                    play_sound(FOPM_Talk[fo_config_voice][speach])
-                    ELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                    play_sound(FOPM_Talk[speach])
+                    ELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                     STEP_CHECK = 7
                 end
             else
@@ -5711,8 +5715,8 @@ function checklist_securing()
     if STEP_CHECK == 7 then
         if TIME >= DELAY_CHECK then
             local speach = "EMERGENCY_EXIT_LIGHTS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 8
             response_CHECK = false
         else
@@ -5735,8 +5739,8 @@ function checklist_securing()
     if STEP_CHECK == 9 then
         if TIME >= DELAY_CHECK then
             local speach = "NO_PORTABLE_SIGNS"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 10
             response_CHECK = false
         else
@@ -5747,8 +5751,8 @@ function checklist_securing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 11
             else
                 return
@@ -5760,8 +5764,8 @@ function checklist_securing()
     if STEP_CHECK == 11 then
         if TIME >= DELAY_CHECK then
             local speach = "APU_AND_BATTERY"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 12
             response_CHECK = false
         else
@@ -5772,8 +5776,8 @@ function checklist_securing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 13
             else
                 return
@@ -5785,8 +5789,8 @@ function checklist_securing()
     if STEP_CHECK == 13 then
         if TIME >= DELAY_CHECK then
             local speach = "EFB"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 14
             response_CHECK = false
         else
@@ -5797,8 +5801,8 @@ function checklist_securing()
         if TIME >= DELAY_CHECK then
             if response_CHECK then
                 local speach = "OFF"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 STEP_CHECK = 15
             else
                 return
@@ -5810,8 +5814,8 @@ function checklist_securing()
     if STEP_CHECK == 15 then
         if TIME >= DELAY_CHECK then
             local speach = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_SEC_CL = false
             CHECKLIST.SEC_CL = true
@@ -5968,8 +5972,8 @@ function phase_check()
         TXT_PHASE = "Taxi In"
         if CRONO > 180 and not COMPLETED_PROC.OETA_DONE and not MINUTE3 then
             local speach = "CRONO3"
-            play_sound(FOPM_Talk[fo_config_voice][speach])
-            DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+            play_sound(FOPM_Talk[speach])
+            DELAY = TIME + (FO_voices_directory[speach].del)
             ONEENG_TAXI_ARR_AVAIL = true
             MINUTE3 = true
         end
@@ -6064,9 +6068,9 @@ function FO_main_logic()
         if not PASSED_TRANS_ALT then
             if TRANSITION_ALT <= math.floor(IND_ALTITUDE) then
                 local speach = "TRNS_ALT"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 PASSED_TRANS_ALT = true
                 PASSED_TRANS_LVL = false
             end
@@ -6085,9 +6089,9 @@ function FO_main_logic()
         if not PASSED_TRANS_LVL then
             if TRANSITION_LVL >= math.floor(IND_ALTITUDE) then
                 local speach = "TRNS_LVL"
-                play_sound(FOPM_Talk[fo_config_voice][speach])
-                DELAY = TIME + (FO_voices_directory[speach].del[fo_config_voice])
-                DELAY_CHECK = TIME + (FO_voices_directory[speach].del[fo_config_voice])
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
+                DELAY_CHECK = TIME + (FO_voices_directory[speach].del)
                 PASSED_TRANS_ALT = false
                 PASSED_TRANS_LVL = true
             end
@@ -6476,8 +6480,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if not COMPLETED_PROC.TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
                     local bindex = math.random(4)
-                    play_sound(BRIEFING_CONF[fo_config_voice][bindex])
-                    DELAY = TIME + (BRIEF_CONF[bindex].del[fo_config_voice])
+                    play_sound(BRIEFING_CONF[bindex])
+                    DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.TO_BRIEFING = true
                     DELAY = TIME + 3
                 end
@@ -6564,8 +6568,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if not COMPLETED_PROC.DES_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
                     local bindex = math.random(4)
-                    play_sound(BRIEFING_CONF[fo_config_voice][bindex])
-                    DELAY = TIME + (BRIEF_CONF[bindex].del[fo_config_voice])
+                    play_sound(BRIEFING_CONF[bindex])
+                    DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.DES_BRIEFING = true
                     DELAY = TIME + 3
                 end
@@ -6586,6 +6590,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         imgui.Spacing()
         imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("General Settings")
         imgui.Spacing()
         local setting_change, change = imgui.Checkbox("FO Auto Perfomr", fo_autoperform)
         if setting_change then

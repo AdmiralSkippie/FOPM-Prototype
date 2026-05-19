@@ -5,6 +5,7 @@ Arreglar APU BLEED speach
 Arreglar el speach "All id done here"
 identificar mangspd o selspd
 hacer procedimientos o cortarlos si es necesario
+CHeckear bien los motores (usar el IMGUI)
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra

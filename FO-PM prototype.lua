@@ -6211,6 +6211,7 @@ local WND_MAIN = true
 local WND_BREAFING = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
 local setting_change = false
+local acf_neo_type = "N"
 
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
@@ -6420,24 +6421,62 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
+        -- ACF/ENG TYPES
         if FLT_PHASE.PREFLIGHT then
-            if ENG_MODEL == 0 then
-                imgui.TextUnformatted("Aircraft Type: A320-232")
-                imgui.TextUnformatted("Engine: IAE V2527-A5")
-            elseif ENG_MODEL == 1 then
-                imgui.TextUnformatted("Aircraft Type: A320-214")
-                imgui.TextUnformatted("Engine: CFM56-5B4")
-            elseif ENG_MODEL == 2 then
-                imgui.TextUnformatted("Aircraft Type: A320-271N")
-                imgui.TextUnformatted("Engine: PW 1127G-JM")
-            elseif ENG_MODEL == 3 then
-                imgui.TextUnformatted("Aircraft Type: A320-251N")
-                imgui.TextUnformatted("Engine: CFM LEAP-1A26")
+            if ACF_ICAO == "A319" then
+                if ENG_MODEL == 0 then
+                    imgui.TextUnformatted("Aircraft Type: A320-232")
+                    imgui.TextUnformatted("Engine: IAE V2527-A5")
+                elseif ENG_MODEL == 1 then
+                    imgui.TextUnformatted("Aircraft Type: A320-214")
+                    imgui.TextUnformatted("Engine: CFM56-5B4")
+                end
+            end
+            if ACF_ICAO == "A320" or ACF_ICAO == "A20N" then
+                if ENG_MODEL == 0 then
+                    imgui.TextUnformatted("Aircraft Type: A320-232")
+                    imgui.TextUnformatted("Engine: IAE V2527-A5")
+                elseif ENG_MODEL == 1 then
+                    imgui.TextUnformatted("Aircraft Type: A320-214")
+                    imgui.TextUnformatted("Engine: CFM56-5B4")
+                elseif ENG_MODEL == 2 then
+                    imgui.TextUnformatted("Aircraft Type: A320-271N")
+                    imgui.TextUnformatted("Engine: PW 1127G-JM")
+                elseif ENG_MODEL == 3 then
+                    imgui.TextUnformatted("Aircraft Type: A320-251N")
+                    imgui.TextUnformatted("Engine: CFM LEAP-1A26")
+                end
+            end
+            if ACF_ICAO == "A321" then
+                if ENG_MODEL == 0 then
+                    imgui.TextUnformatted("Aircraft Type: A321-231")
+                    imgui.TextUnformatted("Engine: IAE V2533-A5")
+                elseif ENG_MODEL == 1 then
+                    imgui.TextUnformatted("Aircraft Type: A321-211")
+                    imgui.TextUnformatted("Engine: CFM56-5B3")
+                end
+            end
+            if ACF_ICAO == "A21N" then
+                if FUEL_ACF_CONFIG == 1 then
+                    acf_neo_type = "N"
+                elseif FUEL_ACF_CONFIG == 2 then
+                    acf_neo_type = "NX"
+                elseif FUEL_ACF_CONFIG == 3 then
+                    acf_neo_type = "NY"
+                end
+                if ENG_MODEL == 2 then
+                    imgui.TextUnformatted("Aircraft Type: A320-272"..acf_neo_type)
+                    imgui.TextUnformatted("Engine: PW 1130G-JM")
+                elseif ENG_MODEL == 3 then
+                    imgui.TextUnformatted("Aircraft Type: A320-253"..acf_neo_type)
+                    imgui.TextUnformatted("Engine: CFM LEAP-1A33")
+                end
             end
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
         end
+        -- DEPARTURE BRIEFING
         if FLT_PHASE.PREFLIGHT or FLT_PHASE.PUSHBACK or FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
@@ -6503,6 +6542,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
+        -- ARRIVAL BRIEFING
         if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND or FLT_PHASE.APPROACH then
             imgui.TextUnformatted("Arrival Breafing")
             if imgui.RadioButton("ILS/MLS", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then

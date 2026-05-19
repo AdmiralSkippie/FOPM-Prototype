@@ -2,10 +2,20 @@ Arreglar bug que traba el FO QNH en 1013
 Desarrollar la toma del METAR en tierra como antes del descenso **
 Desarrollar alerta proximidad al TOD **
 Arreglar APU BLEED speach
-Arreglar el speach "All id done here"
+Arreglar el speach "All id done here" MALE
 identificar mangspd o selspd
 hacer procedimientos o cortarlos si es necesario
 CHeckear bien los motores (usar el IMGUI)
+
+///// CHEKEO DESVIACION /////
+Buscar los datarefs pertinentes
+Hacer las voces
+Establecr los limites
+Hacer la funcion
+
+///// OPERACION CAT III /////
+Hacer los Callouts
+definierlos en funcion (FINAL APP) //(Metidos con el checkeo de desviacion si es practicable)
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra

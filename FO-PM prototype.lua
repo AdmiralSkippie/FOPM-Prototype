@@ -205,7 +205,7 @@ local ENG_1_THR = 0
 local ENG_2_THR = 0
 
 function engine_math()
-    if ENG_MODEL == 1 then
+    if ENG_MODEL == 0 then
         ENG_THR_Rating = math.floor(ENG_THRRate * 100) / 100
         ENG_1_THR = math.floor(ENG_1_POWER * 100) / 100
         ENG_2_THR = math.floor(ENG_2_POWER * 100) / 100
@@ -1408,7 +1408,7 @@ function before_takeoff_proc()
             end
             if STEP == 4.5 then
                 if TIME >= DELAY then
-                    if RAINING and ENG_MODEL == 0 then
+                    if RAINING and ENG_MODEL ~= 0 then
                         if not speak_only_essencials then
                             local speach = "IGNITION"
                             play_sound(FOPM_Talk[speach])
@@ -2462,7 +2462,7 @@ function ten_thausand_feet_DES()
     end
     if STEP == 5 then
         if TIME >= DELAY then
-            if RAINING and ENG_MODEL == 0 then
+            if RAINING and ENG_MODEL ~= 0 then
                 if not speak_only_essencials then
                     local speach = "ENGINE_MODE_SELECTOR"
                     play_sound(FOPM_Talk[speach])
@@ -2912,6 +2912,7 @@ function after_landing_proc()
                 if FLAPS_LEVER_State == F_ATARGET then
                     F_ATARGET = FLAPS_LEVER_State - 0.25
                     command_once(FLAPS_1UP)
+                    DELAY = TIME + fo_speed
                     return
                 else
                     return
@@ -4619,7 +4620,7 @@ function checklist_before_takeoff_BTL()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL == 0 then
+                if RAINING and ENG_MODEL ~= 0 then
                     if ENG_Mode == 2 then
                         local speach = "IGNITION"
                         play_sound(FOPM_Talk[speach])
@@ -5065,7 +5066,7 @@ function checklist_approach()
     if STEP_CHECK == 10 then
         if TIME >= DELAY_CHECK then
             if response_CHECK then
-                if RAINING and ENG_MODEL == 0 then
+                if RAINING and ENG_MODEL ~= 0 then
                     if ENG_Mode == 2 then
                         local speach = "IGNITION"
                         play_sound(FOPM_Talk[speach])

@@ -6215,6 +6215,7 @@ local setting_change = false
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_MAIN then -- MAIN WINDOW
+    imgui.Spacing()
         if imgui.SmallButton("Settings") then
             WND_SETTINGS = true
             WND_MAIN = false
@@ -6404,6 +6405,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
     end
     if WND_BREAFING then -- BREAFING WINDOW
+        imgui.Spacing()
         if imgui.SmallButton("Settings") then
             WND_SETTINGS = true
             WND_MAIN = false
@@ -6415,14 +6417,27 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_MAIN = true
             WND_BREAFING = false
         end
-        imgui.Separator()
-        imgui.Spacing()
-        imgui.TextUnformatted("FLT Phase:")
-        imgui.SameLine()
-        imgui.TextUnformatted(TXT_PHASE)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
+        if FLT_PHASE.PREFLIGHT then
+            if ENG_MODEL == 0 then
+                imgui.TextUnformatted("Aircraft Type: A320-232")
+                imgui.TextUnformatted("Engine: IAE V2527-A5")
+            elseif ENG_MODEL == 1 then
+                imgui.TextUnformatted("Aircraft Type: A320-214")
+                imgui.TextUnformatted("Engine: CFM56-5B4")
+            elseif ENG_MODEL == 2 then
+                imgui.TextUnformatted("Aircraft Type: A320-271N")
+                imgui.TextUnformatted("Engine: PW 1127G-JM")
+            elseif ENG_MODEL == 3 then
+                imgui.TextUnformatted("Aircraft Type: A320-251N")
+                imgui.TextUnformatted("Engine: CFM LEAP-1A26")
+            end
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+        end
         if FLT_PHASE.PREFLIGHT or FLT_PHASE.PUSHBACK or FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
@@ -6578,6 +6593,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
     end
     if WND_SETTINGS then -- SETTINGS WINDOW
+        imgui.Spacing()
         if imgui.SmallButton("Main") then
             WND_SETTINGS = false
             WND_MAIN = true

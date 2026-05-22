@@ -2651,11 +2651,7 @@ function go_arround()
         if STEP == 6 then
             if TIME >= DELAY then
                 if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
-                    COMPLETED_PROC.GA_PROC = true
-                    STEP = 0
-                    EXECUTE_GEAR = false
-                    STEP_FLT = 0
-                    command_GUP = false
+                    STEP = 11
                 else
                     local speach = "FLIGHT_DIRECTORS"
                     play_sound(FOPM_Talk[speach])
@@ -2690,26 +2686,46 @@ function go_arround()
             end
         end
         if STEP == 9 then
-            if TIME >= DELAY then
+            if TIME >= DELAY_SPEACH then
                 if HDGTRK_MODE == 1 then
                     command_once(HDGTRK_TOGGLE)
                 end
-                DELAY = TIME + fo_speed
+                local speach = "ON"
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
                 STEP = 10
             else
                 return
             end
         end
         if STEP == 10 then
-            if TIME >= DELAY_SPEACH then
-                local speach = "ON"
-                play_sound(FOPM_Talk[speach])
-                DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
+                if TIME >= DELAY then
+                    command_once(MCDU_FO_KEY_Perf)
+                    DELAY = TIME + fo_speed
+                    STEP = 11
+                else
+                    return
+                end
+            end
+            if STEP == 11 then
+                if TIME >= DELAY then
+                    FLAP_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_1, "(%d+)"))
+                    SLAT_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_2, "(%d+)"))
+                    GREENDOT = tonumber(string.match(MCDU_GLINE_3,"(%d+)"))
+                    DELAY = TIME + fo_speed
+                    STEP = 12
+                else
+                    return
+                end
+            end
+        if STEP == 12 then
+            if TIME >= DELAY then
+                command_once(MCDU_FO_KEY_Fpln)
+                COMPLETED_PROC.GA_PROC = true
                 STEP = 0
-                command_GUP = false
                 EXECUTE_GEAR = false
                 STEP_FLT = 0
-                COMPLETED_PROC.GA_PROC = true
+                command_GUP = false
             else
                 return
             end
@@ -6369,6 +6385,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
             imgui.SameLine()
             if imgui.SmallButton("Taxi IN") then
+                DELAY = TIME + 1
                 FLT_PHASE.REJECTED_DES = false
                 FLT_PHASE.TAXI_IN = true
             end

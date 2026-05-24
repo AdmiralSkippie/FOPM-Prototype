@@ -35,7 +35,6 @@ logMsg("XXXXX   Voices Pack Config Loaded")
 ----------------
 ---- PHASES ----
 ----------------
-
 local FLT_PHASE = {
     PREFLIGHT = true,
     PUSHBACK = false,
@@ -55,10 +54,10 @@ local FLT_PHASE = {
     TAXI_IN = false,
     PARKING = false
 }
+
 --------------------------------
 ---- PROCEDURES COMPLETE ----
 --------------------------------
-
 local COMPLETED_PROC = {
     PF_DONE = false,
     TO_BRIEFING = false,
@@ -84,7 +83,6 @@ local COMPLETED_PROC = {
 ------------------------------
 ---- CHECKLISTS VARIABLES ----
 ------------------------------
-
 local CHECKLIST = {
     BS_DTL = false,
     EX_BS_DTL = false,
@@ -131,6 +129,7 @@ local APP_TYPE = {
     ---- Especial feature
     FLS = false
 }
+
 ----------------------------
 ---- ONGOING PROCEDURES ----
 ----------------------------

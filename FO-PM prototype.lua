@@ -170,11 +170,13 @@ local DELAY_CHECK = 0
 local DELAY_CLEAN = 0
 local DELAY_SPEACH = 0
 local DELAY_AP = 0
+local DELAY_AL = 0
 local STEP = 0
 local STEP_FLT = 0
 local STEP_CLEAN = 0
 local STEP_SPEACH = 0
 local STEP_AP = 0
+local STEP_AL = 0
 local STEP_CHECK = 0
 local STEP_ONEENG = 0
 local PT_TO_DIRECTION = 0
@@ -193,6 +195,18 @@ local TXT_PHASE = nil
 local MINUTE3 = false
 local PASSED_TRANS_ALT = false
 local PASSED_TRANS_LVL= false
+
+-- FLIGHT PARAMETERS VARIABLES
+local FPMTR = {
+    SPDDELAY = 0,
+    SINKDELAY = 0,
+    BANKDELAY = 0,
+    PITCHDELAY = 0,
+    LOCDELAY = 0,
+    GLIDEDELAY = 0,
+    XTRKDELAY = 0,
+    CONT_APP = true
+}
 
 -------------------------
 ---- ENGINE THR MATH ----
@@ -341,21 +355,41 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 3.25 then
-        if math.floor(RUDDER + 0.3) == -30 then
-            local speach = "FULL_LEFT"
-            play_sound(FOPM_Talk[speach])
-            STEP_FLT = 3.5
+        if ACF_ICAO == "A321" then
+            if math.floor(RUDDER + 0.3) == -25 then
+                local speach = "FULL_LEFT"
+                play_sound(FOPM_Talk[speach])
+                STEP_FLT = 3.5
+            else
+                return
+            end
         else
-            return
+            if math.floor(RUDDER + 0.3) == -30 then
+                local speach = "FULL_LEFT"
+                play_sound(FOPM_Talk[speach])
+                STEP_FLT = 3.5
+            else
+                return
+            end
         end
     end
     if STEP_FLT == 3.5 then
-        if math.floor(RUDDER + 0.3) == 30 then
-            local speach = "FULL_RIGHT"
-            play_sound(FOPM_Talk[speach])
-            STEP_FLT = 3.75
+        if ACF_ICAO == "A321" then
+            if math.floor(RUDDER + 0.3) == 25 then
+                local speach = "FULL_RIGHT"
+                play_sound(FOPM_Talk[speach])
+                STEP_FLT = 3.75
+            else
+                return
+            end
         else
-            return
+            if math.floor(RUDDER + 0.3) == 30 then
+                local speach = "FULL_RIGHT"
+                play_sound(FOPM_Talk[speach])
+                STEP_FLT = 3.75
+            else
+                return
+            end
         end
     end
     if STEP_FLT == 3.75 then
@@ -2573,15 +2607,210 @@ function ap_discn_behaviour()
     end
 end
 
+-- FLIGHT PARAMETERS MONITORING
+function flight_parameters_check()
+    if FPMTR.CONT_APP then
+        if FO_LOC_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+            if math.floor(FO_LOC_Deviation*10)/10 < -1 or math.floor(FO_LOC_Deviation*10)/10 > 1 then
+                local speach = "GA_UNSTABLE"
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                DELAY = TIME + (FO_voices_directory[speach].del)
+                FPMTR.CONT_APP = false
+            end
+        end
+        if FO_GS_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+            if math.floor(FO_GS_Deviation*10)/10 < -1 or math.floor(FO_GS_Deviation*10)/10 > 1 then
+                local speach = "GA_UNSTABLE"
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                DELAY = TIME + (FO_voices_directory[speach].del)
+                FPMTR.CONT_APP = false
+            end
+        end
+    end
+    if TIME >= FPMTR.SPDDELAY then
+        if math.floor(IND_AIRSPEED) < math.floor(TARGET_SPEED) - 5 or 
+           math.floor(IND_AIRSPEED) > math.floor(TARGET_SPEED) + 10 then
+            if TIME >= DELAY_SPEACH then
+                local speach = "SPEED"
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                FPMTR.SPDDELAY = TIME + 10
+            end
+        end
+    end
+    if TIME >= FPMTR.SINKDELAY then
+        if math.floor(VERTICAL_SPEED) < -1000 then
+            if TIME >= DELAY_SPEACH then
+                local speach = "SINK_RATE"
+                play_sound(FOPM_Talk[speach])
+                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                FPMTR.SINKDELAY = TIME + 10
+            end
+        end
+    end
+    if TIME >= FPMTR.BANKDELAY then
+        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+            if (math.floor(ROLL_ANGLE*10)/10) > 7 or (math.floor(ROLL_ANGLE*10)/10) < -7 then
+                if TIME >= DELAY_SPEACH then
+                    local speach = "BANK"
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                    FPMTR.BANKDELAY = TIME + 10
+                end
+            end
+        else
+            if (math.floor(ROLL_ANGLE*10)/10) > 30 or (math.floor(ROLL_ANGLE*10)/10) < -30 then
+                if TIME >= DELAY_SPEACH then
+                    local speach = "BANK"
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                    FPMTR.BANKDELAY = TIME + 10
+                end
+            end
+        end
+    end
+    if TIME >= FPMTR.PITCHDELAY then
+        if ACF_ICAO == "A321" or ACF_ICAO == "A21N" then
+            if math.floor(PITCH_ANGLE*10)/10 < -2.5 or math.floor(PITCH_ANGLE*10)/10 > 7.5 then
+                if TIME >= DELAY_SPEACH then
+                    local speach = "PITCH"
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                    FPMTR.PITCHDELAY = TIME + 10
+                end
+            end
+        else
+            if math.floor(PITCH_ANGLE*10)/10 < -2.5 or math.floor(PITCH_ANGLE*10)/10 > 10 then
+                if TIME >= DELAY_SPEACH then
+                    local speach = "PITCH"
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                    FPMTR.PITCHDELAY = TIME + 10
+                end
+            end
+        end
+    end
+    if TIME >= FPMTR.LOCDELAY then
+        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+            if FO_LOC_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_LOC_Deviation*10)/10 < -0.5 or math.floor(FO_LOC_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "LOC"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.LOCDELAY = TIME + 10
+                    end
+                end
+            end
+        elseif APP_TYPE.LDA_APP then
+            if FO_LOC_Avail == 1 and FO_FD_STATE == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_LOC_Deviation*10)/10 < -0.5 or math.floor(FO_LOC_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "LOC"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.LOCDELAY = TIME + 10
+                    end
+                end
+            end
+        else
+            if FO_LOC_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_LOC_Deviation*10)/10 < -0.5 or math.floor(FO_LOC_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "LAT_DEV"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.LOCDELAY = TIME + 10
+                    end
+                end
+            end
+        end
+    end
+    if TIME >= FPMTR.GLIDEDELAY then
+        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+            if FO_GS_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_GS_Deviation*10)/10 < -0.5 or math.floor(FO_GS_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "GLIDE"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.GLIDEDELAY = TIME + 10
+                    end
+                end
+            end
+        elseif APP_TYPE.LDA_APP then
+            if FO_GS_Avail == 1 and FO_FD_STATE == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_GS_Deviation*10)/10 < -0.5 or math.floor(FO_GS_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "GLIDE"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.GLIDEDELAY = TIME + 10
+                    end
+                end
+            end
+        else
+            if FO_GS_Avail == 1 and math.floor(RADIO_ALT) > 100 then
+                if math.floor(FO_GS_Deviation*10)/10 < -0.5 or math.floor(FO_GS_Deviation*10)/10 > 0.5 then
+                    if TIME >= DELAY_SPEACH then
+                        local speach = "V_DEV"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                        FPMTR.GLIDEDELAY = TIME + 10
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- CAT III AUTOLAND
+function autoland_fma_check()
+    if STEP_AL == 0 then
+        if string.find(FMA_G_STATE, "LAND") then
+            local speach = "LAND"
+            play_sound(FOPM_Talk[speach])
+            DELAY_AL = TIME + (FO_voices_directory[speach].del)
+            STEP_AL = 1
+        end
+    end
+    if STEP_AL == 1 then
+        if TIME >= DELAY_AL then
+            if string.find(FMA_G_STATE, "FLARE") then
+                local speach = "FLARE"
+                play_sound(FOPM_Talk[speach])
+                DELAY_AL = TIME + (FO_voices_directory[speach].del)
+                STEP_AL = 2
+            end
+        end
+    end
+    if STEP_AL == 2 then
+        if TIME >= DELAY_AL then
+            if string.find(FMA_G_STATE, "ROLL OUT") then
+                local speach = "ROLL_OUT"
+                play_sound(FOPM_Talk[speach])
+                DELAY_AL = TIME + (FO_voices_directory[speach].del)
+                STEP_AL = 3
+            end
+        end
+    end
+end
+
 ---- GO ARROUND PROCEDURE
 function go_arround()
     if not COMPLETED_PROC.GA_PROC then
         if STEP == 0 then
-            DELAY = TIME + 0.25
-            STEP = 1
-            CHECKLIST.APP_CL = false
-            CHECKLIST.ATO_CL = false
-            CHECKLIST.LND_CL = false
+            if TIME >= DELAY then
+                DELAY = TIME + 0.25
+                STEP = 1
+                CHECKLIST.APP_CL = false
+                CHECKLIST.ATO_CL = false
+                CHECKLIST.LND_CL = false
+            else
+                return
+            end
         end
         if STEP == 1 then
             if TIME >= DELAY then
@@ -5952,6 +6181,8 @@ function phase_check()
             FLT_PHASE.APPROACH = false
             FLT_PHASE.FINAL_APP = true
             COMPLETED_PROC.GA_PROC = false
+            FPMTR.CONT_APP = true
+            STEP_AL = 0
         end
     end
     if FLT_PHASE.FINAL_APP then
@@ -5961,6 +6192,7 @@ function phase_check()
             FLT_PHASE.GA = true
             COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             COMPLETED_PROC.DES_BRIEFING = false
+            STEP_AL = 0
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
             FLT_PHASE.FINAL_APP = false
@@ -5968,6 +6200,7 @@ function phase_check()
             FLT_PHASE.ON_RWY = true
             COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
+            STEP_AL = 0
         end
     end
     if FLT_PHASE.GA then
@@ -6116,6 +6349,12 @@ function FO_main_logic()
     end
     if FLT_PHASE.FINAL_APP then
         ap_discn_behaviour()
+        if APP_TYPE.CAT_II_III and AP1_ENGAGE == 1 and AP2_ENGAGE == 1 then
+            autoland_fma_check()
+        end
+        if math.floor(RADIO_ALT) < 1000 and FPMTR.CONT_APP then
+            flight_parameters_check()
+        end
     end
     if FLT_PHASE.GA then
         go_arround()
@@ -6228,18 +6467,27 @@ local WND_BREAFING = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
 local setting_change = false
 local acf_neo_type = "N"
+local wleft = 0
+local wtop = 0
+local wright = 0
+local wbottom = 0
+FO_INTERFACE = nil
 
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_MAIN then -- MAIN WINDOW
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft-30,wtop,wright,wbottom-72)
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BREAFING = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Breafing") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft-59,wtop,wright,wbottom-134)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BREAFING = true
@@ -6425,12 +6673,16 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_BREAFING then -- BREAFING WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Settings") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft+30,wtop,wright,wbottom+63)
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BREAFING = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BREAFING = false
@@ -6555,7 +6807,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.TO_BRIEFING = true
-                    DELAY = TIME + 3
+                    wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
+                    WND_BREAFING = false
+                    WND_MAIN = true
                 end
             end
         end
@@ -6644,7 +6899,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.DES_BRIEFING = true
-                    DELAY = TIME + 3
+                    wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
+                    WND_BREAFING = false
+                    WND_MAIN = true
                 end
             end
         end
@@ -6652,12 +6910,16 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_SETTINGS then -- SETTINGS WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Main") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft+30,wtop,wright,wbottom+72)
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BREAFING = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Breafing") then
+            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,wleft-30,wtop,wright,wbottom-63)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BREAFING = true
@@ -6710,7 +6972,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
 end
 
 -- FLOAT WINDOWS MASTER
-FO_INTERFACE = nil
 
 function show_interface()
     local posX = (SCREEN_WIDTH / 1.08) - (250 / 2)
@@ -6757,5 +7018,5 @@ create_command("Toliss_A32S_FO/Command_GEAR_DN", "Command Gear DN", "command_GDN
 create_command("Toliss_A32S_FO/Command_FLAPS_1_UP", "Command FLAPS 1 Position UP", "command_FLPS_1UP = not command_FLPS_1UP", "", "")
 create_command("Toliss_A32S_FO/Command_FLAPS_1_DN", "Command FLAPS 1 Position DN", "command_FLPS_1DN = not command_FLPS_1DN", "", "")
 
-logMsg("XXXXX FO/PM LOADED")
+logMsg("XXXXX   FO/PM LOADED")
 end -- LUA ENDS

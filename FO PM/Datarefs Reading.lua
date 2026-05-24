@@ -118,10 +118,12 @@ dataref("PRKBRK_State", "AirbusFBW/ParkBrake", "readonly") -- 1 ON
 dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11) -- 1 ON 
 dataref("XBLEED_STATE", "AirbusFBW/XBleedSwitch", "readonly") -- 1 Auto --
 dataref("SIGNS_STATE", "AirbusFBW/OHPLightSwitches", "readonly", 12)
+
 -- ADIRS --
     dataref("ADIR_1_STATE", "AirbusFBW/ADIRUSwitchArray", "readonly", 0) -- 1 NAV
     dataref("ADIR_2_STATE", "AirbusFBW/ADIRUSwitchArray", "readonly", 1)
     dataref("ADIR_3_STATE", "AirbusFBW/ADIRUSwitchArray", "readonly", 2)
+
 dataref("BEACON_STATE", "sim/cockpit2/switches/beacon_on", "readonly")
 
 ---- LEVERS ----
@@ -169,11 +171,13 @@ dataref("RUDDER", "sim/flightmodel2/wing/rudder1_deg", "readonly", 10) -- 0 NTRL
     dataref("ENG_2_REV", "AirbusFBW/ENGRevArray", "readonly", 1)
     dataref("ENG_1_AVAIL", "sim/flightmodel/engine/ENGN_running", "readonly", 0)
     dataref("ENG_2_AVAIL", "sim/flightmodel/engine/ENGN_running", "readonly", 1)
-dataref("IND_AIRSPEED", "sim/cockpit2/gauges/indicators/airspeed_kts_copilot", "readonly")
-dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
-dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
-dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
-dataref("VERTICAL_SPEED", "toliss_airbus/pfdoutputs/captain/vertical_speed", "readonly")
+-- SPEED DATAREFS
+    dataref("IND_AIRSPEED", "sim/cockpit2/gauges/indicators/airspeed_kts_copilot", "readonly")
+    dataref("TARGET_SPEED","toliss_airbus/pfdoutputs/general/ap_speed_value","readonly")
+    dataref("VERTICAL_SPEED", "toliss_airbus/pfdoutputs/captain/vertical_speed", "readonly")
+    dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
+    dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
+    dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
 dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly") -- ONLY SHOWS ATHR ENGAGE --
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
 dataref("INBD_SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
@@ -199,8 +203,11 @@ dataref("ECAM_MSG_A", "AirbusFBW/EWD1aText", "readonly")
 --dataref("ECAM_LOWER_MSG", "", "readonly")
 dataref("PITCH_TRIM", "AirbusFBW/PitchTrimPosition", "readonly")
 dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
-dataref("FMA_B_STATE", "AirbusFBW/FMA2b", "readonly")
-dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
+-- FMA (STRINGS)
+    dataref("MINIMUMS_MODE","AirbusFBW/FMA3w","readonly")
+    dataref("MINIMUMS_VAL","AirbusFBW/FMA3b","readonly")
+    dataref("FMA_B_STATE", "AirbusFBW/FMA2b", "readonly")
+    dataref("FMA_G_STATE", "AirbusFBW/FMA1g", "readonly")
 -- QNH INDICATOR --
     dataref("CM_QNH", "sim/cockpit/misc/barometer_setting", "readonly") -- convertir a qnh
     dataref("FO_QNH", "sim/cockpit/misc/barometer_setting2", "readonly") -- convertir a qnh
@@ -214,7 +221,18 @@ dataref("TRANSITION_ALT", "toliss_airbus/performance/DeptTrans", "readonly")
 dataref("TRANSITION_LVL", "toliss_airbus/performance/DestTrans", "readonly")
 dataref("AGL_ALTITUDE", "sim/flightmodel/position/y_agl", "readonly")
 dataref("AP_DISCN_ALARM", "AirbusFBW/APWarning", "readonly") -- 1 ON --
+dataref("AP1_ENGAGE","AirbusFBW/AP1Engage","readonly")
+dataref("AP2_ENGAGE","AirbusFBW/AP2Engage","readonly")
 dataref("OAT", "sim/cockpit2/temperature/outside_air_temp_degc", "readonly")
+dataref("RADIO_ALT","sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_copilot","readonly")
+-- DEVIATION INDICATIONS
+    dataref("FO_GS_Avail", "AirbusFBW/GSonFO", "readonly") -- GS avail
+    dataref("FO_GS_Deviation","AirbusFBW/GSvalFO","readonly") -- GS Deviation
+    dataref("FO_LOC_Avail","AirbusFBW/LOConFO","readonly") -- LOC Avail
+    dataref("FO_LOC_Deviation","AirbusFBW/LOCvalFO","readonly") -- LOC Deviation
+-- ATT INDICATORS
+    dataref("ROLL_ANGLE","toliss_airbus/pfdoutputs/copilot/roll_angle","readonly") -- LEFT TURN / negatives || RIGHT TURN / positive
+    dataref("PITCH_ANGLE","toliss_airbus/pfdoutputs/copilot/pitch_angle","readonly")
 -- ENG TYPE INDICATION SELECTOR -- 
 ENG_THRRate = 0
 ENG_1_POWER = 0

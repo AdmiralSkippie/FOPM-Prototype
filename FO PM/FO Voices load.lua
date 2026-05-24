@@ -149,6 +149,23 @@ FO_voices_directory = {
     RETRACTED = {code = "RETRACTED", del = 0},
     DISARMED = {code = "DISARMED", del = 0},
     AUTO = {code = "AUTO", del = 0},
+
+-- FLIGHT PARAMETERS CALLOUTS
+    SPEED = {code = "SPEED", del = 0},
+    SINK_RATE = {code = "SINK_RATE", del = 0},
+    BANK = {code = "BANK", del = 0},
+    PITCH = {code = "PITCH", del = 0},
+    LOC = {code = "LOC", del = 0},
+    GLIDE = {code = "GLIDE", del = 0},
+    CROSS_TRACK = {code = "XTRK", del = 0},
+    LAT_DEV = {code = "LAT_DEV", del = 0},
+    V_DEV = {code = "V_DEV", del = 0},
+    GA_UNSTABLE = {code = "GA_UNSTABLE", del = 0},
+
+-- AUTOLAND CALLOUTS
+    LAND = {code = "LAND", del = 0},
+    FLARE = {code = "FLARE", del = 0},
+    ROLL_OUT = {code = "ROLLOUT", del = 0},
 ---------------
 -- CHECKLIST --
 ---------------

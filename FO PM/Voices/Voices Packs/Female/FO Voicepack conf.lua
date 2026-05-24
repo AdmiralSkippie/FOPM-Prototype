@@ -166,6 +166,19 @@ FO_voices_directory.EMERGENCY_EXIT_LIGHTS.del = 1.367
 FO_voices_directory.NO_PORTABLE_SIGNS.del = 1.223
 FO_voices_directory.APU_AND_BATTERY.del = 1.348
 FO_voices_directory.BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE.del = 2.308
+FO_voices_directory.SPEED.del = 0.647
+FO_voices_directory.SINK_RATE.del = 0.781
+FO_voices_directory.BANK.del = 0.569
+FO_voices_directory.PITCH.del = 0.603
+FO_voices_directory.LOC.del = 0.663
+FO_voices_directory.GLIDE.del = 0.665
+FO_voices_directory.CROSS_TRACK.del = 0.894
+FO_voices_directory.LAT_DEV.del = 0.720
+FO_voices_directory.V_DEV.del = 0.751
+FO_voices_directory.GA_UNSTABLE.del = 1.335
+FO_voices_directory.LAND.del = 0.797
+FO_voices_directory.FLARE.del = 0.576
+FO_voices_directory.ROLL_OUT.del = 0.815
 
 -- FLAP CONFIG DIRECTORY
 FLAP_CONFIG.CP1.del = 1.472

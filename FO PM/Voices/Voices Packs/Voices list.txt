@@ -142,6 +142,24 @@ CAPTAIN WE ARE READY
 WE ARE READY FOR TAKEOFF CAPTAIN
 READY FOR DEPARTURE
 
+-- FLIGHT PARAMETETERS CALLOUTS
+SPEED	                |   SPEED
+SINK RATE	            |   SINK_RATE
+BANK	                |   BANK
+PITCH	                |   PITCH
+LOC	                    |   LOC
+GLIDE	                |   GLIDE
+CROSS TRACK	            |   XTRK
+LAT DEV	                |   LAT_DEV
+V DEV	                |   V_DEV
+COURSE	                |   COURSE
+GO ARROUND, UNSTABLE    |   GA_UNSTABLE
+
+-- AUTOLAND CALLOUTS
+LAND        |   LAND
+FLARE       |   FLARE
+ROLL OUT    |   ROLLOUT
+
 -- CHEKCLIST ANSWERS --
 COMPLETED
 REMOVED

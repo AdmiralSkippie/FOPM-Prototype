@@ -5465,6 +5465,7 @@ function checklist_landing()
             local speach = "CHECKLIST_COMPLETED"
             play_sound(FOPM_Talk[speach])
             DELAY = TIME + (FO_voices_directory[speach].del)
+            DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
             STEP_CHECK = 0
             CHECKLIST.EX_LND_CL = false
             CHECKLIST.LND_CL = true

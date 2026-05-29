@@ -1074,6 +1074,7 @@ function pre_cockpit_pre()
                 local rindex = math.random(5)
                 play_sound(READY[rindex])
                 DELAY = TIME + (RDY[rindex].del) + fo_speed
+                command_once(MCDU_FO_KEY_Fpln)
                 STEP = 0
                 COMPLETED_PROC.PF_DONE = true
                 EXECUTE_PCP = false

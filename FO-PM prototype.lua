@@ -2145,7 +2145,11 @@ function flaps_commanded_change()
         if STEP_CLEAN == 0 then
             EXECUTE_FLP = true  
             DELAY_CLEAN = TIME + 0.3
-            STEP_CLEAN = 1
+            if FLAPS_LEVER_State == 0 then
+                EXECUTE_FLP = false
+            else
+                STEP_CLEAN = 1
+            end
         end 
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
@@ -2163,6 +2167,7 @@ function flaps_commanded_change()
                     if math.floor(IND_AIRSPEED) > FLAP_RETRACT_SPEED then
                         command_once(FLAPS_1UP)
                         STEP_CLEAN = 3
+                        F_TARGET = FLAPS_LEVER_State - 0.25
                     else
                         return
                     end
@@ -2170,6 +2175,7 @@ function flaps_commanded_change()
                     if math.floor(IND_AIRSPEED) > SLAT_RETRACT_SPEED then
                         command_once(FLAPS_1UP)
                         STEP_CLEAN = 3
+                        F_TARGET = FLAPS_LEVER_State - 0.25
                     else
                         return
                     end
@@ -2180,7 +2186,7 @@ function flaps_commanded_change()
         end
         if STEP_CLEAN == 3 then
             if TIME >= DELAY_CLEAN then
-                if FLAPS_State ~= -1 then
+                if FLAPS_LEVER_State == F_TARGET then
                     local speach = FL_VOICE_SRCH
                     play_sound(FOPM_Talk[speach])
                     DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
@@ -2198,7 +2204,11 @@ function flaps_commanded_change()
         if STEP_CLEAN == 0 then
             EXECUTE_FLP = true
             DELAY_CLEAN = TIME + 0.3
-            STEP_CLEAN = 1
+            if FLAPS_LEVER_State == 1 then
+                EXECUTE_FLP = false
+            else
+                STEP_CLEAN = 1
+            end
         end
         if STEP_CLEAN == 1 then
             if TIME >= DELAY_CLEAN then
@@ -2247,8 +2257,12 @@ function gear_command()
     if command_GUP then
         if STEP_FLT == 0 then
             EXECUTE_GEAR = true
-            DELAY_CHECK = TIME + 0.88
-            STEP_FLT = 1
+            DELAY_CHECK = TIME + fo_speed
+            if LG_Lever == 0 then
+                EXECUTE_GEAR = false
+            else
+                STEP_FLT = 1
+            end
         end
         if STEP_FLT == 1 then
             if TIME >= DELAY_CHECK then
@@ -2270,8 +2284,12 @@ function gear_command()
     elseif command_GDN then
         if STEP_FLT == 0 then
             EXECUTE_GEAR = true
-            DELAY_CHECK = TIME + 1.052
-            STEP_FLT = 1
+            DELAY_CHECK = TIME + fo_speed
+            if LG_Lever == 1 then
+                EXECUTE_GEAR = false
+            else
+                STEP_FLT = 1
+            end
         end
         if STEP_FLT == 1 then
             if TIME >= DELAY_CHECK then
@@ -2290,6 +2308,14 @@ function gear_command()
         end
         if STEP_FLT == 2 then
             if LG_NG_State == 2 and LG_RG_State == 2 and LG_LG_State == 2 then
+                STEP_FLT = 3
+                DELAY_CHECK = TIME + 0.3
+            else
+                return
+            end
+        end
+        if STEP_FLT == 3 then
+            if TIME >= DELAY_CHECK then
                 local speach = "GEAR_3GREENS"
                 play_sound(FOPM_Talk[speach])
                 DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
@@ -6297,6 +6323,15 @@ function FO_main_logic()
         end
         if not EXECUTE_GEAR then
             flaps_commanded_change()
+        end
+    else
+        if command_FLPS_1UP or command_FLPS_1UP then
+            command_FLPS_1UP = false
+            command_FLPS_1DN = false
+        end
+        if command_GUP or command_GDN then
+            command_GUP = false
+            command_GDN = false
         end
     end
     if FLT_PHASE.TAKEOFF then

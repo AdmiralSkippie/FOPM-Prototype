@@ -2656,13 +2656,15 @@ function flight_parameters_check()
         end
     end
     if TIME >= FPMTR.SPDDELAY then
-        if math.floor(IND_AIRSPEED) < math.floor(TARGET_SPEED) - 5 or 
-           math.floor(IND_AIRSPEED) > math.floor(TARGET_SPEED) + 10 then
-            if TIME >= DELAY_SPEACH then
-                local speach = "SPEED"
-                play_sound(FOPM_Talk[speach])
-                DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
-                FPMTR.SPDDELAY = TIME + 10
+        if math.floor(RADIO_ALT) > 20 then
+            if math.floor(IND_AIRSPEED) < math.floor(TARGET_SPEED) - 5 or 
+               math.floor(IND_AIRSPEED) > math.floor(TARGET_SPEED) + 10 then
+                if TIME >= DELAY_SPEACH then
+                    local speach = "SPEED"
+                    play_sound(FOPM_Talk[speach])
+                    DELAY_SPEACH = TIME + (FO_voices_directory[speach].del)
+                    FPMTR.SPDDELAY = TIME + 10
+                end
             end
         end
     end

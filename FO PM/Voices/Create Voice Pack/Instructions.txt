@@ -1,0 +1,61 @@
+
+Hello dear creator.
+
+I hope that you are enjoying the plugin.
+
+This document will teach you some things about to create and set the config of your voice pack, if you want to record a voice or use IA, you are free to do it, but follow this instructions.
+
+The plugin uses a system wicht loads every single callout from 1 folder it calls "Active", in there are all the sounds and the "FO Voicepack conf.lua" file
+wicht sets the config and duration of each sound into the plugin, you need to save the folder with other name than "Active".
+
+Each sound file must be in this specific format:
+WAV file (.wav)
+16 bit PCM Coding
+22050 Hz Frequency
+
+There is a file in this folder (FO PM/Voices/Create Voice Pack) it calls "Voices list.txt", in there you will find a list with every speach and callout that the pulgin use
+Each line it looks like this:
+
+==>    RETRACT & DISARM    |   RETRACT AND DISARM    <==
+
+The first part, before the "|", it's the file name, this is the name that the file is going to be saved, for this example: "RETRACT & DISARM.wav"
+¡IMPORTANT! the name MUST BE IDENTICALY, with capitals, simbols and spaces, if not, the plugin will not find the file.
+And the second part, after the "|", it's the audio, the speach or callout that is going to be recorded or saved in the file, in this case the "retract and disarm" speach.
+
+    ARM <=== If you find something like this in the file, without the "|", it means that the speach and the file name is the same, for this example the speach is "ARM", and the file will be "ARM.wav"
+
+When you have the file, with the format specs, take note of the duration.
+in the same folder (FO PM/Voices/Create Voice Pack) is another file named "Config Template.lua" in there you will find:
+
+FOPM_voicepack_name = "TEMPLATE"  <=== That is your pack name, is at your own and it will be showed in the plugin, in the settings page. Be sure that the name is between "", if not, it will cause a crash.
+
+FO_voices_directory.OFF.del = 0   <=== That is the duration of each speach or callout.
+
+The system tooks every duration of all the files each one, and use it to create a delay to prevent overlaping between the callouts, so be carefull when set each duration.
+Take note that the text in capitals (OFF) are the callout in reference.
+
+So for example: we have the OFF callout with a duration of 0.856s,
+In the folder, the file name need to be like this:     OFF.wav
+And in the config file you write this:                 FO_voices_directory.OFF.del = 0.856
+The time is set in seconds (s) not in miliseconds, just for your notice.
+
+When you have all your files ready, put it in a folder all together, without subfolders, (Name at your own), and the config file save it in the same folder with the name "FO Voicepack conf.lua"
+
+If you want to test it, just follow the same steps to set/load a new Voice Pack, copy all the files from your folder and put it into the "Active" folder, reload the lua script and enjoy.
+
+NOTES:
+1. Be carefull with all the names, capitals, simbols, spaces, all of them, if you dont set well the names, the system will not recognize the files and not will load, causing a crash when try to play it.
+2. Check that the files are truthly a WAV file, .wav 16 bit PCM, check twice if its necesary, if there is a error with the format, the system will not load the sound and crash when try to play it
+   The 22050 Hz is highly recommended to save RAM space, if you export the sound with a higher Frequency, the system will be load it but it will take more uneccesary space in memory.
+3. The "Voices list.txt" and the config file are internally divided into multiple sections, this is just for structure and organization, for you and I, use it to ensure that you have all the sounds and have a order.
+4. The sections "BRAKE TEMP WARNING", "POST BRIEFING", "READY SPEACH" and "READY FOR T/O" are cutomizables, it means that if you want to put another speach than specefied, you are free to do it
+   Just be carefull with the duration of each one, and the number, each category has multiple speaches that the systems randomly choose only one per play, if you put less, in one oportunity the system will be choose a nil speach
+   causing a crash, and if you put more, the system only will load and play the number stablished.
+   The others sections are according with the SOP and are mandatory as specified.
+
+That's it, now you can produce your own Voice pack to use it in your flights, share it with your partners and/or public to share with the comunity.
+I will be waiting for your packs to try it.
+
+Enjoy them, enjoy the plugin and have safe flights :)
+
+Best Regards: Admiral Skippie

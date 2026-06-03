@@ -2,10 +2,12 @@
 FOPM_voicepack_name = "Male"
 
 -- VOICE PACK DURATION CONFIG
+-- MUST CUMON
 FO_voices_directory.OFF.del = 0.382
 FO_voices_directory.ON.del = 0.413
 FO_voices_directory.NORMAL.del = 0.615
 FO_voices_directory.CHECK.del = 0.639
+-- BUMBERS
 FO_voices_directory.N0.del = 0.499
 FO_voices_directory.N1.del = 0.450
 FO_voices_directory.N2.del = 0.403
@@ -16,10 +18,12 @@ FO_voices_directory.N6.del = 0.403
 FO_voices_directory.N7.del = 0.497
 FO_voices_directory.N8.del = 0.440
 FO_voices_directory.N9.del = 0.445
+-- SECTION 1
 FO_voices_directory.RETRACT_AND_DISARM.del = 1.528
 FO_voices_directory.ARM.del = 0.393
 FO_voices_directory.UP.del = 0.396
 FO_voices_directory.DOWN.del = 0.591
+-- SECTION 2
 FO_voices_directory.FULL_UP.del = 0.669
 FO_voices_directory.FULL_DOWN.del = 0.566
 FO_voices_directory.NEUTRAL.del = 0.422
@@ -34,6 +38,7 @@ FO_voices_directory.AVAIL.del = 0.724
 FO_voices_directory.LOW.del = 0.385
 FO_voices_directory.MEDIUM.del = 0.509
 FO_voices_directory.MAX.del = 0.514
+-- SECTION 3
 FO_voices_directory.ENGINE_MASTERS.del = 1.509
 FO_voices_directory.ENGINE_MODE_SELECTOR.del = 1.685
 FO_voices_directory.WEATHER_RADAR.del = 1.009
@@ -49,6 +54,7 @@ FO_voices_directory.OIL_QUANTITY.del = 0.965
 FO_voices_directory.FLAPS.del = 0.602
 FO_voices_directory.SPEED_BRAKE.del = 1.063
 FO_voices_directory.PARKING_BRAKE.del = 1.013
+-- SECTION 4
 FO_voices_directory.BRAKE_ACCUMULATOR.del = 1.186
 FO_voices_directory.ALTERNATE_BRAKES.del = 0.982
 FO_voices_directory.GROUND_SPOILERS.del = 1.052
@@ -60,6 +66,7 @@ FO_voices_directory.AILERONS.del = 0.690
 FO_voices_directory.RDR.del = 0.502
 FO_voices_directory.PWS.del = 0.825
 FO_voices_directory.BRAKE_TEMP.del = 0.768
+-- SECTION 5
 FO_voices_directory.BRAKE_FAN.del = 0.778
 FO_voices_directory.EXTERIOR_LIGHTS.del = 1.540
 FO_voices_directory.TCAS.del = 0.738
@@ -77,6 +84,7 @@ FO_voices_directory.APU_MASTER.del = 0.921
 FO_voices_directory.STARTING_APU.del = 1.540
 FO_voices_directory.SPEED_CHECK.del = 1.136
 FO_voices_directory.TERRAIN.del = 0.825
+-- SECTION 6
 FO_voices_directory.SEAT_BELTS.del = 1.089
 FO_voices_directory.LS.del = 0.708
 FO_voices_directory.GO_ARROUND.del = 0.751
@@ -88,6 +96,7 @@ FO_voices_directory.N60_KNOTS.del = 0.712
 FO_voices_directory.TRNS_ALT.del = 1.101
 FO_voices_directory.TRNS_LVL.del = 0.863
 FO_voices_directory.FLIGHT_DIRECTORS.del = 1.028
+-- SECTION 7
 FO_voices_directory.LANDING_LIGHTS.del = 0.936
 FO_voices_directory.TAXI_LIGHT.del = 0.978
 FO_voices_directory.APU_BLEED.del = 1.001
@@ -102,11 +111,13 @@ FO_voices_directory.AUTOBRAKES.del = 0.840
 FO_voices_directory.ENGINE_2_SHUTDOWN.del = 1.114
 FO_voices_directory.ECAM_RCLL.del = 0.866
 FO_voices_directory.TEN_THAUSAND_FEET.del = 1.006
+-- SPECIAL PROCEDURES (AR - CAT II/III)
 FO_voices_directory.NAVAIDS_DESELECTION.del = 1.236
 FO_voices_directory.GPS_NAV_MODE.del = 1.072
 FO_voices_directory.BOTH_NAV.del = 0.739
 FO_voices_directory.ON_ON.del = 0.770
 FO_voices_directory.CRONO3.del = 0.573
+-- CHECKLIST ANSWER
 FO_voices_directory.COMPLETED.del = 0.757
 FO_voices_directory.REMOVED.del = 0.669
 FO_voices_directory.ON_AUTO.del = 1.323
@@ -121,6 +132,7 @@ FO_voices_directory.SELECTED_SPEED.del = 1.277
 FO_voices_directory.RETRACTED.del = 0.643
 FO_voices_directory.DISARMED.del = 0.727
 FO_voices_directory.AUTO.del = 0.416
+-- CHECKLIST 1
 FO_voices_directory.BEFORE_START_CHECKLIST.del = 1.318
 FO_voices_directory.EFB_PREPARATION.del = 1.581
 FO_voices_directory.AIRCRAFT_PBN_CAPABILITY.del = 1.940
@@ -131,6 +143,7 @@ FO_voices_directory.ADIRS.del = 0.793
 FO_voices_directory.FUEL_QUANTITY.del = 1.036
 FO_voices_directory.BARO_REFERENCE.del = 1.233
 FO_voices_directory.DOWN_TO_THE_LINE.del = 0.982
+-- CHECLIST 2
 FO_voices_directory.BEFORE_START_CHECKLIST_BELOW_THE_LINE.del = 1.888
 FO_voices_directory.EFB.del = 0.842
 FO_voices_directory.ATC.del = 0.715
@@ -140,6 +153,7 @@ FO_voices_directory.THRUST_LEVERS.del = 1.093
 FO_voices_directory.CHECKLIST_COMPLETED.del = 1.172
 FO_voices_directory.AFTER_START_CHECKLIST.del = 1.558
 FO_voices_directory.ANTI_ICE.del = 0.864
+-- CHECKLIST 3
 FO_voices_directory.ECAM_STATUS.del = 1.143
 FO_voices_directory.BEFORE_TAKEOFF_CHECKLIST.del = 1.425
 FO_voices_directory.FLIGHT_CONTROLS.del = 0.843
@@ -150,6 +164,7 @@ FO_voices_directory.ECAM_MEMO.del = 0.938
 FO_voices_directory.TAKEOFF_RUNWAY.del = 1.120
 FO_voices_directory.NAV_ON_FMA.del = 1.143
 FO_voices_directory.CABIN_CREW.del = 0.945
+-- CHECKLIST 4
 FO_voices_directory.PACKS_AND_APU_BLEED.del = 1.419
 FO_voices_directory.AFTER_TAKEOFF_CHECKLIST.del = 1.361
 FO_voices_directory.CLIMB_CHECKLIST.del = 1.105
@@ -158,7 +173,7 @@ FO_voices_directory.MINIMUMS.del = 0.867
 FO_voices_directory.LANDING_CHECKLIST.del = 1.175
 FO_voices_directory.AUTO_TRHUST.del = 0.983
 FO_voices_directory.AFTER_LANDING_CHECKLIST.del = 1.595
-FO_voices_directory.APU.del = 0.710
+-- CHECKLIST 5
 FO_voices_directory.PARKING_CHECKLIST.del = 1.051
 FO_voices_directory.ENGINES.del = 0.777
 FO_voices_directory.SECURING_CHECKLIST.del = 1.333
@@ -166,6 +181,8 @@ FO_voices_directory.EMERGENCY_EXIT_LIGHTS.del = 1.455
 FO_voices_directory.NO_PORTABLE_SIGNS.del = 1.212
 FO_voices_directory.APU_AND_BATTERY.del = 1.351
 FO_voices_directory.BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE.del = 2.052
+FO_voices_directory.APU.del = 0.710
+-- FLIGHT PARAMETERS CALLOUTS
 FO_voices_directory.SPEED.del = 0.526
 FO_voices_directory.SINK_RATE.del = 0.934
 FO_voices_directory.BANK.del = 0.611
@@ -176,6 +193,7 @@ FO_voices_directory.CROSS_TRACK.del = 0.865
 FO_voices_directory.LAT_DEV.del = 0.746
 FO_voices_directory.V_DEV.del = 0.815
 FO_voices_directory.GA_UNSTABLE.del = 1.319
+-- AUTOLAND CALLOUTS
 FO_voices_directory.LAND.del = 0.681
 FO_voices_directory.FLARE.del = 0.572
 FO_voices_directory.ROLL_OUT.del = 0.713

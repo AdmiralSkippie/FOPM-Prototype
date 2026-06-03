@@ -4,5 +4,8 @@ Desarrollar alerta proximidad al TOD **
 identificar mangspd o selspd
 hacer procedimientos o cortarlos si es necesario
 
+Arreglar bug si se inicia el taxi antes con el ONEengdep
+Añadir el sistema para guardar la localizacion
+
 /////// FUTURO ///////
 Interaccion con servicios en tierra

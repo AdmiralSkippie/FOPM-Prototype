@@ -20,6 +20,7 @@ FO_voice_config = {
 
 -- VOICES DIRECTORY
 FO_voices_directory = {
+-- MUST CUMON --
     OFF = {code = "OFF", del = 0},
     ON = {code = "ON", del = 0},
     NORMAL = {code = "NORMAL", del = 0},

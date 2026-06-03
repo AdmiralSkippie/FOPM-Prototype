@@ -1169,7 +1169,7 @@ function after_start_proc()
             end
             if STEP == 3.5 then
                 if TIME >= DELAY then
-                    if (FLAPS_LEVER_State * 4) == FLAPS_TO_CONFIG then
+                    if ((math.floor(FLAPS_LEVER_State * 100)/100) * 4) == FLAPS_TO_CONFIG then
                         if not speak_only_essencials then
                             local speach = CONFIG_VOICE_SRCH
                             play_sound(FOPM_Talk[speach])
@@ -6119,7 +6119,7 @@ function phase_check()
         if ENG_Mode == 2 then
             FLT_PHASE.ENG_START = true
         end
-        if TAXILT_SW > 0 then
+        if TAXILT_SW > 0 and COMPLETED_PROC.AS_PROC_DONE then
             FLT_PHASE.ENG_START = false
             FLT_PHASE.PUSHBACK = false
             FLT_PHASE.TAXI_OUT = true
@@ -6143,6 +6143,10 @@ function phase_check()
             FLT_PHASE.TAKEOFF = true
             FLT_PHASE.TAXI_OUT = false
             COMPLETED_PROC.AS_PROC_DONE = false
+            command_GUP = false
+            command_GDN = false
+            command_FLPS_1UP = false
+            command_FLPS_1DN = false
         end
         if ENG_1_Master == 0 and ENG_2_Master == 0 and BEACON_STATE == 0 then
             FLT_PHASE.PARKING = true
@@ -6487,7 +6491,11 @@ function config_save()
         config:write("--------------------------\n\n")
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
-        config:write("fo_speed = ".. fo_speed.."\n")
+        config:write("fo_speed = ".. fo_speed.."\n\n")
+        config:write("FOPM_wleft = "..tostring(FOPM_wleft).."\n")
+        config:write("FOPM_wtop = "..tostring(FOPM_wtop).."\n")
+        config:write("FOPM_wright = "..tostring(FOPM_wright).."\n")
+        config:write("FOPM_wbottom = "..tostring(FOPM_wbottom))
         config:close()
     end
 end
@@ -6501,14 +6509,10 @@ end
 -- IMGUI VARIABLES
 local WND_SETTINGS = false
 local WND_MAIN = true
-local WND_BREAFING = false
+local WND_BRIEFING = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
 local setting_change = false
 local acf_neo_type = "N"
-local wleft = 0
-local wtop = 0
-local wright = 0
-local wbottom = 0
 FO_INTERFACE = nil
 
 -- IMGUI BUILDER
@@ -6516,19 +6520,21 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_MAIN then -- MAIN WINDOW
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft-30,wtop,wright,wbottom-72)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-30,FOPM_wtop,FOPM_wright,FOPM_wbottom-72)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_MAIN = false
-            WND_BREAFING = false
+            WND_BRIEFING = false
         end
         imgui.SameLine()
-        if imgui.SmallButton("Breafing") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft-59,wtop,wright,wbottom-134)
+        if imgui.SmallButton("Briefing") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-59,FOPM_wtop,FOPM_wright,FOPM_wbottom-134)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
-            WND_BREAFING = true
+            WND_BRIEFING = true
         end
         imgui.SameLine()
         imgui.TextUnformatted("     ")
@@ -6708,22 +6714,24 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
     end
-    if WND_BREAFING then -- BREAFING WINDOW
+    if WND_BRIEFING then -- BRIEFING WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Settings") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft+30,wtop,wright,wbottom+63)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+63)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_MAIN = false
-            WND_BREAFING = false
+            WND_BRIEFING = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
-            WND_BREAFING = false
+            WND_BRIEFING = false
         end
         imgui.Spacing()
         imgui.Separator()
@@ -6845,9 +6853,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.TO_BRIEFING = true
-                    wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
-                    WND_BREAFING = false
+                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    WND_BRIEFING = false
                     WND_MAIN = true
                 end
             end
@@ -6937,9 +6945,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
                     COMPLETED_PROC.DES_BRIEFING = true
-                    wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,wleft+59,wtop,wright,wbottom+134)
-                    WND_BREAFING = false
+                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    WND_BRIEFING = false
                     WND_MAIN = true
                 end
             end
@@ -6948,19 +6956,21 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_SETTINGS then -- SETTINGS WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Main") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft+30,wtop,wright,wbottom+72)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+72)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
-            WND_BREAFING = false
+            WND_BRIEFING = false
         end
         imgui.SameLine()
-        if imgui.SmallButton("Breafing") then
-            wleft,wtop,wright,wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,wleft-30,wtop,wright,wbottom-63)
+        if imgui.SmallButton("Briefing") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-30,FOPM_wtop,FOPM_wright,FOPM_wbottom-63)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
-            WND_BREAFING = true
+            WND_BRIEFING = true
         end
         imgui.Spacing()
         imgui.Separator()
@@ -7012,17 +7022,34 @@ end
 -- FLOAT WINDOWS MASTER
 
 function show_interface()
-    local posX = (SCREEN_WIDTH / 1.08) - (250 / 2)
-    local posY = (SCREEN_HEIGHT / 1.15) - (125 / 2)
     FO_INTERFACE = float_wnd_create(250, 125, 1, true)
     float_wnd_set_title(FO_INTERFACE, "FO/PM")
-    float_wnd_set_position(FO_INTERFACE, posX, posY)
     float_wnd_set_imgui_builder(FO_INTERFACE, "FO_imgui_builder")
+    if FOPM_wleft then
+        float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom)
+    end
 end
 
 
 function hide_interface()
     if FO_INTERFACE then
+        if not WND_MAIN then
+            if WND_BRIEFING then
+                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                WND_SETTINGS = false
+                WND_MAIN = true
+                WND_BRIEFING = false
+            elseif WND_SETTINGS then
+                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+72)
+                WND_SETTINGS = false
+                WND_MAIN = true
+                WND_BRIEFING = false
+            end
+        end
+        FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+        config_save()
         float_wnd_destroy(FO_INTERFACE)
     end
 end

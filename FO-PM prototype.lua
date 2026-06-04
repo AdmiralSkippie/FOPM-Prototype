@@ -354,7 +354,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 3.25 then
-        if ACF_ICAO == "A321" then
+        if ACF_ICAO == "A321" or ACF_ICAO == "A320" or ACF_ICAO == "A319" then
             if math.floor(RUDDER + 0.3) == -25 then
                 local speach = "FULL_LEFT"
                 play_sound(FOPM_Talk[speach])
@@ -373,7 +373,7 @@ function flt_ctl_chk()
         end
     end
     if STEP_FLT == 3.5 then
-        if ACF_ICAO == "A321" then
+        if ACF_ICAO == "A321" or ACF_ICAO == "A320" or ACF_ICAO == "A319" then
             if math.floor(RUDDER + 0.3) == 25 then
                 local speach = "FULL_RIGHT"
                 play_sound(FOPM_Talk[speach])
@@ -6839,7 +6839,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("Yes", RAINING) then
                 RAINING = true
             end
-            local dep_change, change = imgui.Checkbox("AR Departure", APP_TYPE.AR_DEP)
+            local dep_change, change = imgui.Checkbox("RNP AR Departure", APP_TYPE.AR_DEP)
             if dep_change then
                 APP_TYPE.AR_DEP = change
             end
@@ -7049,6 +7049,12 @@ function hide_interface()
             end
         end
         FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+        if FOPM_wleft > 10000 then
+            FOPM_wleft = nil
+            FOPM_wtop = nil
+            FOPM_wright = nil
+            FOPM_wbottom = nil
+        end
         config_save()
         float_wnd_destroy(FO_INTERFACE)
     end

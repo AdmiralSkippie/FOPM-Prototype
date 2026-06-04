@@ -12,10 +12,15 @@ Here you will find a short instruction how to install the plugin and one more th
 ///// HOW TO INSTALL /////
 
 ¡IMPORTANT DISCLAIMER! - To run the plugin you need to have the FlyWithLua installed in your sim.
+
 Compatible with:
+
 Toliss A321/A21N V1.8
+
 Toliss A320/A21N V1.3.1
+
 Toliss A319 V1.11
+
 If you have previous versions installed the plugin might crash
 
 1. In the dowloaded folder you will find 1 file "FO-PM.lua" and 1 folder "FO PM", put them both into the scripts folder of FlyWithLua

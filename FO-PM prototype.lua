@@ -2436,8 +2436,15 @@ end
 function ten_thausand_feet_DES()
     if STEP == 0 then
         if TIME >= DELAY then
-            DELAY = TIME + 1.5
-            STEP = 1
+            if fo_autoperform then
+                local speach = "TEN_THAUSAND_FEET"
+                play_sound(FOPM_Talk[speach])
+                DELAY = TIME + (FO_voices_directory[speach].del)
+                STEP = 1
+            else
+                DELAY = TIME + fo_speed
+                STEP = 1
+            end
         else
             return
         end
@@ -6313,7 +6320,7 @@ function FO_main_logic()
             end
         end
     end
-    if EXECUTE_OETD and not CHECKLIST.EX_BTO_DTL and not EXECUTE_BTP then
+    if EXECUTE_OETD and not CHECKLIST.EX_BTO_DTL and not EXECUTE_BTP and not EXECUTE_ENRWY and not EXECUTE_EXRWY then
         one_engine_taxi_DEP()
     end
     if FLT_PHASE.TAXI_OUT then
@@ -6567,8 +6574,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 if imgui.SmallButton("Before Start CKL") then
                     CHECKLIST.EX_BS_DTL = true
                 end
+                imgui.SameLine()
             end
-            imgui.SameLine()
             if not CHECKLIST.SEC_CL and not CHECKLIST.EX_SEC_CL and not CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_DTL then
                 if imgui.SmallButton("Securing CKL") then
                     CHECKLIST.EX_SEC_CL = true
@@ -6708,12 +6715,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY then
+            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Entry RWY") then
                     EXECUTE_ENRWY = true
                 end
             end
-            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
+            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
                 end

@@ -1,8 +1,8 @@
----------------------------
----- Voices Load System----
----------------------------
+----------------------------------
+---- Voices Load System V 2.0 ----
+----------------------------------
 
--- vOICE SEARCH DIRECTION
+-- VOICE SEARCH DIRECTION
 FOPM_Talk = {}
 
 BRAKE_WARNINGS = {}

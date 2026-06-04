@@ -9,3 +9,7 @@ Añadir el sistema para guardar la localizacion
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra
+
+///// SOME FEATURES /////
+The IMGUI window is very intuitive and you can move it at your discretion to your best spot, when you close it WITH THE COMMAND it will save the last position, if you close it with the red button
+it will reset to its default spot, so it is highly recommend to close it with the command

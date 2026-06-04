@@ -5,7 +5,6 @@
 --|||| GENERAL |||||--
 dataref("TIME", "sim/time/total_running_time_sec", "readonly")
 dataref("ENG_MODEL", "AirbusFBW/EngineTypeIndex", "readonly") -- 0 IAE/1 CFM/2 PW/3 LEAP
-dataref("ACF_ICAO", "sim/aircraft/view/acf_ICAO", "readonly")
 dataref("FUEL_ACF_CONFIG", "AirbusFBW/FuelConfigIndex", "readonly") -- FOR NEO 1 NEO/2 LR /3 XLR
 
 --|||| COMMAND/CHANGE ||||--

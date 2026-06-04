@@ -1,5 +1,5 @@
 -- VOICE PACK NAME
-FOPM_voicepack_name = "Male"
+FOPM_voicepack_name = "Owen"
 
 -- VOICE PACK DURATION CONFIG
 -- MUST CUMON

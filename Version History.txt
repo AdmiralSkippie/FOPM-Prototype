@@ -1,0 +1,79 @@
+
+////////// VERSION HISTORY //////////
+
+///// Version 1.0 Main Release
+
+This is the first public release version of the plugin
+
+First Officer / Pilot Monitoring plugin for Toliss A319, A320, A20N, A321 and A21N
+Perform procedures with and without commands
+Read Checklist and checking that the items ware performed and set correctly
+Check the flight parameters in takeoff, flight and landing, with their respective callouts, according to the SOP
+
+FO can now perform this normal procedures:
+.   PRELIMINARY COCKPIT PREPARATION
+.   AFTER START PROCEDURE
+.   FLIGHT CONTROLS CHECK
+.   BEFORE TAKEOFF PROCEDURE
+.   ENTRY & EXIT RWY PROCEDURE
+.   AFTER TAKEOFF PROCEDURE
+.   CLEAN UP PROCEDURE (ON COMMAND / AUTO PERFORM)
+.   10000FT CLIMB PROCEDURE
+.   10000FT DESCEND PROCEDURE
+.   FLAPS OPERATION (ON COMMAND)
+.   GEAR OPERATION (ON COMMAND)
+.   AP DISENGAGE PROCEDURE (AS NEEDED DEPENDING ON THE APPROACH)
+.   FLIGHT PARAMETER CHECK
+.   GO-AROUND PROCEDURE
+.   AFTER LANDING PROCEDURE
+
+And this supplementary procedures:
+.   ONE ENGINE TAXI DEPARTURE PROCEDURE
+.   ONE ENGINE TAXI ARRIVAL PROCEDURE
+
+FO can check and read this checklist:
+.   BEFORE START CHECKLIST
+.   BEFORE START CHECKLIST BELOW THE LINE
+.   AFTER START CHECKLIST
+.   BEFORE TAKEOFF CHECKLIST
+.   BEFORE TAKEOFF CHECKLIST BELOW THE LINE
+.   AFTER TAKEOFF CHECKLIST
+.   CLIMB CHECKLIST
+.   APPROACH CHECKLIST
+.   LANDING CHECKLIST
+.   AFTER LANDING CHECKLIST
+.   PARKING CHECKLIST
+.   SECURING CHECKLIST
+
+Additionally the FO can perform/say callouts in accordance with the situation/approach type at the moment:
+.   TAKEOFF MONITORING CALLOUTS
+.   TRANSITION ALTITUDE CALLOUT
+.   TRANSITION LEVEL CALLOUT
+.   DECEL MONITORING CALLOUTS
+.   RNP AR DEPARTURE AND APP with their respective checklist items and flight parameters monitoring
+.   ILS CAT II/III APP CALLOUTS with their respective checklist items and flight parameters monitoring
+
+Added Settings
+.   FO autoperform: allow FO auto perform clean up procedure and gear retraction on takeoff and GA
+.   Speak Only Essentials: Restrict FO callouts to only when needed instead of all movements and actions
+.   FO speed: FO action perform speed
+        Fast = 0.6s
+        Normal = 0.85s
+        Study = 1.1s
+All managed in the Settings UI page
+
+Added Briefing page to manage all parameters about Takeoff and Landing briefing.
+Added Main page to manage ongoing phase, on command procedures and checklist.
+Added 6 main commands to xplane's command list for a keyboard assign:
+.   Flaps 1 UP
+.   Flaps 1 DOWN
+.   Gear UP
+.   Gear DOWN
+.   Response Check (for checklists)
+.   FO show/hide interface
+Added 2 voice packs "Owen" and "Adriana", "Adriana" is loaded by default.
+
+If you encounter any issues or bugs please report it, it will be checked as soon as possible
+
+Enjoy and happy flights :)
+Best Regards: Admiral Skippie

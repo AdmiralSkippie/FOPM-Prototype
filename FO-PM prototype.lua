@@ -1,5 +1,5 @@
 ------------------------------------------
------ //// TOLISS FO / PM PROTO //// -----
+----- //// TOLISS FO / PM V1.0 //// -----
 ------------------------------------------
 
 -- PLANE CHECK
@@ -10,7 +10,10 @@ local COMPATIBLE_ACF = {
     A321 = true,
     A21N = true
 }
-if COMPATIBLE_ACF[PLANE_ICAO] then -- LUA START
+dataref("ACF_ICAO", "sim/aircraft/view/acf_ICAO", "readonly")
+dataref("ACF_UI_Name","sim/aircraft/view/acf_ui_name","readonly")
+if COMPATIBLE_ACF[ACF_ICAO] then -- LUA START
+if string.find(string.lower(ACF_UI_Name),"toliss") then
 logMsg("XXXXX   ACF Compatible")
 dataref("TIME", "sim/time/total_running_time_sec", "readonly")
 -- RANDOMIZER --
@@ -2067,11 +2070,15 @@ function clean_up_auto()
                     STEP_SPEACH = 2
                 end
                 if STEP_SPEACH == 2 then
-                    if FLAPS_State ~= -1 then
-                        local speach = FL_VOICE_SRCH
-                        play_sound(FOPM_Talk[speach])
-                        DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
-                        STEP_SPEACH = 3
+                    if FLAPS_LEVER_State ~= 0.25 then
+                        if FLAPS_State ~= -1 then
+                            local speach = FL_VOICE_SRCH
+                            play_sound(FOPM_Talk[speach])
+                            DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
+                            STEP_SPEACH = 3
+                        else
+                            return
+                        end
                     else
                         return
                     end
@@ -2089,6 +2096,7 @@ function clean_up_auto()
                 local speach = FL_VOICE_SRCH
                 play_sound(FOPM_Talk[speach])
                 DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
+                STEP_SPEACH = 0
                 STEP_CLEAN = 2
             end
         else
@@ -2102,7 +2110,7 @@ function clean_up_auto()
                     local speach = "SPEED_CHECK"
                     play_sound(FOPM_Talk[speach])
                     DELAY_CLEAN = TIME + (FO_voices_directory[speach].del)
-                    DELAY_CLEAN = TIME + 1.436
+                    F_TARGET = FLAPS_LEVER_State - 0.25
                     STEP_SPEACH = 1
                     return
                 else
@@ -2114,7 +2122,7 @@ function clean_up_auto()
                 STEP_SPEACH = 2
             end
             if STEP_SPEACH == 2 then
-                if FLAPS_State ~= -1 then
+                if FLAPS_LEVER_State == F_TARGET then
                     local speach = FL_VOICE_SRCH
                     play_sound(FOPM_Talk[speach])
                     DELAY_CLEAN = TIME + (FLAP_POS[speach].del) + fo_speed
@@ -3556,6 +3564,7 @@ function parking_proc()
     end
 end
 
+-- ONE ENGINE TAXI DEPARTURE
 function one_engine_taxi_DEP()
     if STEP_ONEENG == 0 then
         if TAXILT_SW ~= 0 then
@@ -3940,6 +3949,7 @@ function one_engine_taxi_DEP()
     end
 end
 
+-- ONE ENGINE TAXI ARRIVAL
 function one_engine_taxi_ARR()
     if STEP_ONEENG == 0 then
         if TIME >= DELAY then
@@ -6489,6 +6499,7 @@ function config_save()
         config:write("--------------------------\n")
         config:write("---- FO CONFIGURATION ----\n")
         config:write("--------------------------\n\n")
+        config:write('FOPM_plugin_version = "V1.0"'.."\n")
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
         config:write("fo_speed = ".. fo_speed.."\n\n")
@@ -6521,7 +6532,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-30,FOPM_wtop,FOPM_wright,FOPM_wbottom-72)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-40,FOPM_wtop,FOPM_wright,FOPM_wbottom-82)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_MAIN = false
@@ -6530,7 +6541,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-59,FOPM_wtop,FOPM_wright,FOPM_wbottom-134)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-60,FOPM_wtop,FOPM_wright,FOPM_wbottom-144)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
@@ -6718,7 +6729,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         if imgui.SmallButton("Settings") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+63)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+20,FOPM_wtop,FOPM_wright,FOPM_wbottom+62)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_MAIN = false
@@ -6727,7 +6738,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Main") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+144)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
@@ -6957,7 +6968,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         if imgui.SmallButton("Main") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+72)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
@@ -6966,7 +6977,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-30,FOPM_wtop,FOPM_wright,FOPM_wbottom-63)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-20,FOPM_wtop,FOPM_wright,FOPM_wbottom-62)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
@@ -6975,6 +6986,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
+        imgui.TextUnformatted("FOPM Version: "..FOPM_plugin_version)
         imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)
         imgui.Spacing()
         imgui.Separator()
@@ -7042,14 +7054,14 @@ function hide_interface()
                 WND_BRIEFING = false
             elseif WND_SETTINGS then
                 FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+30,FOPM_wtop,FOPM_wright,FOPM_wbottom+72)
+                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
                 WND_SETTINGS = false
                 WND_MAIN = true
                 WND_BRIEFING = false
             end
         end
         FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-        if FOPM_wleft > 10000 then
+        if FOPM_wleft > 10000 or FOPM_wleft < 0 then
             FOPM_wleft = nil
             FOPM_wtop = nil
             FOPM_wright = nil
@@ -7090,4 +7102,9 @@ create_command("Toliss_A32S_FO/Command_FLAPS_1_UP", "Command FLAPS 1 Position UP
 create_command("Toliss_A32S_FO/Command_FLAPS_1_DN", "Command FLAPS 1 Position DN", "command_FLPS_1DN = not command_FLPS_1DN", "", "")
 
 logMsg("XXXXX   FO/PM LOADED")
+else
+    logMsg("XXXXX   ACF Not Compatible")
+end
+else
+    logMsg("XXXXX   ACF Not Compatible")
 end -- LUA ENDS

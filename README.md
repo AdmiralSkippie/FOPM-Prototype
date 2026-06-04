@@ -2,6 +2,7 @@
 # First Officer & Pilot Monitoring Plugin
 
 ////////// CURRENT VERSION //////////
+
 Version 1.0 Main Release (Check "Version History" for more details)
 ____________________________________________________________________________________________________
 

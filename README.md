@@ -6,8 +6,9 @@
 Version 1.0 Main Release (Check "Version History" for more details)
 ____________________________________________________________________________________________________
 
-Hello there pilots and curious people welcome
-Here you will find a short instruction how to install the plugin and one more thing to enhance your experience
+Hello there pilots and curious people welcome.
+Here you will find a short instruction how to install the plugin and one more thing to enhance your experience.
+Plese read the "Documentation" file to know how to operate with the FO.
 
 ///// HOW TO INSTALL /////
 

@@ -1496,7 +1496,11 @@ function before_takeoff_proc()
                         else
                             DELAY = TIME + fo_speed
                         end
-                        STEP = 6
+                        if EXECUTE_OETD then
+                            STEP = 8
+                        else
+                            STEP = 6
+                        end
                     else
                         local rindex = math.random(3)
                         play_sound(BRAKE_WARNINGS[rindex])
@@ -1539,12 +1543,61 @@ function before_takeoff_proc()
                     if BRKFAN_State == 1 then
                         command_once(BRKFAN_PB)
                     end
-                    STEP = 6
+                    if EXECUTE_OETD then
+                        STEP = 8
+                    else
+                        STEP = 6
+                    end
                 else
                     return
                 end
             end
             if STEP == 6 then
+                if TIME >= DELAY then
+                    if not speak_only_essencials then
+                        local speach = "AUTOBRAKES"
+                        play_sound(FOPM_Talk[speach])
+                        DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
+                    else
+                        DELAY = TIME + fo_speed
+                    end
+                    STEP = 6.1
+                else
+                    return
+                end
+            end
+            if STEP == 6.1 then
+                if TIME >= DELAY then
+                    if AUTOBRK_MAX == 1 then
+                        if not speak_only_essencials then
+                            local speach = "MAX"
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
+                        else
+                            DELAY = TIME + fo_speed
+                        end
+                        STEP = 7
+                    else
+                        if not speak_only_essencials then
+                            local speach = "MAX"
+                            play_sound(FOPM_Talk[speach])
+                            DELAY = TIME + (FO_voices_directory[speach].del) + fo_speed
+                        else
+                            DELAY = TIME + fo_speed
+                        end
+                        command_once(AUTOBRK_MAX_PB)
+                        STEP = 7
+                    end
+                end
+            end
+            if STEP == 7 then
+                if TIME >= DELAY then
+                    command_once(TO_CONFIG_PB)
+                    DELAY = TIME + fo_speed
+                    STEP = 8
+                end
+            end
+            if STEP == 8 then
                 if TIME >= DELAY then
                     local rindex = math.random(5)
                     play_sound(READY[rindex])
@@ -3904,7 +3957,7 @@ function one_engine_taxi_DEP()
     if STEP_ONEENG == 27 then
         if TIME >= DELAY then
             command_once(TO_CONFIG_PB)
-            DELAY = TIME + 0.471
+            DELAY = TIME + fo_speed
             STEP_ONEENG = 28
         else
             return
@@ -6366,7 +6419,7 @@ function FO_main_logic()
     end
     if FLT_PHASE.CLIMB then
         if fo_autoperform then
-            if not COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000 then
+            if (not COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000) or EXECUTE_10FT_CLB then
                 COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
                 ten_thausand_feet_CLB()
             end
@@ -6387,7 +6440,7 @@ function FO_main_logic()
     end
     if FLT_PHASE.DESCEND then
         if fo_autoperform then
-            if not COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000 then
+            if (not COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000) or EXECUTE_10FT_DES then
                 ten_thausand_feet_DES()
             end
         elseif EXECUTE_10FT_DES then

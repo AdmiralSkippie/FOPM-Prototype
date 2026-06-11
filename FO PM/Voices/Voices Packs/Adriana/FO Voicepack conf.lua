@@ -154,7 +154,7 @@ FO_voices_directory.CHECKLIST_COMPLETED.del = 1.113
 FO_voices_directory.AFTER_START_CHECKLIST.del = 1.520
 FO_voices_directory.ANTI_ICE.del = 1.039
 -- CHECKLIST 3
-FO_voices_directory.ECAM_STATUS.del = .188
+FO_voices_directory.ECAM_STATUS.del = 1.188
 FO_voices_directory.BEFORE_TAKEOFF_CHECKLIST.del = 1.678
 FO_voices_directory.FLIGHT_CONTROLS.del = 0.954
 FO_voices_directory.FLY_INSTRUMENTS.del = 1.081

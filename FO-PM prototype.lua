@@ -3613,6 +3613,24 @@ function parking_proc()
     end
     if STEP == 9 then
         if TIME >= DELAY then
+            command_once(CRONO_SET_PB)
+            DELAY = TIME + fo_speed
+            STEP = 10
+        else
+            return
+        end
+    end
+    if STEP == 10 then
+        if TIME >= DELAY then
+            command_once(CRONO_RESET_PB)
+            DELAY = TIME + fo_speed
+            STEP = 11
+        else
+            return
+        end
+    end
+    if STEP == 11 then
+        if TIME >= DELAY then
             local rindex = math.random(5)
             play_sound(READY[rindex])
             DELAY = TIME + (RDY[rindex].del)

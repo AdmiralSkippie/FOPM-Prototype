@@ -110,7 +110,7 @@ FO_voices_directory = {
     SPOILERS = {code = "SPOILERS", del = 0},
     REVERSE_GREEN = {code = "REVERSEGREEN", del = 0},
     DECEL = {code = "DECEL", del = 0},
-    N60_KNOTS = {code = "60", del = 0},
+    N70_KNOTS = {code = "70", del = 0},
     TRNS_ALT = {code = "TRANS ALT", del = 0},
     TRNS_LVL = {code = "TRANS LVL", del = 0},
     FLIGHT_DIRECTORS = {code = "FD", del = 0},

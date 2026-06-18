@@ -2,7 +2,7 @@
 ---- FO CONFIGURATION ----
 --------------------------
 
-FOPM_plugin_version = "V1.0"
+FOPM_plugin_version = "V1.1"
 speak_only_essencials = true
 fo_autoperform = false
 fo_speed = 0.85

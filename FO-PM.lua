@@ -39,6 +39,10 @@ logMsg("XXXXX   Voices Pack Config Loaded")
 dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/Active/Procedures.lua")
 logMsg("XXXXX   Procedures Loaded")
 
+-- CHECKLISTS LOAD
+dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/Active/Checklists.lua")
+logMsg("XXXXX   Checklists Loaded")
+
 ----------------
 ---- PHASES ----
 ----------------
@@ -65,7 +69,7 @@ local FLT_PHASE = {
 --------------------------------
 ---- PROCEDURES COMPLETE ----
 --------------------------------
-local COMPLETED_PROC = {
+FOPM_TL_COMPLETED_PROC = {
     PF_DONE = false,
     TO_BRIEFING = false,
     AS_PROC_DONE = false,
@@ -90,7 +94,7 @@ local COMPLETED_PROC = {
 ------------------------------
 ---- CHECKLISTS VARIABLES ----
 ------------------------------
-local CHECKLIST = {
+FOPM_TL_CHECKLIST = {
     BS_DTL = false,
     EX_BS_DTL = false,
     BS_CL = false,
@@ -186,13 +190,14 @@ local STEP_AL = 0
 local STEP_CHECK = 0
 local STEP_ONEENG = 0
 local PROC_STEP = 0
+local CKLST_STEP = 0
 local DES_MADED = false
-local PT_TO_DIRECTION = 0
-local PT_TO_ANGLE = 0
-local PT_TO_CONFIG = 0
-local RAINING = false
-local PACKS_FOR_TO = false
-local APU_TO_PACKS = false
+PT_TO_DIRECTION = 0
+PT_TO_ANGLE = 0
+PT_TO_CONFIG = 0
+RAINING = false
+PACKS_FOR_TO = false
+APU_TO_PACKS = false
 local FLAP_RETRACT_SPEED = 0
 local SLAT_RETRACT_SPEED = 0
 local GREENDOT = 0
@@ -412,7 +417,7 @@ function flt_ctl_chk()
     end
     if STEP_FLT == 4 then
         if TIME >= DELAY then
-            COMPLETED_PROC.FLTCTL_CHK = true
+            FOPM_TL_COMPLETED_PROC.FLTCTL_CHK = true
             STEP_FLT = 0
         else
             return
@@ -629,7 +634,7 @@ function pre_cockpit_pre()
                 command_once(MCDU_FO_KEY_Fpln)
                 STEP = 0
                 PROC_STEP = 0
-                COMPLETED_PROC.PF_DONE = true
+                FOPM_TL_COMPLETED_PROC.PF_DONE = true
                 EXECUTE_PCP = false
             else
                 STEP = 1
@@ -640,7 +645,7 @@ end
 
 ---- AFTER START PROCEDURE
 function after_start_proc()
-    if not COMPLETED_PROC.AS_PROC_DONE then
+    if not FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
             if STEP == 0 then
                 STEP = 1
                 DELAY = TIME + 1
@@ -843,7 +848,7 @@ function after_start_proc()
             if STEP == 7 then
                 if not ONEENG_TAXI_DEP then
                     if TIME >= DELAY then
-                        if not COMPLETED_PROC.FLTCTL_CHK then
+                        if not FOPM_TL_COMPLETED_PROC.FLTCTL_CHK then
                             flt_ctl_chk()
                         else
                             STEP = 8
@@ -863,7 +868,7 @@ function after_start_proc()
                     command_once(MCDU_FO_KEY_Fpln)
                     DELAY = TIME + (RDY[rindex].del) + fo_speed
                     STEP = 0
-                    COMPLETED_PROC.AS_PROC_DONE = true
+                    FOPM_TL_COMPLETED_PROC.AS_PROC_DONE = true
                     EXECUTE_ASP = false
                 else
                     return
@@ -879,7 +884,7 @@ end
 
 ---- BEFORE TAKEOFF PROCEDURE
 function before_takeoff_proc()
-    if not COMPLETED_PROC.BTO_PROC_DONE then
+    if not FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
         if EXECUTE_BTP then
              if STEP == 0 then
                 STEP = 1
@@ -1151,8 +1156,8 @@ function before_takeoff_proc()
                     DELAY = TIME + (RDY[rindex].del)
                     STEP = 0
                     EXECUTE_BTP = false
-                    COMPLETED_PROC.BTO_PROC_DONE = true
-                    COMPLETED_PROC.BRKTEMP_CHK_DONE = false
+                    FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = true
+                    FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
                 else
                     return
                 end
@@ -1169,7 +1174,7 @@ end
 ---- ENTER RWY
 function enter_rwy()
     if FLT_PHASE.ON_RWY then
-        if not COMPLETED_PROC.ENT_RWY_DONE then
+        if not FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE then
             if STEP == 0 then
                 if TIME >= DELAY then
                     DELAY = TIME + 1
@@ -1285,7 +1290,7 @@ function enter_rwy()
                 else
                     STEP = 0
                     EXECUTE_ENRWY = false
-                    COMPLETED_PROC.ENT_RWY_DONE = true
+                    FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = true
                 end
             end
             if STEP == 4.5 then
@@ -1340,7 +1345,7 @@ function enter_rwy()
                     DELAY = TIME + (RDY[rindex].del)
                     STEP = 0
                     EXECUTE_ENRWY = false
-                    COMPLETED_PROC.ENT_RWY_DONE = true
+                    FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = true
                 else
                     return
                 end
@@ -1353,7 +1358,7 @@ end
 
 ---- TAKE OFF PROCEDURE
 function take_off_proc()
-    if not COMPLETED_PROC.TO_PROC_DONE then
+    if not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE then
         if STEP == 0 then
             if TIME >= DELAY then
                 if ENG_1_N1 > 50 and ENG_2_N1 > 50 then
@@ -1636,7 +1641,7 @@ function take_off_proc()
                 end
                 ENG_Mode = 1
                 STEP = 0
-                COMPLETED_PROC.TO_PROC_DONE = true
+                FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = true
             else
                 return
             end
@@ -1736,7 +1741,7 @@ function clean_up_auto()
                     STEP_SPEACH = 0
                     STEP_CLEAN = 0
                     DELAY = TIME + 1
-                    COMPLETED_PROC.ACF_CLEAN = true
+                    FOPM_TL_COMPLETED_PROC.ACF_CLEAN = true
                 else
                     return
                 end
@@ -2025,7 +2030,7 @@ function ten_thausand_feet_CLB()
             DELAY = TIME + (RDY[rindex].del)
             STEP = 0
             EXECUTE_10FT_CLB = false
-            COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = true
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = true
         else
             return
         end
@@ -2175,7 +2180,7 @@ function ten_thausand_feet_DES()
             DELAY = TIME + (RDY[rindex].del)
             STEP = 0
             EXECUTE_10FT_DES = false
-            COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = true
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = true
         else
             return
         end
@@ -2191,7 +2196,7 @@ function ap_discn_behaviour()
                 STEP_AP = 1
             else
                 STEP_AP = 0
-                COMPLETED_PROC.AP_DISCN_PROC = true
+                FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = true
             end
         else
             return
@@ -2241,7 +2246,7 @@ function ap_discn_behaviour()
             command_once(HDGTRK_TOGGLE)
             DELAY_AP = TIME + 0.5
             STEP_AP = 0
-            COMPLETED_PROC.AP_DISCN_PROC = true
+            FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = true
         else
             return
         end
@@ -2443,14 +2448,14 @@ end
 
 ---- GO ARROUND PROCEDURE
 function go_arround()
-    if not COMPLETED_PROC.GA_PROC then
+    if not FOPM_TL_COMPLETED_PROC.GA_PROC then
         if STEP == 0 then
             if TIME >= DELAY then
                 DELAY = TIME + 0.25
                 STEP = 1
-                CHECKLIST.APP_CL = false
-                CHECKLIST.ATO_CL = false
-                CHECKLIST.LND_CL = false
+                FOPM_TL_CHECKLIST.APP_CL = false
+                FOPM_TL_CHECKLIST.ATO_CL = false
+                FOPM_TL_CHECKLIST.LND_CL = false
             else
                 return
             end
@@ -2593,7 +2598,7 @@ function go_arround()
         if STEP == 12 then
             if TIME >= DELAY then
                 command_once(MCDU_FO_KEY_Fpln)
-                COMPLETED_PROC.GA_PROC = true
+                FOPM_TL_COMPLETED_PROC.GA_PROC = true
                 STEP = 0
                 EXECUTE_GEAR = false
                 STEP_FLT = 0
@@ -2607,7 +2612,7 @@ end
 
 ---- TOUCH DOWN PROCEDURE
 function touch_down()
-    if not COMPLETED_PROC.DECEL_CALLOUTS then
+    if not FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS then
         if STEP == 0 then
             if TIME >= DELAY then
                 if INBD_SPOILERS == 1 then
@@ -2658,7 +2663,7 @@ function touch_down()
                     play_sound(FOPM_Talk[speech])
                     DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                     STEP = 0
-                    COMPLETED_PROC.DECEL_CALLOUTS = true
+                    FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = true
                 end
             end
         end
@@ -2922,7 +2927,7 @@ function after_landing_proc()
            DELAY = TIME + (RDY[rindex].del)
            STEP = 0
            EXECUTE_AL_PROC = false
-           COMPLETED_PROC.AL_PROC = true
+           FOPM_TL_COMPLETED_PROC.AL_PROC = true
         else
             return
         end
@@ -2940,9 +2945,9 @@ function brake_temp_check()
             DELAY = TIME + fo_speed
         end
         command_once(BRKFAN_PB)
-        COMPLETED_PROC.BRKTEMP_CHK_DONE = true
+        FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
     else
-        COMPLETED_PROC.BRKTEMP_CHK_DONE = true
+        FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
     end
 end
 
@@ -3033,7 +3038,7 @@ function vacating_rwy()
             TCAS_SW = 2
             STEP = 0
             EXECUTE_EXRWY = false
-            COMPLETED_PROC.EXIT_RWY_DONE = false
+            FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
         else
             return
         end
@@ -3182,7 +3187,7 @@ function parking_proc()
             play_sound(READY[rindex])
             DELAY = TIME + (RDY[rindex].del)
             STEP = 0
-            COMPLETED_PROC.PARK_PROC = true
+            FOPM_TL_COMPLETED_PROC.PARK_PROC = true
         else
             return
         end
@@ -3477,16 +3482,16 @@ function one_engine_taxi_DEP()
     end
     if STEP_ONEENG == 23 then
         if TIME >= DELAY then
-            CHECKLIST.EX_AS_CL = true
+            FOPM_TL_CHECKLIST.EX_AS_CL = true
             STEP_ONEENG = 24
         else
             return
         end
     end
     if STEP_ONEENG == 24 then
-        if CHECKLIST.AS_CL then
+        if FOPM_TL_CHECKLIST.AS_CL then
             if TIME >= DELAY then
-                if not COMPLETED_PROC.FLTCTL_CHK then
+                if not FOPM_TL_COMPLETED_PROC.FLTCTL_CHK then
                     flt_ctl_chk()
                 else
                     STEP_ONEENG = 25
@@ -3638,454 +3643,153 @@ end
 -- BEFORE START CHECKLIST
 function checklist_before_start()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "BEFORE_START_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EFB_PREPARATION"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "COMPLETED"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "AIRCRAFT_PBN_CAPABILITY"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "COCKPIT_PREPARATION"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if COMPLETED_PROC.PF_DONE then
-                    local speech = "COMPLETED"
+            if FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    if APP_TYPE.AR_DEP then
-                        STEP_CHECK = 6.1
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].check() then
+                        if FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].state == "FLAPS" then
+                            local speech = FL_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                        else
+                            local speech = FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
                     else
-                        STEP_CHECK = 7
+                        response_CHECK = false
                     end
                 end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6.1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "NAVAIDS_DESELECTION"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6.2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6.2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 7
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "GEAR_PINS_AND_COVERS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "REMOVED"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 9
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "SIGNS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if SEATBELTS_SW == 1 and SIGNS_STATE == 1 then
-                    local speech = "ON_AUTO"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 11
+            elseif FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].state == "FLAPS" then
+                        local speech = FL_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                    else
+                        local speech = FOPM_checklist.Before_start_checklist_DTL[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 11 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "ADIRS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if ADIR_1_STATE == 1 and ADIR_2_STATE == 1 and ADIR_3_STATE == 1 then
-                    local speech = "NAV"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 13
-                end
+            if CKLST_STEP > #FOPM_checklist.Before_start_checklist_DTL then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_BS_DTL = false
+                FOPM_TL_CHECKLIST.BS_DTL = true
+                FOPM_TL_CHECKLIST.PARK_CL = false
+                FOPM_TL_CHECKLIST.SEC_CL = false
             else
-                return
+                STEP_CHECK = 1
             end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 13 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FUEL_QUANTITY"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 14
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 14 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 15
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 15 then
-        if TIME >= DELAY_CHECK then
-            local speech = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 16
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 16 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if CM_QNH == FO_QNH then
-                    local speech = "SET"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 17
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 17 then
-        if TIME >= DELAY_CHECK then
-            local speech = "DOWN_TO_THE_LINE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_BS_DTL = false
-            CHECKLIST.BS_DTL = true
-            CHECKLIST.PARK_CL = false
-            CHECKLIST.SEC_CL = false
-        else
-            return
         end
     end
 end
 
--- BEFORE_START_CHECKLIST BELOW THE LINE
+-- BEFORE START CHECKLIST BELOW THE LINE
 function checklist_before_start_BTL()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "BEFORE_START_CHECKLIST_BELOW_THE_LINE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EFB"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
+            if FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].item
                 play_sound(FOPM_Talk[speech])
                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].check() then
+                        if FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].state == "FLAPS" then
+                            local speech = FL_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                        else
+                            local speech = FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Before_start_checklist_BTL[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
                 STEP_CHECK = 3
-            else
-                return
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 3 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "ATC"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if TCAS_SW == 2 then
-                    local speech = "SET"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 5
-                end
+            if CKLST_STEP > #FOPM_checklist.Before_start_checklist_BTL then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_BS_CL = false
+                FOPM_TL_CHECKLIST.BS_CL = true
             else
-                return
+                STEP_CHECK = 1
             end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "WINDOWS_AND_DOORS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if
-                DOOR_1L == 0 and
-                DOOR_1R == 0 and
-                DOOR_2L == 0 and
-                DOOR_2R == 0 and
-                DOOR_3L == 0 and
-                DOOR_3R == 0 and
-                DOOR_4L == 0 and
-                DOOR_4R == 0 then
-                    local speech = "CLOSE"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "BEACON"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if BEACON_STATE == 1 then
-                    local speech = "ON"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 9
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "THRUST_LEVERS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "IDLE"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 11
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 11 then
-        if TIME >= DELAY_CHECK then
-            local speech = "PARKING_BRAKE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 13
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 13 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_BS_CL = false
-            CHECKLIST.BS_CL = true
-        else
-            return
         end
     end
 end
@@ -4093,307 +3797,151 @@ end
 -- AFTER START CHECKLIST
 function checklist_after_start()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "AFTER_START_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ANTI_ICE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ECAM_STATUS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "PITCHTRM"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 then
-                    local speech = "SET"
+            if FOPM_checklist.After_start_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.After_start_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "RUDDER_TRIM"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if RUDDER_TRIM_POS < 0.2 and RUDDER_TRIM_POS > -0.2 then
-                    local speech = "N0"
-                    play_sound(FOPM_Talk[speech])
+                local speech = FOPM_checklist.After_start_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 9
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.After_start_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.After_start_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.After_start_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.After_start_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.After_start_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.After_start_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.After_start_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 9 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_AS_CL = false
-            CHECKLIST.AS_CL = true
-        else
-            return
+            if CKLST_STEP > #FOPM_checklist.After_start_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_AS_CL = false
+                FOPM_TL_CHECKLIST.AS_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
-    end
+    end    
 end
 
 -- BEFORE TAKEOFF CHECKLIST
 function checklist_before_takeoff()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "BEFORE_TAKEOFF_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FLIGHT_CONTROLS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FLY_INSTRUMENTS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "BRIEFING"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if COMPLETED_PROC.TO_BRIEFING then
-                    local speech = "COMPLETED"
+            if FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FLAPS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = CONFIG_VOICE_SRCH
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
-                STEP_CHECK = 9
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "V1_VR_V2_FLEX_TEMP"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
+                local speech = FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].item
                 play_sound(FOPM_Talk[speech])
                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 11
-            else
-                return
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 11 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "ECAM_MEMO"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "TAKEOFF_NO_BLUE"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 13
+            if FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].check() then
+                        if FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Before_takeoff_checklist_DTL[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
+                end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 13 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "DOWN_TO_THE_LINE"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_BTO_DTL = false
-            CHECKLIST.BTO_DTL = true
-        else
-            return
+            if CKLST_STEP > #FOPM_checklist.Before_takeoff_checklist_DTL then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_BTO_DTL = false
+                FOPM_TL_CHECKLIST.BTO_DTL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -4401,206 +3949,107 @@ end
 -- BEFORE TAKEOFF CHECKLIST BELOW THE LINE
 function checklist_before_takeoff_BTL()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "TAKEOFF_RUNWAY"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CONFIRM"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "NAV_ON_FMA"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if string.find(FMA_B_STATE, "NAV") then
-                    local speech = "CHECK"
+            if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 5
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
                 end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CABIN_CREW"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "ADVISED"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 7
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "TCAS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if TCAS_SW == 4 then
-                    local speech = "TA_RA"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 9
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if RAINING and ENG_MODEL ~= 0 then
-                    if ENG_Mode == 2 then
-                        local speech = "IGNITION"
-                        play_sound(FOPM_Talk[speech])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                        STEP_CHECK = 11
+            elseif FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].step_desition then
+                if not FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].to_step_desition then
+                    if DES_MADED then
+                        DES_MADED = false
                     end
-                elseif ENG_Mode == 1 then
-                    local speech = "NORMAL"
+                    local speech = FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 11
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 11 then
-        if TIME >= DELAY_CHECK then
-            local speech = "PACKS_AND_APU_BLEED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if PACKS_FOR_TO then
-                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 then
-                        local speech = "CHECK"
-                        play_sound(FOPM_Talk[speech])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                        STEP_CHECK = 13
-                    end
-                elseif APU_TO_PACKS then
-                    if PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 1 then
-                        local speech = "CHECK"
-                        play_sound(FOPM_Talk[speech])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                        STEP_CHECK = 13
+                    if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
+                        if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].check() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        else
+                            CKLST_STEP = CKLST_STEP + 2
+                        end
+                    elseif FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item == "PACKS_AND_APU_BLEED" or FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item == "PACKS" then
+                        if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].check[1]() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        elseif FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].check[2]() then
+                            CKLST_STEP = CKLST_STEP + 2
+                        else
+                            CKLST_STEP = CKLST_STEP + 3
+                        end
                     end
                 else
-                    if PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 then
-                        local speech = "CHECK"
-                        play_sound(FOPM_Talk[speech])
-                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                        STEP_CHECK = 13
+                    if not DES_MADED then
+                        STEP_CHECK = 2
+                        response_CHECK = false
+                        DES_MADED = true
+                    else
+                        CKLST_STEP = CKLST_STEP + 1
                     end
                 end
             else
-                return
+                local speech = FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 13 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_BTO_CL = false
-            CHECKLIST.BTO_CL = true
-        else
-            return
+            if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].check() then
+                        if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Before_takeoff_checklist_BTL[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
+            end
+        end
+    elseif STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            if CKLST_STEP > #FOPM_checklist.Before_takeoff_checklist_BTL then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_BTO_CL = false
+                FOPM_TL_CHECKLIST.BTO_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -4608,106 +4057,75 @@ end
 -- AFTER TAKEOFF CHECKLIST
 function checklist_after_takeoff()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "AFTER_TAKEOFF_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "LANDING_GEAR"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if LG_Lever == 0 then
-                    local speech = "UP"
+            if FOPM_checklist.After_takeoff_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.After_takeoff_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.After_takeoff_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.After_takeoff_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.After_takeoff_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.After_takeoff_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.After_takeoff_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.After_takeoff_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.After_takeoff_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.After_takeoff_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
                     STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 3 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "FLAPS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if FLAPS_LEVER_State == 0 then
-                    local speech = "RETRACTED"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 5
-                end
+            if CKLST_STEP > #FOPM_checklist.After_takeoff_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_ATO_CL = false
+                FOPM_TL_CHECKLIST.ATO_CL = true
             else
-                return
+                STEP_CHECK = 1
             end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "PACKS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if PACK_1_STATE == 1 and PACK_2_STATE == 1 then
-                    local speech = "ON"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_ATO_CL = false
-            CHECKLIST.ATO_CL = true
-        else
-            return
         end
     end
 end
@@ -4715,50 +4133,75 @@ end
 -- CLIMB CHECKLIST
 function checklist_climb()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "CLIMB_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
+            if FOPM_checklist.Climb_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Climb_checklist[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.Climb_checklist[CKLST_STEP].item
                 play_sound(FOPM_Talk[speech])
                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 3 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_CLB_CL = false
-            CHECKLIST.CLB_CL = true
-        else
-            return
+            if FOPM_checklist.Climb_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Climb_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.Climb_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Climb_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Climb_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Climb_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Climb_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
+            end
+        end
+    elseif STEP_CHECK == 3 then
+        if TIME >= DELAY_CHECK then
+            if CKLST_STEP > #FOPM_checklist.Climb_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_CLB_CL = false
+                FOPM_TL_CHECKLIST.CLB_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -4766,244 +4209,109 @@ end
 -- APPROACH CHECKLIST
 function checklist_approach()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "APPROACH_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            if APP_TYPE.RNAVAR_APP then
-                STEP_CHECK = 0.1
-            else
-                STEP_CHECK = 1
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 0.1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "NAVAIDS_DESELECTION"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0.2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 0.2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 0.3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 0.3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "GPS_NAV_MODE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0.4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 0.4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "BOTH_NAV"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 1
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "BRIEFING"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if COMPLETED_PROC.DES_BRIEFING then
-                    local speech = "COMPLETED"
+            if FOPM_checklist.Approach_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 3
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ECAM_STATUS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                if APP_TYPE.CAT_II_III then
-                    STEP_CHECK = 4.1
+                    STEP_CHECK = 2
+                    response_CHECK = false
                 else
-                    STEP_CHECK = 5
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            elseif FOPM_checklist.Approach_checklist[CKLST_STEP].CAT_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            elseif FOPM_checklist.Approach_checklist[CKLST_STEP].step_desition then
+                if not FOPM_checklist.Approach_checklist[CKLST_STEP].to_step_desition then
+                    if DES_MADED then
+                        DES_MADED = false
+                    end
+                    local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    if FOPM_checklist.Approach_checklist[CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
+                        if FOPM_checklist.Approach_checklist[CKLST_STEP].check() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        else
+                            CKLST_STEP = CKLST_STEP + 2
+                        end
+                    end
+                else
+                    if not DES_MADED then
+                        STEP_CHECK = 2
+                        response_CHECK = false
+                        DES_MADED = true
+                    else
+                        CKLST_STEP = CKLST_STEP + 1
+                    end
                 end
             else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4.1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "SIGNS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4.2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4.2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "ON_ON"
+                local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].item
                 play_sound(FOPM_Talk[speech])
                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
-            else
-                return
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 5 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "BARO_REFERENCE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 7
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "MINIMUMS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 9
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ENGINE_MODE_SELECTOR"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if RAINING and ENG_MODEL ~= 0 then
-                    if ENG_Mode == 2 then
-                        local speech = "IGNITION"
+            if FOPM_checklist.Approach_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Approach_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.Approach_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Approach_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Approach_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Approach_checklist[CKLST_STEP].state
                         play_sound(FOPM_Talk[speech])
                         DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                        STEP_CHECK = 11
                     end
-                elseif ENG_Mode == 1 then
-                    local speech = "NORMAL"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 11
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 11 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_APP_CL = false
-            CHECKLIST.APP_CL = true
-        else
-            return
+            if CKLST_STEP > #FOPM_checklist.Approach_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_APP_CL = false
+                FOPM_TL_CHECKLIST.APP_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -5011,130 +4319,115 @@ end
 -- LANDING CHECKLIST
 function checklist_landing()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "LANDING_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CABIN_CREW"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "ADVISED"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "AUTO_TRHUST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "CHECK"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "AUTOBRAKES"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if AUTOBRK_LOW == 1 then
-                    local speech = "LOW"
+            if FOPM_checklist.Landing_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                elseif AUTOBRK_MED == 1 then
-                    local speech = "MEDIUM"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
                 end
-                STEP_CHECK = 7
+            elseif FOPM_checklist.Landing_checklist[CKLST_STEP].CAT_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            elseif FOPM_checklist.Landing_checklist[CKLST_STEP].step_desition then
+                if not FOPM_checklist.Landing_checklist[CKLST_STEP].to_step_desition then
+                    if DES_MADED then
+                        DES_MADED = false
+                    end
+                    local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].item
+                    play_sound(FOPM_Talk[speech])
+                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    if FOPM_checklist.Landing_checklist[CKLST_STEP].item == "AUTO_TRHUST" then
+                        if FOPM_checklist.Landing_checklist[CKLST_STEP].check() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        else
+                            CKLST_STEP = CKLST_STEP + 2
+                        end
+                    elseif FOPM_checklist.Landing_checklist[CKLST_STEP].item == "AUTOBRAKES" then
+                        if FOPM_checklist.Landing_checklist[CKLST_STEP].check[1]() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        elseif FOPM_checklist.Landing_checklist[CKLST_STEP].check[2]() then
+                            CKLST_STEP = CKLST_STEP + 2
+                        end
+                    end
+                else
+                    if not DES_MADED then
+                        STEP_CHECK = 2
+                        response_CHECK = false
+                        DES_MADED = true
+                    else
+                        CKLST_STEP = CKLST_STEP + 1
+                    end
+                end
             else
-                return
+                local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 7 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "ECAM_MEMO"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                DELAY_CHECK = TIME + 0.3
-                STEP_CHECK = 9
+            if FOPM_checklist.Landing_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Landing_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.Landing_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Landing_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Landing_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Landing_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
+                end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 9 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            DELAY_SPEACH = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_LND_CL = false
-            CHECKLIST.LND_CL = true
-        else
-            return
+            if CKLST_STEP > #FOPM_checklist.Landing_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_LND_CL = false
+                FOPM_TL_CHECKLIST.LND_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -5142,162 +4435,109 @@ end
 -- AFTER LANDING CHECKLIST
 function checklist_after_landing()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "AFTER_LANDING_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FLAPS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = FL_VOICE_SRCH
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FLAP_POS[speech].del)
-                STEP_CHECK = 3
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 3 then
-        if TIME >= DELAY_CHECK then
-            local speech = "SPOILERS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if SPDBRK_Lever == 0 then
-                    local speech = "DISARMED"
+            if FOPM_checklist.After_landing_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 5
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "APU"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if APU_STATE == 1 then
-                    local speech = "AVAIL"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
                 else
-                    local speech = "STARTING_APU"
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            elseif FOPM_checklist.After_landing_checklist[CKLST_STEP].CAT_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
                 end
-                STEP_CHECK = 7
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "WEATHER_RADAR"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if RADAR_SYS_SW == 1 then
-                    local speech = "OFF"
+            elseif FOPM_checklist.After_landing_checklist[CKLST_STEP].step_desition then
+                if not FOPM_checklist.After_landing_checklist[CKLST_STEP].to_step_desition then
+                    if DES_MADED then
+                        DES_MADED = false
+                    end
+                    local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 9
+                    if FOPM_checklist.After_landing_checklist[CKLST_STEP].item == "APU" then
+                        if FOPM_checklist.After_landing_checklist[CKLST_STEP].check() then
+                            CKLST_STEP = CKLST_STEP + 1
+                        else
+                            CKLST_STEP = CKLST_STEP + 2
+                        end
+                    end
+                else
+                    if not DES_MADED then
+                        STEP_CHECK = 2
+                        response_CHECK = false
+                        DES_MADED = true
+                    else
+                        CKLST_STEP = CKLST_STEP + 1
+                    end
                 end
             else
-                return
+                local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 9 then
+    elseif STEP_CHECK == 2 then
         if TIME >= DELAY_CHECK then
-            local speech = "PWS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if PWS_SW == 0 then
-                    local speech = "OFF"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 11
+            if FOPM_checklist.After_landing_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.After_landing_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.After_landing_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = FL_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                        else
+                            local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.After_landing_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.After_landing_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = FL_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                    else
+                        local speech = FOPM_checklist.After_landing_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
+                    STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 11 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_AL_CL = false
-            CHECKLIST.AL_CL = true
-        else
-            return
+            if CKLST_STEP > #FOPM_checklist.After_landing_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_AL_CL = false
+                FOPM_TL_CHECKLIST.AL_CL = true
+            else
+                STEP_CHECK = 1
+            end
         end
     end
 end
@@ -5305,228 +4545,88 @@ end
 -- PARKING CHECKLIST
 function checklist_parking()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "PARKING_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "APU_BLEED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if APU_BLEED_STATE == 1 then
-                    local speech = "ON"
+            if FOPM_checklist.Parking_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Parking_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.Parking_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.Parking_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Parking_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.Parking_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Parking_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Parking_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Parking_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Parking_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
                     STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 3 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "ENGINES"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if ENG_1_Master == 0 and ENG_2_Master == 0 then
-                    local speech = "OFF"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 5
-                end
+            if CKLST_STEP > #FOPM_checklist.Parking_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_PARK_CL = false
+                FOPM_TL_CHECKLIST.PARK_CL = true
+                FOPM_TL_CHECKLIST.BS_DTL = false
+                FOPM_TL_CHECKLIST.BS_CL = false
+                FOPM_TL_CHECKLIST.AS_CL = false
+                FOPM_TL_CHECKLIST.BTO_DTL = false
+                FOPM_TL_CHECKLIST.BTO_CL = false
+                FOPM_TL_CHECKLIST.ATO_CL = false
+                FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = false
+                FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = false
+                FOPM_TL_CHECKLIST.CLB_CL = false
+                FOPM_TL_CHECKLIST.APP_CL = false
+                FOPM_TL_CHECKLIST.LND_CL = false
+                FOPM_TL_CHECKLIST.AL_CL = false
+                MINUTE3 = false
             else
-                return
+                STEP_CHECK = 1
             end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "SEAT_BELTS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if SEATBELTS_SW == 0 then
-                    local speech = "OFF"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-   if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EXTERIOR_LIGHTS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 9
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "FUEL_PUMPS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if FPUMP_RTANK_1_STATE == 0 and
-                   FPUMP_RTANK_2_STATE == 0 and
-                   FPUMP_CTANK_1_STATE == 0 and
-                   FPUMP_CTANK_2_STATE == 0 and
-                   FPUMP_LTANK_1_STATE == 0 and
-                   FPUMP_LTANK_2_STATE == 0 then
-                    local speech = "OFF"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 11
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 11 then
-        if TIME >= DELAY_CHECK then
-            local speech = "PARKING_BRAKE"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if PRKBRK_SW == 1 then
-                    local speech = "ON"
-                    play_sound(FOPM_Talk[speech])
-                    DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 13
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 13 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EFB"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 15
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 15 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 16
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 16 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_PARK_CL = false
-            CHECKLIST.PARK_CL = true
-            CHECKLIST.BS_DTL = false
-            CHECKLIST.BS_CL = false
-            CHECKLIST.AS_CL = false
-            CHECKLIST.BTO_DTL = false
-            CHECKLIST.BTO_CL = false
-            CHECKLIST.ATO_CL = false
-            COMPLETED_PROC.TO_PROC_DONE = false
-            COMPLETED_PROC.DECEL_CALLOUTS = false
-            CHECKLIST.CLB_CL = false
-            CHECKLIST.APP_CL = false
-            CHECKLIST.LND_CL = false
-            CHECKLIST.AL_CL = false
-            MINUTE3 = false
-        else
-            return
         end
     end
 end
@@ -5534,203 +4634,75 @@ end
 -- SECURING CHECKLIST
 function checklist_securing()
     if STEP_CHECK == 0 then
+        STEP_CHECK = 1
+        CKLST_STEP = 1
+    elseif STEP_CHECK == 1 then
         if TIME >= DELAY_CHECK then
-            local speech = "SECURING_CHECKLIST"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 1
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 1 then
-        if TIME >= DELAY_CHECK then
-            local speech = "ADIRS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 2
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 2 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if ADIR_1_STATE == 0 and ADIR_2_STATE == 0 and ADIR_3_STATE == 0 then
-                    local speech = "OFF"
+            if FOPM_checklist.Securing_checklist[CKLST_STEP].AR_item then
+                if APP_TYPE.AR_DEP then
+                    local speech = FOPM_checklist.Securing_checklist[CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    STEP_CHECK = 2
+                    response_CHECK = false
+                else
+                    CKLST_STEP = CKLST_STEP + 1
+                end
+            else
+                local speech = FOPM_checklist.Securing_checklist[CKLST_STEP].item
+                play_sound(FOPM_Talk[speech])
+                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                STEP_CHECK = 2
+                response_CHECK = false
+            end
+        end
+    elseif STEP_CHECK == 2 then
+        if TIME >= DELAY_CHECK then
+            if FOPM_checklist.Securing_checklist[CKLST_STEP].check then
+                if response_CHECK then
+                    if FOPM_checklist.Securing_checklist[CKLST_STEP].check() then
+                        if FOPM_checklist.Securing_checklist[CKLST_STEP].state == "FLAPS" then
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                        else
+                            local speech = FOPM_checklist.Securing_checklist[CKLST_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                        end
+                    else
+                        response_CHECK = false
+                    end
+                end
+            elseif FOPM_checklist.Securing_checklist[CKLST_STEP].state then
+                if response_CHECK then
+                    if FOPM_checklist.Securing_checklist[CKLST_STEP].state == "FLAPS" then
+                        local speech = CONFIG_VOICE_SRCH
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
+                    else
+                        local speech = FOPM_checklist.Securing_checklist[CKLST_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
                     STEP_CHECK = 3
+                    CKLST_STEP = CKLST_STEP + 1
                 end
             else
-                return
+                STEP_CHECK = 3
+                CKLST_STEP = CKLST_STEP + 1
             end
-        else
-            return
         end
-    end
-    if STEP_CHECK == 3 then
+    elseif STEP_CHECK == 3 then
         if TIME >= DELAY_CHECK then
-            local speech = "OXYGEN"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 4
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 4 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "OFF"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 5
+            if CKLST_STEP > #FOPM_checklist.Securing_checklist then
+                STEP_CHECK = 0
+                CKLST_STEP = 0
+                FOPM_TL_CHECKLIST.EX_SEC_CL = false
+                FOPM_TL_CHECKLIST.SEC_CL = true
             else
-                return
+                STEP_CHECK = 1
             end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 5 then
-        if TIME >= DELAY_CHECK then
-            local speech = "APU_BLEED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 6
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 6 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                if APU_BLEED_STATE == 0 then
-                    local speech = "OFF"
-                    play_sound(FOPM_Talk[speech])
-                    ELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                    STEP_CHECK = 7
-                end
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 7 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EMERGENCY_EXIT_LIGHTS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 8
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 8 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "OFF"
-                DELAY_CHECK = TIME + 0.920
-                STEP_CHECK = 9
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 9 then
-        if TIME >= DELAY_CHECK then
-            local speech = "NO_PORTABLE_SIGNS"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 10
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 10 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "OFF"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 11
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 11 then
-        if TIME >= DELAY_CHECK then
-            local speech = "APU_AND_BATTERY"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 12
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 12 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "OFF"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 13
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 13 then
-        if TIME >= DELAY_CHECK then
-            local speech = "EFB"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 14
-            response_CHECK = false
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 14 then
-        if TIME >= DELAY_CHECK then
-            if response_CHECK then
-                local speech = "OFF"
-                play_sound(FOPM_Talk[speech])
-                DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-                STEP_CHECK = 15
-            else
-                return
-            end
-        else
-            return
-        end
-    end
-    if STEP_CHECK == 15 then
-        if TIME >= DELAY_CHECK then
-            local speech = "CHECKLIST_COMPLETED"
-            play_sound(FOPM_Talk[speech])
-            DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
-            STEP_CHECK = 0
-            CHECKLIST.EX_SEC_CL = false
-            CHECKLIST.SEC_CL = true
-        else
-            return
         end
     end
 end
@@ -5743,10 +4715,10 @@ end
 function phase_check()
     if FLT_PHASE.PREFLIGHT then
         TXT_PHASE = "Preflight"
-        if CHECKLIST.BS_CL then
+        if FOPM_TL_CHECKLIST.BS_CL then
             FLT_PHASE.PREFLIGHT = false
             FLT_PHASE.PUSHBACK = true
-            COMPLETED_PROC.PARK_PROC = false
+            FOPM_TL_COMPLETED_PROC.PARK_PROC = false
         end
     end
     if FLT_PHASE.PUSHBACK then
@@ -5754,7 +4726,7 @@ function phase_check()
         if ENG_Mode == 2 then
             FLT_PHASE.ENG_START = true
         end
-        if TAXILT_SW > 0 and COMPLETED_PROC.AS_PROC_DONE then
+        if TAXILT_SW > 0 and FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
             FLT_PHASE.ENG_START = false
             FLT_PHASE.PUSHBACK = false
             FLT_PHASE.TAXI_OUT = true
@@ -5766,18 +4738,18 @@ function phase_check()
     end
     if EXECUTE_ENRWY then
         FLT_PHASE.ON_RWY = true
-        COMPLETED_PROC.EXIT_RWY_DONE = false
+        FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
     end
     if EXECUTE_EXRWY then
         FLT_PHASE.ON_RWY = false
-        COMPLETED_PROC.ENT_RWY_DONE = false
+        FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = false
     end
     if FLT_PHASE.TAXI_OUT then
         TXT_PHASE = "Taxi Out"
         if THR_LEVER >= 2 then
             FLT_PHASE.TAKEOFF = true
             FLT_PHASE.TAXI_OUT = false
-            COMPLETED_PROC.AS_PROC_DONE = false
+            FOPM_TL_COMPLETED_PROC.AS_PROC_DONE = false
             command_GUP = false
             command_GDN = false
             command_FLPS_1UP = false
@@ -5798,15 +4770,15 @@ function phase_check()
             FLT_PHASE.REJECTED = true
             FLT_PHASE.TAKEOFF = false
         end
-        if THR_STATE == 1 and CHECKLIST.ATO_CL then
+        if THR_STATE == 1 and FOPM_TL_CHECKLIST.ATO_CL then
             TXT_PHASE = "Climb"
             FLT_PHASE.CLIMB = true
             APP_TYPE.AR_DEP = false
             RAINING = false
             FLT_PHASE.TAKEOFF = false
-            COMPLETED_PROC.BTO_PROC_DONE = false
-            COMPLETED_PROC.ACF_CLEAN = false
-            COMPLETED_PROC.AL_PROC = false
+            FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
+            FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
+            FOPM_TL_COMPLETED_PROC.AL_PROC = false
         end
     end
     if FLT_PHASE.REJECTED then
@@ -5835,20 +4807,20 @@ function phase_check()
             FLT_PHASE.CRUISE = false
             FLT_PHASE.DESCEND = true
         end
-        if CHECKLIST.APP_CL then
+        if FOPM_TL_CHECKLIST.APP_CL then
             FLT_PHASE.CLIMB = false
             FLT_PHASE.CRUISE = false
             FLT_PHASE.DESCEND = false
             FLT_PHASE.APPROACH = true
-            COMPLETED_PROC.AP_DISCN_PROC = false
+            FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = false
         end
     end
     if FLT_PHASE.APPROACH then
         TXT_PHASE = "Approach"
-        if CHECKLIST.LND_CL then
+        if FOPM_TL_CHECKLIST.LND_CL then
             FLT_PHASE.APPROACH = false
             FLT_PHASE.FINAL_APP = true
-            COMPLETED_PROC.GA_PROC = false
+            FOPM_TL_COMPLETED_PROC.GA_PROC = false
             FPMTR.CONT_APP = true
             STEP_AL = 0
         end
@@ -5858,16 +4830,16 @@ function phase_check()
         if THR_LEVER == 3 then
             FLT_PHASE.FINAL_APP = false
             FLT_PHASE.GA = true
-            COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
-            COMPLETED_PROC.DES_BRIEFING = false
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
+            FOPM_TL_COMPLETED_PROC.DES_BRIEFING = false
             STEP_AL = 0
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
             FLT_PHASE.FINAL_APP = false
             FLT_PHASE.DECELERATION = true
             FLT_PHASE.ON_RWY = true
-            COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
-            COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
             STEP_AL = 0
         end
     end
@@ -5888,7 +4860,7 @@ function phase_check()
     end
     if FLT_PHASE.TAXI_IN then
         TXT_PHASE = "Taxi In"
-        if CRONO > 180 and not COMPLETED_PROC.OETA_DONE and not MINUTE3 then
+        if CRONO > 180 and not FOPM_TL_COMPLETED_PROC.OETA_DONE and not MINUTE3 then
             local speech = "CRONO3"
             play_sound(FOPM_Talk[speech])
             DELAY = TIME + (FO_voices_directory[speech].del)
@@ -5902,13 +4874,13 @@ function phase_check()
     end
     if FLT_PHASE.PARKING then
         TXT_PHASE = "Parking"
-        if CHECKLIST.PARK_CL then
+        if FOPM_TL_CHECKLIST.PARK_CL then
             MINUTE3 = false
             FLT_PHASE.PARKING = false
             FLT_PHASE.PREFLIGHT = true
-            COMPLETED_PROC.PF_DONE = false
-            COMPLETED_PROC.TO_BRIEFING = false
-            COMPLETED_PROC.FLTCTL_CHK = false
+            FOPM_TL_COMPLETED_PROC.PF_DONE = false
+            FOPM_TL_COMPLETED_PROC.TO_BRIEFING = false
+            FOPM_TL_COMPLETED_PROC.FLTCTL_CHK = false
             APP_TYPE.ILS_APP = false
             APP_TYPE.MLS_APP = false
             APP_TYPE.RNAV_APP = false
@@ -5932,13 +4904,13 @@ function FO_main_logic()
         end
     end
     if FLT_PHASE.ENG_START then
-        if not COMPLETED_PROC.AS_PROC_DONE then
+        if not FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
             if ENG_Mode == 1 then
                 after_start_proc()
             end
         end
     end
-    if EXECUTE_OETD and not CHECKLIST.EX_BTO_DTL and not EXECUTE_BTP and not EXECUTE_ENRWY and not EXECUTE_EXRWY then
+    if EXECUTE_OETD and not FOPM_TL_CHECKLIST.EX_BTO_DTL and not EXECUTE_BTP and not EXECUTE_ENRWY and not EXECUTE_EXRWY then
         one_engine_taxi_DEP()
     end
     if FLT_PHASE.TAXI_OUT then
@@ -5952,7 +4924,7 @@ function FO_main_logic()
             vacating_rwy()
         end
     end
-    if CHECKLIST.BTO_CL and not COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+    if FOPM_TL_CHECKLIST.BTO_CL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
         take_off_proc()
     end
     if FLT_PHASE.REJECTED then
@@ -5977,19 +4949,19 @@ function FO_main_logic()
     end
     if FLT_PHASE.TAKEOFF then
         if THR_STATE == 1 and fo_autoperform then
-            if not COMPLETED_PROC.ACF_CLEAN and not string.find(FMA_G_STATE, "SRS") then
+            if not FOPM_TL_COMPLETED_PROC.ACF_CLEAN and not string.find(FMA_G_STATE, "SRS") then
                 clean_up_auto()
             end
         end
     end
     if FLT_PHASE.CLIMB then
         if fo_autoperform then
-            if (not COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000) or EXECUTE_10FT_CLB then
-                COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
+            if (not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000) or EXECUTE_10FT_CLB then
+                FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
                 ten_thausand_feet_CLB()
             end
         elseif EXECUTE_10FT_CLB then
-            COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
+            FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
             ten_thausand_feet_CLB()
         end
         if not PASSED_TRANS_ALT then
@@ -6005,7 +4977,7 @@ function FO_main_logic()
     end
     if FLT_PHASE.DESCEND then
         if fo_autoperform then
-            if (not COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000) or EXECUTE_10FT_DES then
+            if (not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000) or EXECUTE_10FT_DES then
                 ten_thausand_feet_DES()
             end
         elseif EXECUTE_10FT_DES then
@@ -6040,7 +5012,7 @@ function FO_main_logic()
         touch_down()
     end
     if FLT_PHASE.TAXI_IN then
-        if not COMPLETED_PROC.AL_PROC and SPDBRK_Lever == 0 then
+        if not FOPM_TL_COMPLETED_PROC.AL_PROC and SPDBRK_Lever == 0 then
             if not EXECUTE_EXRWY then
                 after_landing_proc()
             end
@@ -6054,15 +5026,15 @@ function FO_main_logic()
         if EXECUTE_OETA then
             one_engine_taxi_ARR()
         end
-        if CRONO >= 300 and not COMPLETED_PROC.BRKTEMP_CHK_DONE then
+        if CRONO >= 300 and not FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
             brake_temp_check()
         end
     end
     if FLT_PHASE.PARKING then
-        if not COMPLETED_PROC.BRKTEMP_CHK_DONE then
+        if not FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
             brake_temp_check()
         end
-        if not COMPLETED_PROC.PARK_PROC and COMPLETED_PROC.BRKTEMP_CHK_DONE then
+        if not FOPM_TL_COMPLETED_PROC.PARK_PROC and FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
             parking_proc()
         end
     end
@@ -6072,40 +5044,40 @@ do_every_frame("FO_main_logic()")
 
 -- FO CHECKLIST LOGIC
 function FO_checklist()
-    if CHECKLIST.EX_BS_DTL then
+    if FOPM_TL_CHECKLIST.EX_BS_DTL then
         checklist_before_start()
     end
-    if CHECKLIST.EX_BS_CL then
+    if FOPM_TL_CHECKLIST.EX_BS_CL then
         checklist_before_start_BTL()
     end
-    if CHECKLIST.EX_AS_CL then
+    if FOPM_TL_CHECKLIST.EX_AS_CL then
         checklist_after_start()
     end
-    if CHECKLIST.EX_BTO_DTL then
+    if FOPM_TL_CHECKLIST.EX_BTO_DTL then
         checklist_before_takeoff()
     end
-    if CHECKLIST.EX_BTO_CL then
+    if FOPM_TL_CHECKLIST.EX_BTO_CL then
         checklist_before_takeoff_BTL()
     end
-    if CHECKLIST.EX_ATO_CL then
+    if FOPM_TL_CHECKLIST.EX_ATO_CL then
         checklist_after_takeoff()
     end
-    if CHECKLIST.EX_CLB_CL then
+    if FOPM_TL_CHECKLIST.EX_CLB_CL then
         checklist_climb()
     end
-    if CHECKLIST.EX_APP_CL then
+    if FOPM_TL_CHECKLIST.EX_APP_CL then
         checklist_approach()
     end
-    if CHECKLIST.EX_LND_CL then
+    if FOPM_TL_CHECKLIST.EX_LND_CL then
         checklist_landing()
     end
-    if CHECKLIST.EX_AL_CL then
+    if FOPM_TL_CHECKLIST.EX_AL_CL then
         checklist_after_landing()
     end
-    if CHECKLIST.EX_PARK_CL then
+    if FOPM_TL_CHECKLIST.EX_PARK_CL then
         checklist_parking()
     end
-    if CHECKLIST.EX_SEC_CL then
+    if FOPM_TL_CHECKLIST.EX_SEC_CL then
         checklist_securing()
     end
 end
@@ -6202,87 +5174,87 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        -- CHECKLIST
+        -- FOPM_TL_CHECKLIST
         if FLT_PHASE.PREFLIGHT then
-            if not CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_DTL and not CHECKLIST.EX_SEC_CL and COMPLETED_PROC.PF_DONE then
+            if not FOPM_TL_CHECKLIST.BS_DTL and not FOPM_TL_CHECKLIST.EX_BS_DTL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
                 if imgui.SmallButton("Before Start CKL") then
-                    CHECKLIST.EX_BS_DTL = true
+                    FOPM_TL_CHECKLIST.EX_BS_DTL = true
                 end
                 imgui.SameLine()
             end
-            if not CHECKLIST.SEC_CL and not CHECKLIST.EX_SEC_CL and not CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_DTL then
+            if not FOPM_TL_CHECKLIST.SEC_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and not FOPM_TL_CHECKLIST.BS_DTL and not FOPM_TL_CHECKLIST.EX_BS_DTL then
                 if imgui.SmallButton("Securing CKL") then
-                    CHECKLIST.EX_SEC_CL = true
+                    FOPM_TL_CHECKLIST.EX_SEC_CL = true
                 end
             end
-            if CHECKLIST.BS_DTL and not CHECKLIST.EX_BS_CL then
+            if FOPM_TL_CHECKLIST.BS_DTL and not FOPM_TL_CHECKLIST.EX_BS_CL then
                 if imgui.SmallButton("Before Start CKL BTL") then
-                    CHECKLIST.EX_BS_CL = true
+                    FOPM_TL_CHECKLIST.EX_BS_CL = true
                 end
             end
         end
         if FLT_PHASE.PUSHBACK then
-            if not CHECKLIST.AS_CL and
-               not CHECKLIST.EX_AS_CL and 
-               COMPLETED_PROC.AS_PROC_DONE and
+            if not FOPM_TL_CHECKLIST.AS_CL and
+               not FOPM_TL_CHECKLIST.EX_AS_CL and 
+               FOPM_TL_COMPLETED_PROC.AS_PROC_DONE and
                not ONEENG_TAXI_DEP
                then
                 if imgui.SmallButton("After Start CKL") then
-                    CHECKLIST.EX_AS_CL = true
+                    FOPM_TL_CHECKLIST.EX_AS_CL = true
                 end
             end
         end
         if FLT_PHASE.TAXI_OUT then
-            if not CHECKLIST.BTO_DTL and not CHECKLIST.EX_BTO_DTL and COMPLETED_PROC.BTO_PROC_DONE then
+            if not FOPM_TL_CHECKLIST.BTO_DTL and not FOPM_TL_CHECKLIST.EX_BTO_DTL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
                 if imgui.SmallButton("Before Takeoff CKL") then
-                    CHECKLIST.EX_BTO_DTL = true
+                    FOPM_TL_CHECKLIST.EX_BTO_DTL = true
                 end
             end
-            if CHECKLIST.BTO_DTL and not CHECKLIST.BTO_CL and COMPLETED_PROC.ENT_RWY_DONE and not CHECKLIST.EX_BTO_CL then
+            if FOPM_TL_CHECKLIST.BTO_DTL and not FOPM_TL_CHECKLIST.BTO_CL and FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE and not FOPM_TL_CHECKLIST.EX_BTO_CL then
                 if imgui.SmallButton("Before Takeoff CKL BTL") then
-                    CHECKLIST.EX_BTO_CL = true
+                    FOPM_TL_CHECKLIST.EX_BTO_CL = true
                 end
             end
         end
         if FLT_PHASE.TAKEOFF then
-            if COMPLETED_PROC.TO_PROC_DONE and not CHECKLIST.EX_ATO_CL then
+            if FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FOPM_TL_CHECKLIST.EX_ATO_CL then
                 if imgui.SmallButton("After Takeoff CKL") then
-                    CHECKLIST.EX_ATO_CL = true
+                    FOPM_TL_CHECKLIST.EX_ATO_CL = true
                 end
             end
         end
         if FLT_PHASE.CLIMB then
-            if not CHECKLIST.CLB_CL and not CHECKLIST.EX_CLB_CL then
+            if not FOPM_TL_CHECKLIST.CLB_CL and not FOPM_TL_CHECKLIST.EX_CLB_CL then
                 if imgui.SmallButton("Climb CKL") then
-                    CHECKLIST.EX_CLB_CL = true
+                    FOPM_TL_CHECKLIST.EX_CLB_CL = true
                 end
             end
         end
         if FLT_PHASE.DESCEND or FLT_PHASE.CLIMB then
-            if COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not CHECKLIST.EX_APP_CL then
+            if FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not FOPM_TL_CHECKLIST.EX_APP_CL then
                 if imgui.SmallButton("Approach CKL") then
-                    CHECKLIST.EX_APP_CL = true
+                    FOPM_TL_CHECKLIST.EX_APP_CL = true
                 end
             end
         end
         if FLT_PHASE.APPROACH then
-            if not CHECKLIST.LND_CL and not CHECKLIST.EX_LND_CL then
+            if not FOPM_TL_CHECKLIST.LND_CL and not FOPM_TL_CHECKLIST.EX_LND_CL then
                 if imgui.SmallButton("Landing CKL") then
-                    CHECKLIST.EX_LND_CL = true
+                    FOPM_TL_CHECKLIST.EX_LND_CL = true
                 end
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not CHECKLIST.AL_CL and not CHECKLIST.EX_AL_CL and COMPLETED_PROC.AL_PROC then
+            if not FOPM_TL_CHECKLIST.AL_CL and not FOPM_TL_CHECKLIST.EX_AL_CL and FOPM_TL_COMPLETED_PROC.AL_PROC then
                 if imgui.SmallButton("After Landing CKL") then
-                    CHECKLIST.EX_AL_CL = true
+                    FOPM_TL_CHECKLIST.EX_AL_CL = true
                 end
             end
         end
         if FLT_PHASE.PARKING then
-            if COMPLETED_PROC.PARK_PROC and not CHECKLIST.PARK_CL and not CHECKLIST.EX_PARK_CL then
+            if FOPM_TL_COMPLETED_PROC.PARK_PROC and not FOPM_TL_CHECKLIST.PARK_CL and not FOPM_TL_CHECKLIST.EX_PARK_CL then
                 if imgui.SmallButton("Parking CKL") then
-                    CHECKLIST.EX_PARK_CL = true
+                    FOPM_TL_CHECKLIST.EX_PARK_CL = true
                 end
             end
         end
@@ -6291,14 +5263,14 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Separator()
         imgui.Spacing()
         if FLT_PHASE.PREFLIGHT then
-            if not COMPLETED_PROC.PF_DONE and not EXECUTE_PCP then
+            if not FOPM_TL_COMPLETED_PROC.PF_DONE and not EXECUTE_PCP then
                 if imgui.SmallButton("Preliminary Cockpit Prep.") then
                     EXECUTE_PCP = true
                 end
             end
         end
         if FLT_PHASE.TAXI_OUT then
-            if not COMPLETED_PROC.BTO_PROC_DONE and not EXECUTE_BTP then
+            if not FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE and not EXECUTE_BTP then
                 if imgui.SmallButton("Before Takeoff Proc.") then
                     EXECUTE_BTP = true
                 end
@@ -6324,8 +5296,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.SmallButton("Taxi OUT") then
                 FLT_PHASE.REJECTED_DES = false
                 FLT_PHASE.TAXI_OUT = true
-                COMPLETED_PROC.DECEL_CALLOUTS = false
-                CHECKLIST.BTO_CL = false
+                FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = false
+                FOPM_TL_CHECKLIST.BTO_CL = false
             end
             imgui.SameLine()
             if imgui.SmallButton("Taxi IN") then
@@ -6335,26 +5307,26 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FLT_PHASE.CLIMB then
-            if not COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and not EXECUTE_10FT_CLB then
+            if not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and not EXECUTE_10FT_CLB then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     EXECUTE_10FT_CLB = true
                 end
             end
         end
         if FLT_PHASE.DESCEND then
-            if not COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not EXECUTE_10FT_DES then
+            if not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not EXECUTE_10FT_DES then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     EXECUTE_10FT_DES = true
                 end
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not CHECKLIST.EX_AL_CL then
+            if not EXECUTE_ENRWY and not FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Entry RWY") then
                     EXECUTE_ENRWY = true
                 end
             end
-            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not CHECKLIST.EX_AL_CL then
+            if not EXECUTE_EXRWY and FLT_PHASE.ON_RWY and not EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Exit RWY") then
                     EXECUTE_EXRWY = true
                 end
@@ -6499,12 +5471,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if dep_change then
                 ONEENG_TAXI_DEP = change
             end
-            if not COMPLETED_PROC.TO_BRIEFING then
+            if not FOPM_TL_COMPLETED_PROC.TO_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
                     local bindex = math.random(4)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
-                    COMPLETED_PROC.TO_BRIEFING = true
+                    FOPM_TL_COMPLETED_PROC.TO_BRIEFING = true
                     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
                     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
                     WND_BRIEFING = false
@@ -6591,12 +5563,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("Raining", RAINING) then
                 RAINING = true
             end
-            if not COMPLETED_PROC.DES_BRIEFING then
+            if not FOPM_TL_COMPLETED_PROC.DES_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then
                     local bindex = math.random(4)
                     play_sound(BRIEFING_CONF[bindex])
                     DELAY = TIME + (BRIEF_CONF[bindex].del)
-                    COMPLETED_PROC.DES_BRIEFING = true
+                    FOPM_TL_COMPLETED_PROC.DES_BRIEFING = true
                     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
                     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
                     WND_BRIEFING = false
@@ -6630,6 +5602,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.TextUnformatted("FOPM Version: "..FOPM_plugin_version)
         imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)
         imgui.TextUnformatted("Procedures: "..FOPM_proc_config_name)
+        imgui.TextUnformatted("Checklists: "..FOPM_cklst_config_name)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

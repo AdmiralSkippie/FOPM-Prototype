@@ -177,7 +177,7 @@ dataref("RUDDER", "sim/flightmodel2/wing/rudder1_deg", "readonly", 10) -- 0 NTRL
     dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
     dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
     dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
-dataref("ENG_ATHR_MODE", "AirbusFBW/ATHRmode", "readonly") -- ONLY SHOWS ATHR ENGAGE --
+dataref("ENG_ATHR_MODE", "AirbusFBW/SPDmanaged", "readonly") -- 1 = Managed
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
 dataref("INBD_SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
 dataref("CRONO", "AirbusFBW/ClockChronoValue", "readonly")

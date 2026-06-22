@@ -631,12 +631,6 @@ function pre_cockpit_pre()
                     end
                 end
             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action then
-                if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref then
-                    local dataref_name = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].dataref_name
-                    _G[dataref_name] = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref
-                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command then
-                    command_once(FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command)
-                end
                 if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" or FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item == "FLAPS" then
                         if not FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].essential then
@@ -669,6 +663,14 @@ function pre_cockpit_pre()
                     end
                 else
                     DELAY = TIME + fo_speed
+                end
+                if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref then
+                    local dataref_name = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].dataref_name
+                    _G[dataref_name] = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref
+                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command then
+                    command_once(FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command)
+                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.delay then
+                    DELAY = TIME + FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.delay
                 end
                 STEP = 3
                 PROC_STEP = PROC_STEP + 1
@@ -940,12 +942,6 @@ function after_start_proc()
                     end
                 end
             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action then
-                if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref then
-                    local dataref_name = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].dataref_name
-                    _G[dataref_name] = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref
-                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command then
-                    command_once(FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command)
-                end
                 if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" or FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item == "FLAPS" then
                         if not FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].essential then
@@ -978,6 +974,14 @@ function after_start_proc()
                     end
                 else
                     DELAY = TIME + fo_speed
+                end
+                if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref then
+                    local dataref_name = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].dataref_name
+                    _G[dataref_name] = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.dataref
+                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command then
+                    command_once(FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.command)
+                elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.delay then
+                    DELAY = TIME + FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].action.delay
                 end
                 STEP = 3
                 PROC_STEP = PROC_STEP + 1

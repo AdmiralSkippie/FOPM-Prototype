@@ -176,5 +176,88 @@ FOPM_procedure = {
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
             action_check = {func = flt_ctl_chk}
         }
+    },
+    Before_takeoff_proc = {
+        [1] = {
+            item = "WEATHER_RADAR",
+            step_desition = true,
+            check = function () return radar_pos == 1 end
+        },
+        [2] = {
+            state = "ON",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 0},
+            dataref_name = "RADAR_SYS_SW"
+        },
+        [3] = {
+            state = "ON",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 2},
+            dataref_name = "RADAR_SYS_SW"
+        },
+        [4] = {
+            item = "PWS",
+            state = "ON",
+            action = {dataref = 2},
+            dataref_name = "PWS_SW"
+        },
+        [5] = {
+            item = "TERRAIN",
+            state = "ON",
+            action = {command = TERRAIN_FO_PB},
+        },
+        [6] = {
+            item = "ENGINE_MODE_SELECTOR",
+            step_desition = true,
+            check = function () return RAINING and ENG_MODEL ~= 0 end
+        },
+        [7] = {
+            state = "IGNITION",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 2},
+            dataref_name = "ENG_Mode"
+        },
+        [8] = {
+            state = "NORMAL",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 1},
+            dataref_name = "ENG_Mode"
+        },
+        [9] = {
+            item = "BRAKE_TEMP",
+            step_desition = true,
+            check = function () return BRAKE1_TEMP > 150 and BRAKE2_TEMP > 150 and BRAKE3_TEMP > 150 and BRAKE4_TEMP > 150 end
+        },
+        [10] = {
+            int_item = "TEMP_CHECK",
+            step_desition = true,
+            check = function() return BRAKE1_TEMP < 150 and BRAKE2_TEMP < 150 and BRAKE3_TEMP < 150 and BRAKE4_TEMP < 150 end,
+        },
+        [11] = {
+            state = "CHECK",
+            step_desition = true,
+            to_step_desition = true,
+            check = function() return BRKFAN_State == 0 end,
+            action_check = {command = BRKFAN_PB},
+        },
+        [12] = {
+            int_item = "ON_OETD",
+            step_desition = true,
+            check = function() return not EXECUTE_OETD end,
+        },
+        [13] = {
+            item = "AUTOBRAKES",
+            state = "MAX",
+            check = function() return AUTOBRK_MAX == 0 end,
+            action_check = {command = AUTOBRK_MAX_PB},
+        },
+        [14] = {
+            int_item = "TO_CONFIG",
+            action = {command = TO_CONFIG_PB},
+        },
     }
 }

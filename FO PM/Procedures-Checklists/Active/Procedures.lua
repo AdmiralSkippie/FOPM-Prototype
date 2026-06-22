@@ -120,5 +120,61 @@ FOPM_procedure = {
             check = function () return FO_CSTR_STATE == 1 end,
             action_check = {command = FO_ND_CSTR_PB}
         },
+    },
+    After_start_procedure = {
+        [1] = {
+            item = "GROUND_SPOILERS",
+            state = "ARM",
+            action = {dataref = -0.5},
+            dataref_name = "SPDBRK_Lever"
+        },
+        [2] = {
+            item = "RUDDER_TRIM",
+            state = "N0",
+            action = {command = RUDDER_TRIM_RESET},
+        },
+        [3] = {
+            item = "FLAPS",
+            state = "CHECK",
+            action_check = {command = FLAPS_1DOWN},
+            check = function () return ((math.floor(FLAPS_LEVER_State * 100)/100) * 4) == FLAPS_TO_CONFIG end
+        },
+        [4] = {
+            item = "PITCHTRM",
+            action_pre_check = {command = MCDU_FO_KEY_Perf},
+        },
+        [5] = {
+            int_item = "TRIM_CHECK",
+            step_desition = true,
+            check = function () return PT_TO_DIRECTION == "UP" end
+        },
+        [6] = {
+            int_item = "TRIM_STOP",
+            step_desition = true,
+            check = function () return PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) end
+        },
+        [7] = {
+            state = "SET"
+        },
+        [8] = {
+            item = "ECAM_STATUS",
+            state = "CHECK"
+        },
+        [9] = {
+            int_item = "FLAPS",
+            essential = true,
+            state = CONFIG_VOICE_SRCH,
+            check = function () return FLAPS_State ~= -1 end
+        },
+        [10] = {
+            int_item = "OETD CHECK",
+            step_desition = true,
+            check = function () return ONEENG_TAXI_DEP end
+        },
+        [11] = {
+            int_item = "FLTCTLCHK",
+            check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
+            action_check = {func = flt_ctl_chk}
+        }
     }
 }

@@ -146,12 +146,12 @@ FOPM_procedure = {
         [5] = {
             int_item = "TRIM_CHECK",
             step_desition = true,
-            check = function () return PT_TO_DIRECTION == "UP" end
+            check = function () return FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION == "UP" end
         },
         [6] = {
             int_item = "TRIM_STOP",
             step_desition = true,
-            check = function () return PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) end
+            check = function () return FOPM_CONFIG_VARIABLE.PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) end
         },
         [7] = {
             state = "SET"
@@ -211,7 +211,7 @@ FOPM_procedure = {
         [6] = {
             item = "ENGINE_MODE_SELECTOR",
             step_desition = true,
-            check = function () return RAINING and ENG_MODEL ~= 0 end
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end
         },
         [7] = {
             state = "IGNITION",
@@ -295,7 +295,7 @@ FOPM_procedure = {
         },
         [7] = {
             int_item = "FLAPS",
-            check = function () return FLAPS_LEVER_State == F_TARGET end,
+            check = function () return FLAPS_LEVER_State == FOPM_CONFIG_VARIABLE.F_TARGET end,
             action_check = {command = FLAPS_1UP}
         },
         [8] = {
@@ -407,7 +407,7 @@ FOPM_procedure = {
             item = "APU_BLEED",
             essential = true,
             step_desition = true,
-            check = function () return APU_TO_PACKS end
+            check = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
         },
         [15] = {
             step_desition = true,
@@ -448,7 +448,7 @@ FOPM_procedure = {
             item = "ANTI_ICE",
             step_desition = true,
             essential = true,
-            check = function () return RAINING and OAT < 10 end
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and OAT < 10 end
         },
         [22] = {
             step_desition = true,
@@ -490,7 +490,7 @@ FOPM_procedure = {
         [29] = {
             int_item = "PROC_COMP",
             step_desition = true,
-            check = function () return PROC_STEP == 29 end
+            check = function () return FOPM_STEP_VARIABLE.PROC_STEP == 29 end
         },
         [30] = {
             int_item = "TIME_COMP",

@@ -2,7 +2,7 @@
 -- FO/PM PROCEDURES --
 ----------------------
 
-FOPM_proc_config_name = "Avianca"
+FOPM_proc_config_name = "Avianca 2021"
 
 FOPM_procedure = {
     Pre_cockpit_preparation = {
@@ -169,7 +169,7 @@ FOPM_procedure = {
         [10] = {
             int_item = "OETD CHECK",
             step_desition = true,
-            check = function () return ONEENG_TAXI_DEP end
+            check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
         },
         [11] = {
             int_item = "FLTCTLCHK",
@@ -259,5 +259,251 @@ FOPM_procedure = {
             int_item = "TO_CONFIG",
             action = {command = TO_CONFIG_PB},
         },
+    },
+    After_landing_proc = {
+        [1] = {
+            -- DELAY
+            action = {delay = 0.5}
+        },
+        [2] = {
+            item = "CHECK_TIME",
+            essential = true,
+            action = {command = CRONO_SET_PB}
+        },
+        [3] = {
+            item = "WEATHER_RADAR",
+            state = "OFF",
+            action = {dataref = 1},
+            dataref_name = "RADAR_SYS_SW"
+        },
+        [4] = {
+            item = "PWS",
+            state = "OFF",
+            action = {dataref = 0},
+            dataref_name = "PWS_SW"
+        },
+        [5] = {
+            item = "ENGINE_MODE_SELECTOR",
+            state = "NORMAL",
+            action = {dataref = 1},
+            dataref_name = "ENG_Mode"
+        },
+        [6] = {
+            item = "FLAPS",
+            step_desition = true,
+            check = function () return OAT >= 29 end
+        },
+        [7] = {
+            int_item = "FLAPS",
+            check = function () return FLAPS_LEVER_State == F_TARGET end,
+            action_check = {command = FLAPS_1UP}
+        },
+        [8] = {
+            item = "APU_MASTER",
+            action = {command = APU_MASTER_PB}
+        },
+        [9] = {
+            -- DELAY
+            action = {delay = 5 - fo_speed}
+        },
+        [10] = {
+            state = "APU_MASTER",
+            action = {command = APU_START_PB}
+        },
+        [11] = {
+            item = "TERRAIN",
+            state = "OFF",
+            action = {command = TERRAIN_FO_PB}
+        },
+        [12] = {
+            int_item = "FO_FD",
+            check = function () return FO_FD_STATE == 0 end,
+            action_check = {command = FD_FO_PB}
+        },
+        [13] = {
+            int_item = "FO_LS",
+            check = function () return  end,
+            action_check = {command = LS_FO_PB}
+        },
+        [14] = {
+            int_item = "FO_HDGTRK",
+            check = function () return HDGTRK_MODE == 0 end,
+            action_check = {command = HDGTRK_TOGGLE}
+        },
+    },
+    One_engine_taxi_DEP = {
+        [1] = {
+            int_item = "INIT",
+            check = function () return TAXILT_SW ~= 0 end
+        },
+        [2] = {
+            item = "YELLOW_HYDRAULIC_PUMP",
+            essential = true,
+            state = "ON",
+            action = {dataref = 1},
+            dataref_name = "Y_ELEC_PUMP_PB"
+        },
+        [3] = {
+            int_item = "START_COMMAND",
+            check = function () return FOPM_Procedures_Control.START_ENG2 end
+        },
+        [4] = {
+            int_item = "STRAIGHT_LINE",
+            check = function () return STEARING_DEGREES <= 2 and STEARING_DEGREES >= -2 end
+        },
+        [5] = {
+            item = "YELLOW_HYDRAULIC_PUMP",
+            essential = true,
+            state = "OFF",
+            action = {dataref = 0},
+            dataref_name = "Y_ELEC_PUMP_PB"
+        },
+        [6] = {
+            item = "APU_BLEED",
+            essential = true,
+            state = "ON",
+            check = function () return APU_BLEED_STATE == 0 end,
+            action = {command = APU_BLEED_PB},
+        },
+        [7] = {
+            item = "ENGINE_MODE_SELECTOR",
+            essential = true,
+            state = "IGNITION",
+            action = {dataref = 2},
+            dataref_name = "ENG_Mode"
+        },
+        [8] = {
+            -- DELAY
+            action = {delay = 10 - fo_speed}
+        },
+        [9] = {
+            state = "STARTING_NUMBER_2",
+            essential = true,
+            action = {dataref = 1},
+            dataref_name = "ENG_2_Master"
+        },
+        [10] = {
+            int_item = "ENG_2_AVAIL",
+            check = function () return ENG_2_AVAIL == 1 end
+        },
+        [11] = {
+            item = "ENGINE2",
+            state = "AVAIL",
+            essential = true
+        },
+        [12] = {
+            item = "CHECK_TIME",
+            essential = true,
+            action_pre_check = {command = CRONO_SET_PB},
+        },
+        [13] = {
+            item = "ENGINE_MODE_SELECTOR",
+            essential = true,
+            state = "NORMAL",
+            action = {dataref = 1},
+            dataref_name = "ENG_Mode"
+        },
+        [14] = {
+            item = "APU_BLEED",
+            essential = true,
+            step_desition = true,
+            check = function () return APU_TO_PACKS end
+        },
+        [15] = {
+            step_desition = true,
+            to_step_desition = true,
+            essential = true,
+            state = "OFF",
+            action = {command = APU_BLEED_PB}
+        },
+        [16] = {
+            item = "APU_MASTER",
+            essential = true,
+            state = "OFF",
+            action = {command = APU_MASTER_PB},
+        },
+        [17] = {
+            step_desition = true,
+            to_step_desition = true,
+            essential = true,
+            state = "ON",
+        },
+        [18] = {
+            item = "CROSS_BLEED",
+            essential = true,
+            state = "AUTO",
+            action = {dataref = 1},
+            dataref_name = "XBLEED_SW"
+        },
+        [19] = {
+            item = "ECAM_STATUS",
+            essential = true,
+            state = "CHECK",
+        },
+        [20] = {
+            item = "ENGINE2",
+            essential = true,
+        },
+        [21] = {
+            item = "ANTI_ICE",
+            step_desition = true,
+            essential = true,
+            check = function () return RAINING and OAT < 10 end
+        },
+        [22] = {
+            step_desition = true,
+            to_step_desition = true,
+            essential = true,
+            state = "SET",
+            action = {command = ANTI_ICE_ENG2_PB}
+        },
+        [23] = {
+            step_desition = true,
+            to_step_desition = true,
+            essential = true,
+            state = "SET",
+        },
+        [24] = {
+            int_item = "After Start Checklist",
+            step_desition = true,
+            check = function () return not FOPM_TL_CHECKLIST.EX_AS_CL end
+        },
+        [25] = {
+            int_item = "CHK_VERIFICATION",
+            check = function () return FOPM_TL_CHECKLIST.AS_CL end
+        },
+        [26] = {
+            int_item = "FLTCTLCHK",
+            check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
+            action_check = {func = flt_ctl_chk}
+        },
+        [27] = {
+            item = "AUTOBRAKES",
+            essential = true,
+            state = "MAX",
+            action = {command = AUTOBRK_MAX_PB},
+        },
+        [28] = {
+            int_item = "TO_CONFIG",
+            action = {command = TO_CONFIG_PB},
+        },
+        [29] = {
+            int_item = "PROC_COMP",
+            step_desition = true,
+            check = function () return PROC_STEP == 29 end
+        },
+        [30] = {
+            int_item = "TIME_COMP",
+            step_desition = true,
+            check = function () return CRONO >= 180 end
+        },
+        [31] = {
+            int_item = "STOP_CHRONO",
+            action = {command = CRONO_SET_PB}
+        },
+        [32] = {
+            int_item = "STOP_CHRONO",
+            action = {command = CRONO_RESET_PB}
+        }
     }
 }

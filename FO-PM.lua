@@ -501,8 +501,6 @@ function pre_cockpit_pre()
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
                         end
-                    elseif FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
                     if FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
                         if FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
@@ -599,8 +597,6 @@ function pre_cockpit_pre()
                         elseif FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
                             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        elseif FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func then
-                            FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func()
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
@@ -755,8 +751,6 @@ function after_start_proc()
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
                         end
-                    elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
                     if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
                         if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
@@ -767,7 +761,7 @@ function after_start_proc()
                         end
                     end
                     if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check then
-                        if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_CHECK" then
+                        if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_CHECK" then
                             FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
                             FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)")
                             FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_1, "(%d+)"))
@@ -782,19 +776,26 @@ function after_start_proc()
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                                 command_begin(PITCH_TRIM_DN)
                             end
-                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_STOP" then
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_STOP" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_STOP" then
                             if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 command_end(PITCH_TRIM_DN)
                                 command_end(PITCH_TRIM_UP)
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             end
-                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "OETD CHECK" then
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "OETD CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "OETD CHECK" then
                             if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                                 FOPM_Procedures_Control.EXECUTE_OETD = true
                                 FOPM_STEP_VARIABLE.STEP = 3
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            end
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                                FOPM_STEP_VARIABLE.STEP = 3
+                            else
+                                flt_ctl_chk()
                             end
                         end
                     end
@@ -876,8 +877,6 @@ function after_start_proc()
                         elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
                             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func then
-                            FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func()
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
@@ -1032,8 +1031,6 @@ function before_takeoff_proc()
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
                         end
-                    elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
                     if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
                         if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
@@ -1044,20 +1041,20 @@ function before_takeoff_proc()
                         end
                     end
                     if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check then
-                        if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "WEATHER_RADAR" then
+                        if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "WEATHER_RADAR" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "WEATHER_RADAR" then
                             radar_pos = math.random(2)
                             if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                             end
-                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ENGINE_MODE_SELECTOR" then
+                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ENGINE_MODE_SELECTOR" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "ENGINE_MODE_SELECTOR" then
                             if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                             end
-                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "BRAKE_TEMP" then
+                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "BRAKE_TEMP" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "BRAKE_TEMP" then
                             if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 local rindex = math.random(3)
                                 play_sound(BRAKE_WARNINGS[rindex])
@@ -1066,14 +1063,14 @@ function before_takeoff_proc()
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                             end
-                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TEMP_CHECK" then
+                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TEMP_CHECK" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "TEMP_CHECK" then
                             if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 local rindex = math.random(5)
                                 play_sound(READY[rindex])
                                 FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP - 1
                             end
-                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ON_OETD" then
+                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ON_OETD" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "ON_OETD" then
                             if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             else
@@ -1160,8 +1157,6 @@ function before_takeoff_proc()
                         elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
                             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func then
-                            FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func()
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
@@ -2815,8 +2810,6 @@ function after_landing_proc()
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
                         end
-                    elseif FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
                     if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
                         if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
@@ -2827,7 +2820,7 @@ function after_landing_proc()
                         end
                     end
                     if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].check then
-                        if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" then
+                        if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" or FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" then
                             if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_CONFIG_VARIABLE.F_TARGET = 0.25
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
@@ -2915,8 +2908,6 @@ function after_landing_proc()
                         elseif FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
                             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        elseif FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func then
-                            FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func()
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
@@ -3330,8 +3321,6 @@ function one_engine_taxi_DEP()
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
                         end
-                    elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
                     if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
                         if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
@@ -3342,36 +3331,43 @@ function one_engine_taxi_DEP()
                         end
                     end
                     if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check then
-                        if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "APU_BLEED" then
+                        if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "APU_BLEED" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "APU_BLEED" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             end
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "ANTI_ICE" then
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ANTI_ICE" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "ANTI_ICE" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                             end
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "After Start Checklist" then
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "After Start Checklist" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "After Start Checklist" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_TL_CHECKLIST.EX_AS_CL = true
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             end
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "PROC_COMP" then
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "PROC_COMP" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "PROC_COMP" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 local rindex = math.random(5)
                                 play_sound(READY[rindex])
                                 FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             end
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "PROC_COMP" then
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TIME_COMP" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "TIME_COMP" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 local rindex = math.random(3)
                                 play_sound(READY_FOR_TO[rindex])
                                 FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            end
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                                FOPM_STEP_VARIABLE.STEP = 3
+                            else
+                                flt_ctl_chk()
                             end
                         end
                     end
@@ -3453,8 +3449,6 @@ function one_engine_taxi_DEP()
                         elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
                             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func then
-                            FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].action_check.func()
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
@@ -5146,24 +5140,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Separator()
         imgui.Spacing()
         imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
-        imgui.TextUnformatted("FOPM_STEP_VARIABLE.PROC_STEP: "..FOPM_STEP_VARIABLE.PROC_STEP)
-        if FOPM_STEP_VARIABLE.PROC_STEP == 0 or FOPM_STEP_VARIABLE.PROC_STEP > #FOPM_procedure.Pre_cockpit_preparation then
-            imgui.TextUnformatted("Item: ")
-        else
-            if FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].item then
-                imgui.TextUnformatted("Item: "..FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].item)
-            elseif FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                imgui.TextUnformatted("Item: "..FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].int_item)
-            end
-            if FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
-                imgui.TextUnformatted(FOPM_procedure.Pre_cockpit_preparation[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command)
-            end
-        end
-        if FOPM_procedure.Pre_cockpit_preparation[21].check() then
-            imgui.TextUnformatted("Si")
-        else
-            imgui.TextUnformatted("No")
-        end
+        imgui.TextUnformatted("PROC_STEP: "..FOPM_STEP_VARIABLE.PROC_STEP)
+        imgui.TextUnformatted("CKLST_STEP: "..FOPM_STEP_VARIABLE.CKLST_STEP)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

@@ -106,7 +106,7 @@ FOPM_checklist = {
         [4] = {
             item = "PITCHTRM",
             state = "SET",
-            check = function () return PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 end
+            check = function () return FOPM_CONFIG_VARIABLE.PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 end
         },
         [5] = {
             item = "RUDDER_TRIM",
@@ -176,7 +176,7 @@ FOPM_checklist = {
         [6] = {
             item = "ENGINE_MODE_SELECTOR",
             step_desition = true,
-            check = function () return RAINING and ENG_MODEL ~= 0 end,
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
         },
         [7] = {
             state = "IGNITION",
@@ -194,8 +194,8 @@ FOPM_checklist = {
             item = "PACKS_AND_APU_BLEED",
             step_desition = true,
             check = {
-                [1] = function () return PACKS_FOR_TO end,
-                [2] = function () return APU_TO_PACKS end
+                [1] = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO end,
+                [2] = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
             }
         },
         [10] = {
@@ -295,7 +295,7 @@ FOPM_checklist = {
         [9] = {
             item = "ENGINE_MODE_SELECTOR",
             step_desition = true,
-            check = function () return RAINING and ENG_MODEL ~= 0 end,
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
         },
         [10] = {
             state = "IGNITION",

@@ -151,7 +151,7 @@ FOPM_procedure = {
         [6] = {
             int_item = "TRIM_STOP",
             step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.PT_TO_CONFIG == (math.floor(PITCH_TRIM * 10) / 10) end
+            check = function () return FOPM_CONFIG_VARIABLE.PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 end
         },
         [7] = {
             state = "SET"
@@ -164,7 +164,7 @@ FOPM_procedure = {
             int_item = "FLAPS",
             essential = true,
             state = CONFIG_VOICE_SRCH,
-            check = function () return FLAPS_State ~= -1 end
+            check = function () return FLAPS_State == -1 end
         },
         [10] = {
             int_item = "OETD CHECK",
@@ -173,8 +173,8 @@ FOPM_procedure = {
         },
         [11] = {
             int_item = "FLTCTLCHK",
+            step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
-            action_check = {func = flt_ctl_chk}
         }
     },
     Before_takeoff_proc = {
@@ -474,8 +474,8 @@ FOPM_procedure = {
         },
         [26] = {
             int_item = "FLTCTLCHK",
+            step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
-            action_check = {func = flt_ctl_chk}
         },
         [27] = {
             item = "AUTOBRAKES",

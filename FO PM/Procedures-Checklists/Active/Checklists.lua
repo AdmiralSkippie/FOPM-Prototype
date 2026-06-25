@@ -80,14 +80,19 @@ FOPM_checklist = {
                 DOOR_4R == 0 end
         },
         [5] = {
+            item = "BEACON",
+            state = "ON",
+            check = function () return BEACON_STATE == 1 end
+        },
+        [6] = {
             item = "THRUST_LEVERS",
             state = "IDLE",
         },
-        [6] = {
+        [7] = {
             item = "PARKING_BRAKE",
             state = "SET",
         },
-        [7] = {
+        [8] = {
             item = "CHECKLIST_COMPLETED"
         },
     },

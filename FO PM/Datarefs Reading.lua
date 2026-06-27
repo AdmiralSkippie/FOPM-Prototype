@@ -29,6 +29,7 @@ APU_BLEED_PB = "toliss_airbus/apucommands/BleedToggle"
 TERRAIN_FO_PB = "toliss_airbus/dispcommands/TerrOnND2Toggle"
 GPWS_FLAP3_PB = "toliss_airbus/gpwscommands/Flap3Toggle"
 LS_FO_PB = "toliss_airbus/dispcommands/CoLSButtonPush"
+dataref("LS_FO_State","AirbusFBW/ILSonFO","readonly") -- 1 == ON
 HDGTRK_TOGGLE = "toliss_airbus/hdgtrk_button_push"
 dataref("HDGTRK_MODE", "AirbusFBW/HDGTRKmode", "readonly") -- 0 = HDG
 FD_CAP_PB = "toliss_airbus/fd1_push"

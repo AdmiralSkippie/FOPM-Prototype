@@ -252,7 +252,7 @@ FOPM_procedure = {
         [13] = {
             item = "AUTOBRAKES",
             state = "MAX",
-            check = function() return AUTOBRK_MAX == 0 end,
+            check = function() return AUTOBRK_MAX == 1 end,
             action_check = {command = AUTOBRK_MAX_PB},
         },
         [14] = {
@@ -322,7 +322,7 @@ FOPM_procedure = {
         },
         [13] = {
             int_item = "FO_LS",
-            check = function () return  end,
+            check = function () return LS_FO_State == 0 end,
             action_check = {command = LS_FO_PB}
         },
         [14] = {

@@ -142,7 +142,7 @@ FOPM_checklist = {
         },
         [5] = {
             item = "FLAPS",
-            state = "CHECK",
+            state = "FLAPS",
         },
         [6] = {
             item = "V1_VR_V2_FLEX_TEMP",
@@ -373,7 +373,7 @@ FOPM_checklist = {
         },
         [2] = {
             item = "FLAPS",
-            state = "CHECK",
+            state = "FLAPS",
         },
         [3] = {
             item = "SPOILERS",

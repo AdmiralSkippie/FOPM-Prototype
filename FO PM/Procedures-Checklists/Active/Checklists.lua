@@ -345,19 +345,21 @@ FOPM_checklist = {
             item = "AUTOBRAKES",
             step_desition = true,
             check = {
-                [1] = function () return AUTOBRK_LOW == 1 end,
-                [2] = function () return AUTOBRK_MED == 1 end
+                [1] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW end,
+                [2] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM end
             }
         },
         [7] = {
             state = "LOW",
             step_desition = true,
             to_step_desition = true,
+            check = function () return AUTOBRK_LOW == 1 end
         },
         [8] = {
             state = "MEDIUM",
             step_desition = true,
             to_step_desition = true,
+            check = function () return AUTOBRK_MED == 1 end
         },
         [9] = {
             item = "ECAM_MEMO",

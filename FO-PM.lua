@@ -212,7 +212,11 @@ FOPM_CONFIG_VARIABLE = {
     TXT_PHASE = nil,
     MINUTE3 = false,
     PASSED_TRANS_ALT = false,
-    PASSED_TRANS_LVL= false
+    PASSED_TRANS_LVL= false,
+    AUTOBRAKES = {
+        LOW = true,
+        MEDIUM = true
+    }
 }
 
 -- FLIGHT PARAMETERS VARIABLES
@@ -5535,6 +5539,16 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
             if imgui.RadioButton("Raining", FOPM_CONFIG_VARIABLE.RAINING) then
                 FOPM_CONFIG_VARIABLE.RAINING = true
+            end
+            imgui.TextUnformatted("Autobrakes:")
+            if imgui.RadioButton("LOW", FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW) then
+                FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW = true
+                FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("MED", FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM) then
+                FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW = false
+                FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM = true
             end
             if not FOPM_TL_COMPLETED_PROC.DES_BRIEFING then
                 if imgui.SmallButton("CONFIRM") then

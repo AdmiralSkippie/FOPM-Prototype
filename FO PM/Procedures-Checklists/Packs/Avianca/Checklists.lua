@@ -80,14 +80,19 @@ FOPM_checklist = {
                 DOOR_4R == 0 end
         },
         [5] = {
+            item = "BEACON",
+            state = "ON",
+            check = function () return BEACON_STATE == 1 end
+        },
+        [6] = {
             item = "THRUST_LEVERS",
             state = "IDLE",
         },
-        [6] = {
+        [7] = {
             item = "PARKING_BRAKE",
             state = "SET",
         },
-        [7] = {
+        [8] = {
             item = "CHECKLIST_COMPLETED"
         },
     },
@@ -137,7 +142,7 @@ FOPM_checklist = {
         },
         [5] = {
             item = "FLAPS",
-            state = "CHECK",
+            state = "FLAPS",
         },
         [6] = {
             item = "V1_VR_V2_FLEX_TEMP",
@@ -340,19 +345,21 @@ FOPM_checklist = {
             item = "AUTOBRAKES",
             step_desition = true,
             check = {
-                [1] = function () return AUTOBRK_LOW == 1 end,
-                [2] = function () return AUTOBRK_MED == 1 end
+                [1] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW end,
+                [2] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM end
             }
         },
         [7] = {
             state = "LOW",
             step_desition = true,
             to_step_desition = true,
+            check = function () return AUTOBRK_LOW == 1 end
         },
         [8] = {
             state = "MEDIUM",
             step_desition = true,
             to_step_desition = true,
+            check = function () return AUTOBRK_MED == 1 end
         },
         [9] = {
             item = "ECAM_MEMO",
@@ -368,7 +375,7 @@ FOPM_checklist = {
         },
         [2] = {
             item = "FLAPS",
-            state = "CHECK",
+            state = "FLAPS",
         },
         [3] = {
             item = "SPOILERS",

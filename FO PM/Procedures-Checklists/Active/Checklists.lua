@@ -5,7 +5,7 @@
 FOPM_cklst_config_name = "Avianca 2021"
 
 FOPM_checklist = {
-    Before_start_checklist_DTL = {
+    Before_start_checklist = {
         [1] = {
             item = "BEFORE_START_CHECKLIST",
         },
@@ -122,7 +122,7 @@ FOPM_checklist = {
             item = "CHECKLIST_COMPLETED"
         }
     },
-    Before_takeoff_checklist_DTL = {
+    Before_takeoff_checklist = {
         [1] = {
             item = "BEFORE_TAKEOFF_CHECKLIST"
         },

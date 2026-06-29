@@ -5,10 +5,20 @@ hacer procedimientos o cortarlos si es necesario
 
 // DEBOGiN 1.1
 Arreglar la entrada en bucle si un item de la lista no esta correcto
-stuck in step 7 after landing
-añadir el LS detection para el step 13
-
-Añadir el sistema para guardar la localizacion
+Agregar voces
+    Cockpit preparation checklist   // COCK PREP
+    RADIONAV Position "Deselected"  // COCK PREP // APP CKL
+    TO SPEEDS AND TRHUST            // BS CKL // DEP_CHANGE CKL
+    Flap setting                    // TAXI CKL // DEP_CHANGE CKL
+    radar and pred w/s              // TAXI CKL // AL CKL
+    departure change checklist      // DEP_CHANGE CKL
+    RWY_&_SID                       // DEP_CHANGE CKL
+    FCU_ALT                         // DEP_CHANGE CKL
+    PRKBRK OR CHOCKS                // PARK CKL
+    WING LIGHTS                     // PARK CKL
+Actualizar el sistema para guardar la localizacion
+Actualizar/Agregar la logica para las nuevas checklist
+Actualizar la logica para determinar opciones dependiendo de chacklist disponibles
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra

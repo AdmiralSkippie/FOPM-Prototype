@@ -5517,11 +5517,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if imgui.SmallButton("X") then
             response_CHECK = true
         end
-        imgui.Separator()
-        imgui.Spacing()
-        imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
-        imgui.TextUnformatted("PROC_STEP: "..FOPM_STEP_VARIABLE.PROC_STEP)
-        imgui.TextUnformatted("CKLST_STEP: "..FOPM_STEP_VARIABLE.CKLST_STEP)
+        -- DEBUGING
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
+            imgui.TextUnformatted("PROC_STEP: "..FOPM_STEP_VARIABLE.PROC_STEP)
+            imgui.TextUnformatted("CKLST_STEP: "..FOPM_STEP_VARIABLE.CKLST_STEP)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

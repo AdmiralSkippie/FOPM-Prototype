@@ -102,8 +102,14 @@ FOPM_TL_CHECKLIST = {
     EX_BS_CL_BTL = false,
     AS_CL = false,
     EX_AS_CL = false,
+    TC_CL = false,
+    EX_TX_CL = false,
+    DC_CL = true,
+    EX_DC_CL = false,
     BTO_CL = false,
     EX_BTO_CL = false,
+    LU_CL = false,
+    EX_LU_CL = false,
     BTO_CL_BTL = false,
     EX_BTO_CL_BTL = false,
     ATO_CL = false,
@@ -3680,8 +3686,8 @@ function checklist_cockpit_prep()
             if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist.Cockpit_preparation_checklist then
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
-                FOPM_TL_CHECKLIST.EX_BS_CL = false
-                FOPM_TL_CHECKLIST.BS_CL = true
+                FOPM_TL_CHECKLIST.EX_CP_CL = false
+                FOPM_TL_CHECKLIST.CP_CL = true
                 FOPM_TL_CHECKLIST.PARK_CL = false
                 FOPM_TL_CHECKLIST.SEC_CL = false
             else
@@ -4020,8 +4026,8 @@ function checklist_taxi()
             if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist.Taxi_checklist then
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
-                FOPM_TL_CHECKLIST.EX_BTO_CL = false
-                FOPM_TL_CHECKLIST.BTO_CL = true
+                FOPM_TL_CHECKLIST.EX_TX_CL = false
+                FOPM_TL_CHECKLIST.TC_CL = true
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4098,10 +4104,8 @@ function checklist_departure_change()
             if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist.Departure_change_checklist then
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
-                FOPM_TL_CHECKLIST.EX_BS_CL = false
-                FOPM_TL_CHECKLIST.BS_CL = true
-                FOPM_TL_CHECKLIST.PARK_CL = false
-                FOPM_TL_CHECKLIST.SEC_CL = false
+                FOPM_TL_CHECKLIST.EX_DC_CL = false
+                FOPM_TL_CHECKLIST.DC_CL = true
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4282,8 +4286,8 @@ function checklist_lineup()
             if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist.Lineup_checklist then
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
-                FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = false
-                FOPM_TL_CHECKLIST.BTO_CL_BTL = true
+                FOPM_TL_CHECKLIST.EX_LU_CL = false
+                FOPM_TL_CHECKLIST.LU_CL = true
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5082,10 +5086,18 @@ end
 function phase_check()
     if FLT_PHASE.PREFLIGHT then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Preflight"
-        if FOPM_TL_CHECKLIST.BS_CL_BTL then
-            FLT_PHASE.PREFLIGHT = false
-            FLT_PHASE.PUSHBACK = true
-            FOPM_TL_COMPLETED_PROC.PARK_PROC = false
+        if FOPM_checklist.Before_start_checklist_BTL then
+            if FOPM_TL_CHECKLIST.BS_CL_BTL then
+                FLT_PHASE.PREFLIGHT = false
+                FLT_PHASE.PUSHBACK = true
+                FOPM_TL_COMPLETED_PROC.PARK_PROC = false
+            end
+        else
+            if FOPM_TL_CHECKLIST.BS_CL then
+                FLT_PHASE.PREFLIGHT = false
+                FLT_PHASE.PUSHBACK = true
+                FOPM_TL_COMPLETED_PROC.PARK_PROC = false
+            end
         end
     end
     if FLT_PHASE.PUSHBACK then
@@ -5137,15 +5149,36 @@ function phase_check()
             FLT_PHASE.REJECTED = true
             FLT_PHASE.TAKEOFF = false
         end
-        if THR_STATE == 1 and FOPM_TL_CHECKLIST.ATO_CL then
-            FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
-            FLT_PHASE.CLIMB = true
-            APP_TYPE.AR_DEP = false
-            FOPM_CONFIG_VARIABLE.RAINING = false
-            FLT_PHASE.TAKEOFF = false
-            FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
-            FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
-            FOPM_TL_COMPLETED_PROC.AL_PROC = false
+        if FOPM_checklist.After_takeoff_checklist then
+            if THR_STATE == 1 and FOPM_TL_CHECKLIST.ATO_CL then
+                FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
+                FLT_PHASE.CLIMB = true
+                APP_TYPE.AR_DEP = false
+                FOPM_CONFIG_VARIABLE.RAINING = false
+                FLT_PHASE.TAKEOFF = false
+                FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
+                FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
+                FOPM_TL_COMPLETED_PROC.AL_PROC = false
+                command_GUP = false
+                command_GDN = false
+                command_FLPS_1UP = false
+                command_FLPS_1DN = false
+            end
+        else
+            if THR_STATE == 1 and FOPM_TL_COMPLETED_PROC.TO_PROC_DONE then
+                FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
+                FLT_PHASE.CLIMB = true
+                APP_TYPE.AR_DEP = false
+                FOPM_CONFIG_VARIABLE.RAINING = false
+                FLT_PHASE.TAKEOFF = false
+                FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
+                FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
+                FOPM_TL_COMPLETED_PROC.AL_PROC = false
+                command_GUP = false
+                command_GDN = false
+                command_FLPS_1UP = false
+                command_FLPS_1DN = false
+            end
         end
     end
     if FLT_PHASE.REJECTED then
@@ -5291,8 +5324,14 @@ function FO_main_logic()
             vacating_rwy()
         end
     end
-    if FOPM_TL_CHECKLIST.BTO_CL_BTL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
-        take_off_proc()
+    if FOPM_checklist.Before_takeoff_checklist_BTL then
+        if FOPM_TL_CHECKLIST.BTO_CL_BTL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+            take_off_proc()
+        end
+    else
+        if FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+            take_off_proc()
+        end
     end
     if FLT_PHASE.REJECTED then
         touch_down()
@@ -5411,6 +5450,9 @@ do_every_frame("FO_main_logic()")
 
 -- FO CHECKLIST LOGIC
 function FO_checklist()
+    if FOPM_TL_CHECKLIST.EX_CP_CL then
+        checklist_cockpit_prep()
+    end
     if FOPM_TL_CHECKLIST.EX_BS_CL then
         checklist_before_start()
     end
@@ -5420,8 +5462,17 @@ function FO_checklist()
     if FOPM_TL_CHECKLIST.EX_AS_CL then
         checklist_after_start()
     end
+    if FOPM_TL_CHECKLIST.EX_TX_CL then
+        checklist_taxi()
+    end
+    if FOPM_TL_CHECKLIST.EX_DC_CL then
+        checklist_departure_change()
+    end
     if FOPM_TL_CHECKLIST.EX_BTO_CL then
         checklist_before_takeoff()
+    end
+    if FOPM_TL_CHECKLIST.EX_LU_CL then
+        checklist_lineup()
     end
     if FOPM_TL_CHECKLIST.EX_BTO_CL_BTL then
         checklist_before_takeoff_BTL()
@@ -5526,87 +5577,140 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        -- FOPM_TL_CHECKLIST
+        -- CHECKLIST
         if FLT_PHASE.PREFLIGHT then
-            if not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
-                if imgui.SmallButton("Before Start CKL") then
-                    FOPM_TL_CHECKLIST.EX_BS_CL = true
-                end
-                imgui.SameLine()
-            end
-            if not FOPM_TL_CHECKLIST.SEC_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL then
-                if imgui.SmallButton("Securing CKL") then
-                    FOPM_TL_CHECKLIST.EX_SEC_CL = true
+            if FOPM_checklist.Cockpit_preparation_checklist then
+                if not FOPM_TL_CHECKLIST.CP_CL and not FOPM_TL_CHECKLIST.EX_CP_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
+                    if imgui.SmallButton("Cockpit Preparation CKL") then
+                        FOPM_TL_CHECKLIST.EX_CP_CL = true
+                    end
+                    imgui.SameLine()
                 end
             end
-            if FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL_BTL then
-                if imgui.SmallButton("Before Start CKL BTL") then
-                    FOPM_TL_CHECKLIST.EX_BS_CL_BTL = true
+            if FOPM_checklist.Before_start_checklist then
+                if not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
+                    if imgui.SmallButton("Before Start CKL") then
+                        FOPM_TL_CHECKLIST.EX_BS_CL = true
+                    end
+                    imgui.SameLine()
+                end
+            end
+            if FOPM_checklist.Securing_checklist then
+                if not FOPM_TL_CHECKLIST.SEC_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL then
+                    if imgui.SmallButton("Securing CKL") then
+                        FOPM_TL_CHECKLIST.EX_SEC_CL = true
+                    end
+                end
+            end
+            if FOPM_checklist.Before_start_checklist_BTL then
+                if FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL_BTL then
+                    if imgui.SmallButton("Before Start CKL BTL") then
+                        FOPM_TL_CHECKLIST.EX_BS_CL_BTL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.PUSHBACK then
-            if not FOPM_TL_CHECKLIST.AS_CL and
-               not FOPM_TL_CHECKLIST.EX_AS_CL and 
-               FOPM_TL_COMPLETED_PROC.AS_PROC_DONE and
-               not FOPM_Procedures_Control.ONEENG_TAXI_DEP
-               then
-                if imgui.SmallButton("After Start CKL") then
-                    FOPM_TL_CHECKLIST.EX_AS_CL = true
+            if FOPM_checklist.After_start_checklist then
+                if not FOPM_TL_CHECKLIST.AS_CL and
+                not FOPM_TL_CHECKLIST.EX_AS_CL and 
+                FOPM_TL_COMPLETED_PROC.AS_PROC_DONE and
+                not FOPM_Procedures_Control.ONEENG_TAXI_DEP
+                then
+                    if imgui.SmallButton("After Start CKL") then
+                        FOPM_TL_CHECKLIST.EX_AS_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.TAXI_OUT then
-            if not FOPM_TL_CHECKLIST.BTO_CL and not FOPM_TL_CHECKLIST.EX_BTO_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
-                if imgui.SmallButton("Before Takeoff CKL") then
-                    FOPM_TL_CHECKLIST.EX_BTO_CL = true
+            if FOPM_checklist.Taxi_checklist then
+                if not FOPM_TL_CHECKLIST.TC_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
+                    if imgui.SmallButton("Taxi CKL") then
+                        FOPM_TL_CHECKLIST.EX_TX_CL = true
+                    end
                 end
             end
-            if FOPM_TL_CHECKLIST.BTO_CL and not FOPM_TL_CHECKLIST.BTO_CL_BTL and FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE and not FOPM_TL_CHECKLIST.EX_BTO_CL_BTL then
-                if imgui.SmallButton("Before Takeoff CKL BTL") then
-                    FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = true
+            if FOPM_checklist.Before_takeoff_checklist then
+                if not FOPM_TL_CHECKLIST.BTO_CL and not FOPM_TL_CHECKLIST.EX_BTO_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
+                    if imgui.SmallButton("Before Takeoff CKL") then
+                        FOPM_TL_CHECKLIST.EX_BTO_CL = true
+                    end
+                end
+            end
+            if FOPM_checklist.Departure_change_checklist then
+                if not FOPM_TL_CHECKLIST.DC_CL and not FOPM_TL_CHECKLIST.EX_DC_CL then
+                    if imgui.SmallButton("Departure Change CKL") then
+                        FOPM_TL_CHECKLIST.EX_DC_CL = true
+                    end
+                end
+            end
+            if FOPM_checklist.Lineup_checklist then
+                if FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_CHECKLIST.EX_LU_CL and FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE and not FOPM_TL_CHECKLIST.EX_BTO_CL_BTL then
+                    if imgui.SmallButton("Line Up CKL") then
+                        FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = true
+                    end
+                end
+            end
+            if FOPM_checklist.Before_takeoff_checklist_BTL then
+                if FOPM_TL_CHECKLIST.BTO_CL and not FOPM_TL_CHECKLIST.BTO_CL_BTL and FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE and not FOPM_TL_CHECKLIST.EX_BTO_CL_BTL then
+                    if imgui.SmallButton("Before Takeoff CKL BTL") then
+                        FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.TAKEOFF then
-            if FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FOPM_TL_CHECKLIST.EX_ATO_CL then
-                if imgui.SmallButton("After Takeoff CKL") then
-                    FOPM_TL_CHECKLIST.EX_ATO_CL = true
+            if FOPM_checklist.After_takeoff_checklist then
+                if FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FOPM_TL_CHECKLIST.EX_ATO_CL then
+                    if imgui.SmallButton("After Takeoff CKL") then
+                        FOPM_TL_CHECKLIST.EX_ATO_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.CLIMB then
-            if not FOPM_TL_CHECKLIST.CLB_CL and not FOPM_TL_CHECKLIST.EX_CLB_CL then
-                if imgui.SmallButton("Climb CKL") then
-                    FOPM_TL_CHECKLIST.EX_CLB_CL = true
+            if FOPM_checklist.Climb_checklist then
+                if not FOPM_TL_CHECKLIST.CLB_CL and not FOPM_TL_CHECKLIST.EX_CLB_CL then
+                    if imgui.SmallButton("Climb CKL") then
+                        FOPM_TL_CHECKLIST.EX_CLB_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.DESCEND or FLT_PHASE.CLIMB then
-            if FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not FOPM_TL_CHECKLIST.EX_APP_CL then
-                if imgui.SmallButton("Approach CKL") then
-                    FOPM_TL_CHECKLIST.EX_APP_CL = true
+            if  FOPM_checklist.Approach_checklist then
+                if FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not FOPM_TL_CHECKLIST.EX_APP_CL then
+                    if imgui.SmallButton("Approach CKL") then
+                        FOPM_TL_CHECKLIST.EX_APP_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.APPROACH then
-            if not FOPM_TL_CHECKLIST.LND_CL and not FOPM_TL_CHECKLIST.EX_LND_CL then
-                if imgui.SmallButton("Landing CKL") then
-                    FOPM_TL_CHECKLIST.EX_LND_CL = true
+            if FOPM_checklist.Approach_checklist then
+                if not FOPM_TL_CHECKLIST.LND_CL and not FOPM_TL_CHECKLIST.EX_LND_CL then
+                    if imgui.SmallButton("Landing CKL") then
+                        FOPM_TL_CHECKLIST.EX_LND_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.TAXI_IN then
-            if not FOPM_TL_CHECKLIST.AL_CL and not FOPM_TL_CHECKLIST.EX_AL_CL and FOPM_TL_COMPLETED_PROC.AL_PROC then
-                if imgui.SmallButton("After Landing CKL") then
-                    FOPM_TL_CHECKLIST.EX_AL_CL = true
+            if FOPM_checklist.After_landing_checklist then
+                if not FOPM_TL_CHECKLIST.AL_CL and not FOPM_TL_CHECKLIST.EX_AL_CL and FOPM_TL_COMPLETED_PROC.AL_PROC then
+                    if imgui.SmallButton("After Landing CKL") then
+                        FOPM_TL_CHECKLIST.EX_AL_CL = true
+                    end
                 end
             end
         end
         if FLT_PHASE.PARKING then
-            if FOPM_TL_COMPLETED_PROC.PARK_PROC and not FOPM_TL_CHECKLIST.PARK_CL and not FOPM_TL_CHECKLIST.EX_PARK_CL then
-                if imgui.SmallButton("Parking CKL") then
-                    FOPM_TL_CHECKLIST.EX_PARK_CL = true
+            if FOPM_checklist.Parking_checklist then
+                if FOPM_TL_COMPLETED_PROC.PARK_PROC and not FOPM_TL_CHECKLIST.PARK_CL and not FOPM_TL_CHECKLIST.EX_PARK_CL then
+                    if imgui.SmallButton("Parking CKL") then
+                        FOPM_TL_CHECKLIST.EX_PARK_CL = true
+                    end
                 end
             end
         end
@@ -5829,6 +5933,17 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     play_sound(BRIEFING_CONF[bindex])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (BRIEF_CONF[bindex].del)
                     FOPM_TL_COMPLETED_PROC.TO_BRIEFING = true
+                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    WND_BRIEFING = false
+                    WND_MAIN = true
+                end
+            else
+                if imgui.SmallButton("DEP CHANGE") then
+                    local bindex = math.random(4)
+                    play_sound(BRIEFING_CONF[bindex])
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + (BRIEF_CONF[bindex].del)
+                    FOPM_TL_CHECKLIST.DC_CL = false
                     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
                     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
                     WND_BRIEFING = false

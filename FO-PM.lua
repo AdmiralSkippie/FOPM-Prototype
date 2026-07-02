@@ -226,7 +226,8 @@ FOPM_CONFIG_VARIABLE = {
     AUTOBRAKES = {
         LOW = true,
         MEDIUM = true
-    }
+    },
+    IAE_SD_TIME = math.floor(TIME)
 }
 
 -- FLIGHT PARAMETERS VARIABLES
@@ -3388,6 +3389,9 @@ end
 function parking_proc()
     if FOPM_STEP_VARIABLE.STEP == 0 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if ENG_MODEL == 0 then
+                FOPM_CONFIG_VARIABLE.IAE_SD_TIME = math.floor(TIME)
+            end
             FOPM_DELAY_VARIABLE.DELAY = TIME + 1
             FOPM_STEP_VARIABLE.STEP = 1
         else
@@ -3638,6 +3642,18 @@ function one_engine_taxi_DEP()
                                 FOPM_STEP_VARIABLE.STEP = 3
                             else
                                 flt_ctl_chk()
+                            end
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ENG_COMP" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "After Start Checklist" then
+                            if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
+                            end
+                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "IAE_CHECK_TIME" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].item == "After Start Checklist" then
+                            if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                             end
                         end
                     end

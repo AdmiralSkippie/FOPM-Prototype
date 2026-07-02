@@ -530,15 +530,32 @@ FOPM_procedure = {
             check = function () return FOPM_STEP_VARIABLE.PROC_STEP == 29 end
         },
         [30] = {
-            int_item = "TIME_COMP",
+            int_item = "ENG_COMP",
             step_desition = true,
-            check = function () return CRONO >= 180 end
+            check = function () return ENG_MODEL == 0 end
         },
         [31] = {
+            int_item = "IAE_CHECK_TIME",
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.IAE_SD_TIME < 7200 end
+        },
+        [32] = {
+            int_item = "TIME_COMP",
+            step_desition = true,
+            to_step_desition = true,
+            check = function () return CRONO >= 300 end
+        },
+        [33] = {
+            int_item = "TIME_COMP",
+            step_desition = true,
+            to_step_desition = true,
+            check = function () return CRONO >= 120 end
+        },
+        [34] = {
             int_item = "STOP_CHRONO",
             action = {command = CRONO_SET_PB}
         },
-        [32] = {
+        [35] = {
             int_item = "STOP_CHRONO",
             action = {command = CRONO_RESET_PB}
         }

@@ -328,41 +328,46 @@ FOPM_procedure = {
         [6] = {
             item = "FLAPS",
             step_desition = true,
-            check = function () return OAT >= 500 end
+            check = function () return OAT >= 29 end
         },
         [7] = {
-            int_item = "FLAPS",
-            check = function () return FLAPS_LEVER_State == FOPM_CONFIG_VARIABLE.F_TARGET end,
+            int_item = "FLAPS_RET",
+            check = function () return FOPM_CONFIG_VARIABLE.F_ATARGET == FOPM_CONFIG_VARIABLE.F_TARGET end,
             action_check = {command = FLAPS_1UP}
         },
         [8] = {
+            int_item = "FLAPS",
+            state = "FLAPS",
+            check = function () return FLAPS_LEVER_State == FOPM_CONFIG_VARIABLE.F_TARGET end
+        },
+        [9] = {
             item = "APU_MASTER",
             action = {command = APU_MASTER_PB}
         },
-        [9] = {
+        [10] = {
             -- DELAY
             action = {delay = 5 - fo_speed}
         },
-        [10] = {
-            state = "APU_MASTER",
+        [11] = {
+            state = "STARTING_APU",
             action = {command = APU_START_PB}
         },
-        [11] = {
+        [12] = {
             item = "TERRAIN",
             state = "OFF",
             action = {command = TERRAIN_FO_PB}
         },
-        [12] = {
+        [13] = {
             int_item = "FO_FD",
             check = function () return FO_FD_STATE == 0 end,
             action_check = {command = FD_FO_PB}
         },
-        [13] = {
+        [14] = {
             int_item = "FO_LS",
             check = function () return LS_FO_State == 0 end,
             action_check = {command = LS_FO_PB}
         },
-        [14] = {
+        [15] = {
             int_item = "FO_HDGTRK",
             check = function () return HDGTRK_MODE == 0 end,
             action_check = {command = HDGTRK_TOGGLE}

@@ -3188,10 +3188,20 @@ function after_landing_proc()
                         if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" or FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" then
                             if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_CONFIG_VARIABLE.F_TARGET = 0.25
+                                FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             else
                                 FOPM_CONFIG_VARIABLE.F_TARGET = 0
+                                FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            end
+                        elseif FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS_RET" or FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS_RET" then
+                            if FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                command_once(FLAPS_1UP)
+                                FOPM_CONFIG_VARIABLE.F_ATARGET = FOPM_CONFIG_VARIABLE.F_ATARGET - 0.25
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                             end
                         end
                     end
@@ -3281,7 +3291,7 @@ function after_landing_proc()
                                 play_sound(FOPM_Talk[speech])
                                 FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
                             elseif FOPM_procedure.After_landing_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
-                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + 10
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + fo_speed
                             end
                         end
                     end

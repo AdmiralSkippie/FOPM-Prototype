@@ -72,6 +72,7 @@ FOPM_TL_COMPLETED_PROC = {
     PF_DONE = false,
     TO_BRIEFING = false,
     AS_PROC_DONE = false,
+    TAXI_PROC_DONE = false,
     BTO_PROC_DONE = false,
     TO_PROC_DONE = false,
     ACF_CLEAN = false,
@@ -102,7 +103,7 @@ FOPM_TL_CHECKLIST = {
     EX_BS_CL_BTL = false,
     AS_CL = false,
     EX_AS_CL = false,
-    TC_CL = false,
+    TX_CL = false,
     EX_TX_CL = false,
     DC_CL = true,
     EX_DC_CL = false,
@@ -154,6 +155,7 @@ local APP_TYPE = {
 FOPM_Procedures_Control = {
     EXECUTE_PCP = false,
     EXECUTE_ASP = false,
+    EXECUTE_TXP = false,
     EXECUTE_BTP = false,
     EXECUTE_10FT_CLB = false,
     EXECUTE_10FT_DES = false,
@@ -573,7 +575,7 @@ function pre_cockpit_pre()
                                 if not speak_only_essencials then
                                     local speech = FL_VOICE_SRCH
                                     play_sound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del)
                                 else
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
@@ -853,7 +855,7 @@ function after_start_proc()
                                 if not speak_only_essencials then
                                     local speech = CONFIG_VOICE_SRCH
                                     play_sound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del) + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del)
                                 else
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
@@ -987,6 +989,301 @@ function after_start_proc()
     end
 end
 
+---- TAXI PROCEDURE
+function taxi_proc()
+    if FOPM_STEP_VARIABLE.STEP == 0 then
+        FOPM_STEP_VARIABLE.STEP = 1
+        FOPM_STEP_VARIABLE.PROC_STEP = 1
+    elseif FOPM_STEP_VARIABLE.STEP == 1 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].step_desition then
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].to_step_desition then
+                    if FOPM_STEP_VARIABLE.DES_MADED then
+                        FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                    else
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
+                                local dataref_name = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
+                                _G[dataref_name] = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref
+                            elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command then
+                                command_once(FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command)
+                            end
+                        end
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item then
+                            if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                                if not speak_only_essencials then
+                                    local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                                else
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                                end
+                            else
+                                local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                            end
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        end
+                        FOPM_STEP_VARIABLE.DES_MADED = true
+                        FOPM_STEP_VARIABLE.STEP = 2
+                    end
+                else
+                    if FOPM_STEP_VARIABLE.DES_MADED then
+                        FOPM_STEP_VARIABLE.DES_MADED = false
+                    end
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item then
+                        if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                            if not speak_only_essencials then
+                                local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                            else
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            end
+                        else
+                            local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                            play_sound(FOPM_Talk[speech])
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                        end
+                    end
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
+                            local dataref_name = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
+                            _G[dataref_name] = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command then
+                            command_once(FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command)
+                        end
+                    end
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check then
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "WEATHER_RADAR" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "WEATHER_RADAR" then
+                            radar_pos = math.random(2)
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
+                            end
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ENGINE_MODE_SELECTOR" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "ENGINE_MODE_SELECTOR" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
+                            end
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "BRAKE_TEMP" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "BRAKE_TEMP" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                local rindex = math.random(3)
+                                play_sound(BRAKE_WARNINGS[rindex])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (BRAKE_WARN[rindex].del)
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
+                            end
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TEMP_CHECK" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TEMP_CHECK" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                local rindex = math.random(5)
+                                play_sound(READY[rindex])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP - 1
+                            end
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "ON_OETD" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "ON_OETD" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
+                                FOPM_STEP_VARIABLE.STEP = 3
+                            end
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "OETD CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "OETD CHECK" then
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
+                                FOPM_Procedures_Control.EXECUTE_OETD = true
+                                FOPM_STEP_VARIABLE.STEP = 3
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            end
+                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                                FOPM_STEP_VARIABLE.STEP = 3
+                            else
+                                flt_ctl_chk()
+                            end
+                        end
+                    end
+                end
+            else
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item then
+                    if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                        if not speak_only_essencials then
+                            local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                            play_sound(FOPM_Talk[speech])
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                        else
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        end
+                    else
+                        local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                        play_sound(FOPM_Talk[speech])
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                    end
+                elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                end
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check then
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref then
+                        local dataref_name = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
+                        _G[dataref_name] = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.dataref
+                    elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command then
+                        command_once(FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_pre_check.command)
+                    end
+                end
+                FOPM_STEP_VARIABLE.STEP = 2
+            end
+        end
+    elseif FOPM_STEP_VARIABLE.STEP == 2 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check then
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state then
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" then
+                            if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                                if not speak_only_essencials then
+                                    local speech = CONFIG_VOICE_SRCH
+                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del)
+                                else
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                                end
+                            else
+                                local speech = CONFIG_VOICE_SRCH
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del) + fo_speed
+                            end
+                        else
+                            if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                                if not speak_only_essencials then
+                                    local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                                else
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                                end
+                            else
+                                local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                            end
+                        end
+                    else
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    end
+                    FOPM_STEP_VARIABLE.STEP = 3
+                    FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                else
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check then
+                        if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.dataref then
+                            local dataref_name = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
+                            _G[dataref_name] = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.dataref
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
+                            command_once(FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        end
+                    else
+                        if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item then
+                                local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
+                            elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item then
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + 10
+                            end
+                        end
+                    end
+                end
+            elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action then
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state then
+                    if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" then
+                        if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                            if not speak_only_essencials then
+                                local speech = CONFIG_VOICE_SRCH
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del) + fo_speed
+                            else
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            end
+                        else
+                            local speech = CONFIG_VOICE_SRCH
+                            play_sound(FOPM_Talk[speech])
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del) + fo_speed
+                        end
+                    else
+                        if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                            if not speak_only_essencials then
+                                local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                                play_sound(FOPM_Talk[speech])
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                            else
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            end
+                        else
+                            local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                            play_sound(FOPM_Talk[speech])
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                        end
+                    end
+                else
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                end
+                if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.dataref then
+                    local dataref_name = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
+                    _G[dataref_name] = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.dataref
+                elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.command then
+                    command_once(FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.command)
+                elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.delay then
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action.delay
+                end
+                FOPM_STEP_VARIABLE.STEP = 3
+                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+            elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state then
+                if not FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].essential then
+                    if not speak_only_essencials then
+                        local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                        play_sound(FOPM_Talk[speech])
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
+                    else
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    end
+                else
+                    local speech = FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].state
+                    play_sound(FOPM_Talk[speech])
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
+                end
+                FOPM_STEP_VARIABLE.STEP = 3
+                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+            else
+                FOPM_STEP_VARIABLE.STEP = 3
+                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+            end
+        end
+    elseif FOPM_STEP_VARIABLE.STEP == 3 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if FOPM_STEP_VARIABLE.PROC_STEP > #FOPM_procedure.Taxi_procedure then
+                local rindex = math.random(5)
+                play_sound(READY[rindex])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 0
+                FOPM_STEP_VARIABLE.PROC_STEP = 0
+                FOPM_Procedures_Control.EXECUTE_BTP = false
+                FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = true
+                FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
+            else
+                FOPM_STEP_VARIABLE.STEP = 1
+            end
+        end
+    end
+end
+
 ---- BEFORE TAKEOFF PROCEDURE
 function before_takeoff_proc()
     if FOPM_STEP_VARIABLE.STEP == 0 then
@@ -1091,6 +1388,12 @@ function before_takeoff_proc()
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
                                 FOPM_STEP_VARIABLE.STEP = 3
                             end
+                        elseif FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "PACKS" or FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].item == "PACKS" then
+                            if FOPM_procedure.Before_takeoff_proc[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                            else
+                                FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
+                            end
                         end
                     end
                 end
@@ -1133,7 +1436,7 @@ function before_takeoff_proc()
                                 if not speak_only_essencials then
                                     local speech = CONFIG_VOICE_SRCH
                                     play_sound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del) + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_CONFIG[speech].del)
                                 else
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
@@ -1349,15 +1652,15 @@ function enter_rwy()
                     else
                         FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
-                    FOPM_STEP_VARIABLE.STEP = 2.5
+                    FOPM_STEP_VARIABLE.STEP = 3
                 else
                     return
                 end
             end
-            if FOPM_STEP_VARIABLE.STEP == 2.5 then
+            if FOPM_STEP_VARIABLE.STEP == 3 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                     if not speak_only_essencials then
-                        local speech = "TA_RA"
+                        local speech = "SET"
                         play_sound(FOPM_Talk[speech])
                         FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                     else
@@ -1370,75 +1673,14 @@ function enter_rwy()
                 end
             end
             if FOPM_STEP_VARIABLE.STEP == 4 then
-                if not FLT_PHASE.TAXI_IN then
-                    if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                        if not speak_only_essencials then
-                            local speech = "PACKS"
-                            play_sound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
-                        else
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        end
-                        FOPM_STEP_VARIABLE.STEP = 4.5
-                    else
-                        return
-                    end
-                else
-                    FOPM_STEP_VARIABLE.STEP = 0
-                    FOPM_Procedures_Control.EXECUTE_ENRWY = false
-                    FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = true
-                end
-            end
-            if FOPM_STEP_VARIABLE.STEP == 4.5 then
-                if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                    if not FOPM_CONFIG_VARIABLE.PACKS_FOR_TO then
-                        if PACK_1_STATE == 1 then
-                            command_once(PACK_1_PB)
-                        end
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + 0.5
-                        FOPM_STEP_VARIABLE.STEP = 4.6
-                    else
-                        if not speak_only_essencials then
-                            local speech = "ON"
-                            play_sound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
-                        else
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                        end
-                        FOPM_STEP_VARIABLE.STEP = 5
-                    end
-                else
-                    return
-                end
-            end
-            if FOPM_STEP_VARIABLE.STEP == 4.6 then
-                if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                    if PACK_2_STATE == 1 then
-                        command_once(PACK_2_PB)
-                    end
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + 0.5
-                    FOPM_STEP_VARIABLE.STEP = 4.7
-                else
-                    return
-                end
-            end
-            if FOPM_STEP_VARIABLE.STEP == 4.7 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                     if not speak_only_essencials then
-                        local speech = "OFF"
-                        play_sound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
+                        local rindex = math.random(5)
+                        play_sound(READY[rindex])
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
                     else
                         FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     end
-                    FOPM_STEP_VARIABLE.STEP = 5
-                end
-            end
-            if FOPM_STEP_VARIABLE.STEP == 5 then
-                if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                    local rindex = math.random(5)
-                    play_sound(READY[rindex])
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
                     FOPM_STEP_VARIABLE.STEP = 0
                     FOPM_Procedures_Control.EXECUTE_ENRWY = false
                     FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = true
@@ -1448,6 +1690,114 @@ function enter_rwy()
             end
         else
             FOPM_Procedures_Control.EXECUTE_ENRWY = false
+        end
+    end
+end
+
+---- VACATING RWY
+function vacating_rwy()
+    if FOPM_STEP_VARIABLE.STEP == 0 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            FOPM_DELAY_VARIABLE.DELAY = TIME + 1
+            FOPM_STEP_VARIABLE.STEP = 1
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 1 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if not speak_only_essencials then
+                local speech = "EXTERIOR_LIGHTS"
+                play_sound(FOPM_Talk[speech])
+                FOPM_DELAY_VARIABLE.DELAY_SPEACH = TIME + (FO_voices_directory[speech].del)
+            end
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 2
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 2 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            LANDLT_L_SW = 0
+            LANDLT_R_SW = 0
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 3
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 3 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            STROBE_SW = 1
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 4
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 4 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if not speak_only_essencials then
+                if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
+                    local speech = "SET"
+                    play_sound(FOPM_Talk[speech])
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
+                else
+                    return
+                end
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            end
+            TAXILT_SW = 1
+            FOPM_STEP_VARIABLE.STEP = 5
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 5 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if not speak_only_essencials then
+                local speech = "TCAS"
+                play_sound(FOPM_Talk[speech])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            end
+            FOPM_STEP_VARIABLE.STEP = 6
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 6 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if not speak_only_essencials then
+                local speech = "SET"
+                play_sound(FOPM_Talk[speech])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            end
+            TCAS_SW = 2
+            FOPM_STEP_VARIABLE.STEP = 7
+        else
+            return
+        end
+    end
+    if FOPM_STEP_VARIABLE.STEP == 7 then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if not speak_only_essencials then
+                local rindex = math.random(5)
+                play_sound(READY[rindex])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            end
+            FOPM_STEP_VARIABLE.STEP = 0
+            FOPM_Procedures_Control.EXECUTE_EXRWY = false
+            FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
+        else
+            return
         end
     end
 end
@@ -2884,7 +3234,7 @@ function after_landing_proc()
                                 if not speak_only_essencials then
                                     local speech = FL_VOICE_SRCH
                                     play_sound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del)
                                 else
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
@@ -3031,100 +3381,6 @@ function brake_temp_check()
         FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
     else
         FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
-    end
-end
-
----- VACATING RWY
-function vacating_rwy()
-    if FOPM_STEP_VARIABLE.STEP == 0 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            FOPM_DELAY_VARIABLE.DELAY = TIME + 1
-            FOPM_STEP_VARIABLE.STEP = 1
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 1 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            if not speak_only_essencials then
-                local speech = "EXTERIOR_LIGHTS"
-                play_sound(FOPM_Talk[speech])
-                FOPM_DELAY_VARIABLE.DELAY_SPEACH = TIME + (FO_voices_directory[speech].del)
-            end
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            FOPM_STEP_VARIABLE.STEP = 2
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 2 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            LANDLT_L_SW = 0
-            LANDLT_R_SW = 0
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            FOPM_STEP_VARIABLE.STEP = 3
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 3 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            STROBE_SW = 1
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            FOPM_STEP_VARIABLE.STEP = 4
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 4 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            if not speak_only_essencials then
-                if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
-                    local speech = "SET"
-                    play_sound(FOPM_Talk[speech])
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
-                else
-                    return
-                end
-            else
-                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            end
-            TAXILT_SW = 1
-            FOPM_STEP_VARIABLE.STEP = 5
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 5 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            if not speak_only_essencials then
-                local speech = "TCAS"
-                play_sound(FOPM_Talk[speech])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
-            else
-                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            end
-            FOPM_STEP_VARIABLE.STEP = 6
-        else
-            return
-        end
-    end
-    if FOPM_STEP_VARIABLE.STEP == 6 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            if not speak_only_essencials then
-                local speech = "SET"
-                play_sound(FOPM_Talk[speech])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
-            else
-                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            end
-            TCAS_SW = 2
-            FOPM_STEP_VARIABLE.STEP = 0
-            FOPM_Procedures_Control.EXECUTE_EXRWY = false
-            FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
-        else
-            return
-        end
     end
 end
 
@@ -3425,7 +3681,7 @@ function one_engine_taxi_DEP()
                                 if not speak_only_essencials then
                                     local speech = FL_VOICE_SRCH
                                     play_sound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FLAP_POS[speech].del)
                                 else
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
@@ -4027,7 +4283,7 @@ function checklist_taxi()
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_TX_CL = false
-                FOPM_TL_CHECKLIST.TC_CL = true
+                FOPM_TL_CHECKLIST.TX_CL = true
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5314,6 +5570,9 @@ function FO_main_logic()
         one_engine_taxi_DEP()
     end
     if FLT_PHASE.TAXI_OUT then
+        if FOPM_Procedures_Control.EXECUTE_TXP then
+            taxi_proc()
+        end
         if FOPM_Procedures_Control.EXECUTE_BTP then
             before_takeoff_proc()
         end
@@ -5625,7 +5884,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         if FLT_PHASE.TAXI_OUT then
             if FOPM_checklist.Taxi_checklist then
-                if not FOPM_TL_CHECKLIST.TC_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
+                if not FOPM_TL_CHECKLIST.TX_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
                     if imgui.SmallButton("Taxi CKL") then
                         FOPM_TL_CHECKLIST.EX_TX_CL = true
                     end
@@ -5726,12 +5985,31 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FLT_PHASE.TAXI_OUT then
-            if not FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE and not FOPM_Procedures_Control.EXECUTE_BTP then
-                if imgui.SmallButton("Before Takeoff Proc.") then
-                    FOPM_Procedures_Control.EXECUTE_BTP = true
+            if FOPM_procedure.Taxi_procedure then
+                if not FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE and not FOPM_Procedures_Control.EXECUTE_TXP then
+                    if imgui.SmallButton("Taxi Proc.") then
+                        FOPM_Procedures_Control.EXECUTE_TXP = true
+                    end
+                    imgui.SameLine()
                 end
             end
-            imgui.SameLine()
+            if FOPM_checklist.Taxi_checklist then
+                if FOPM_TL_CHECKLIST.TX_CL then
+                    if not FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE and not FOPM_Procedures_Control.EXECUTE_BTP then
+                        if imgui.SmallButton("Before Takeoff Proc.") then
+                            FOPM_Procedures_Control.EXECUTE_BTP = true
+                        end
+                        imgui.SameLine()
+                    end
+                end
+            else
+                if not FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE and not FOPM_Procedures_Control.EXECUTE_BTP then
+                    if imgui.SmallButton("Before Takeoff Proc.") then
+                        FOPM_Procedures_Control.EXECUTE_BTP = true
+                    end
+                    imgui.SameLine()
+                end
+            end
             if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Entry RWY") then
                     FOPM_Procedures_Control.EXECUTE_ENRWY = true

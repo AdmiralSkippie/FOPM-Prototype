@@ -171,94 +171,131 @@ FOPM_procedure = {
             step_desition = true,
             check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
         },
-        [11] = {
+    },
+    Taxi_procedure = {
+        [1] = {
+            int_item = "OETD CHECK",
+            step_desition = true,
+            check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
+        },
+        [2] = {
             int_item = "FLTCTLCHK",
             step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
-        }
-    },
-    Before_takeoff_proc = {
-        [1] = {
+        },
+        [3] = {
             item = "WEATHER_RADAR",
             step_desition = true,
             check = function () return radar_pos == 1 end
         },
-        [2] = {
+        [4] = {
             state = "ON",
             step_desition = true,
             to_step_desition = true,
             action = {dataref = 0},
             dataref_name = "RADAR_SYS_SW"
         },
-        [3] = {
+        [5] = {
             state = "ON",
             step_desition = true,
             to_step_desition = true,
             action = {dataref = 2},
             dataref_name = "RADAR_SYS_SW"
         },
-        [4] = {
+        [6] = {
             item = "PWS",
             state = "ON",
             action = {dataref = 2},
             dataref_name = "PWS_SW"
         },
-        [5] = {
+        [7] = {
             item = "TERRAIN",
             state = "ON",
             action = {command = TERRAIN_FO_PB},
         },
-        [6] = {
-            item = "ENGINE_MODE_SELECTOR",
-            step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end
-        },
-        [7] = {
-            state = "IGNITION",
-            step_desition = true,
-            to_step_desition = true,
-            action = {dataref = 2},
-            dataref_name = "ENG_Mode"
-        },
         [8] = {
-            state = "NORMAL",
+            int_item = "ON_OETD",
             step_desition = true,
-            to_step_desition = true,
-            action = {dataref = 1},
-            dataref_name = "ENG_Mode"
+            check = function() return not EXECUTE_OETD end,
         },
         [9] = {
+            item = "AUTOBRAKES",
+            state = "MAX",
+            check = function() return AUTOBRK_MAX == 1 end,
+            action_check = {command = AUTOBRK_MAX_PB},
+        },
+        [10] = {
+            int_item = "TO_CONFIG",
+            action = {command = TO_CONFIG_PB},
+        },
+    },
+    Before_takeoff_proc = {
+        [1] = {
             item = "BRAKE_TEMP",
             step_desition = true,
             check = function () return BRAKE1_TEMP > 150 and BRAKE2_TEMP > 150 and BRAKE3_TEMP > 150 and BRAKE4_TEMP > 150 end
         },
-        [10] = {
+        [2] = {
             int_item = "TEMP_CHECK",
             step_desition = true,
             check = function() return BRAKE1_TEMP < 150 and BRAKE2_TEMP < 150 and BRAKE3_TEMP < 150 and BRAKE4_TEMP < 150 end,
         },
-        [11] = {
+        [3] = {
             state = "CHECK",
             step_desition = true,
             to_step_desition = true,
             check = function() return BRKFAN_State == 0 end,
             action_check = {command = BRKFAN_PB},
         },
-        [12] = {
-            int_item = "ON_OETD",
+        [4] = {
+            item = "TCAS",
+            state = "TA_RA",
+            check = function () return TCAS_SW == 4 end,
+            action_check = {dataref = 4},
+            dataref_name = "TCAS_SW"
+        },
+        [5] = {
+            item = "ENGINE_MODE_SELECTOR",
             step_desition = true,
-            check = function() return not EXECUTE_OETD end,
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end
         },
-        [13] = {
-            item = "AUTOBRAKES",
-            state = "MAX",
-            check = function() return AUTOBRK_MAX == 1 end,
-            action_check = {command = AUTOBRK_MAX_PB},
+        [6] = {
+            state = "IGNITION",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 2},
+            dataref_name = "ENG_Mode"
         },
-        [14] = {
-            int_item = "TO_CONFIG",
-            action = {command = TO_CONFIG_PB},
+        [7] = {
+            state = "NORMAL",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 1},
+            dataref_name = "ENG_Mode"
         },
+        [8] = {
+            item = "PACKS",
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO or FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
+        },
+        [9] = {
+            int_item = "PACK1 OFF",
+            step_desition = true,
+            to_step_desition = true,
+            check = function () return PACK_1_STATE == 0 end,
+            action_check = {command = PACK_1_PB}
+        },
+        [10] = {
+            int_item = "PACK2 OFF",
+            state = "OFF",
+            check = function () return PACK_2_STATE == 0 end,
+            action_check = {command = PACK_2_PB}
+        },
+        [11] = {
+            state = "ON",
+            step_desition = true,
+            to_step_desition = true
+        }
     },
     After_landing_proc = {
         [1] = {
@@ -291,7 +328,7 @@ FOPM_procedure = {
         [6] = {
             item = "FLAPS",
             step_desition = true,
-            check = function () return OAT >= 29 end
+            check = function () return OAT >= 500 end
         },
         [7] = {
             int_item = "FLAPS",

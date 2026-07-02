@@ -259,6 +259,29 @@ FOPM_procedure = {
             int_item = "TO_CONFIG",
             action = {command = TO_CONFIG_PB},
         },
+        [15] = {
+            item = "PACKS",
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO or FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
+        },
+        [16] = {
+            int_item = "PACK1 OFF",
+            step_desition = true,
+            to_step_desition = true,
+            check = function () return PACK_1_STATE == 0 end,
+            action_check = {command = PACK_1_PB}
+        },
+        [17] = {
+            int_item = "PACK2 OFF",
+            state = "OFF",
+            check = function () return PACK_2_STATE == 0 end,
+            action_check = {command = PACK_2_PB}
+        },
+        [18] = {
+            state = "ON",
+            step_desition = true,
+            to_step_desition = true
+        }
     },
     After_landing_proc = {
         [1] = {

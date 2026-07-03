@@ -227,7 +227,8 @@ FOPM_CONFIG_VARIABLE = {
         LOW = true,
         MEDIUM = true
     },
-    IAE_SD_TIME = math.floor(TIME)
+    IAE_SD_TIME = math.floor(TIME),
+    TO_RWY = "-"
 }
 
 -- FLIGHT PARAMETERS VARIABLES
@@ -781,9 +782,9 @@ function after_start_proc()
                         if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_CHECK" then
                             FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
                             FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)")
-                            FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_1, "(%d+)"))
-                            FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_2, "(%d+)"))
-                            FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU_GLINE_3,"(%d+)"))
+                            FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
+                            FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
+                            FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
                             if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = FOPM_CONFIG_VARIABLE.PT_TO_ANGLE * 1
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
@@ -3033,9 +3034,9 @@ function go_arround()
             end
             if FOPM_STEP_VARIABLE.STEP == 11 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                    FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_1, "(%d+)"))
-                    FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU_GLINE_2, "(%d+)"))
-                    FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU_GLINE_3,"(%d+)"))
+                    FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
+                    FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
+                    FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     FOPM_STEP_VARIABLE.STEP = 12
                 else
@@ -6124,11 +6125,14 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if FLT_PHASE.PREFLIGHT then
             if ACF_ICAO == "A319" then
                 if ENG_MODEL == 0 then
-                    imgui.TextUnformatted("Aircraft Type: A320-232")
-                    imgui.TextUnformatted("Engine: IAE V2527-A5")
+                    imgui.TextUnformatted("Aircraft Type: A319-132")
+                    imgui.TextUnformatted("Engine: IAE V2524-A5")
                 elseif ENG_MODEL == 1 then
-                    imgui.TextUnformatted("Aircraft Type: A320-214")
-                    imgui.TextUnformatted("Engine: CFM56-5B4")
+                    imgui.TextUnformatted("Aircraft Type: A319-112")
+                    imgui.TextUnformatted("Engine: CFM56-5B6")
+                elseif ENG_MODEL == 4 then
+                    imgui.TextUnformatted("Aircraft Type: A319-115")
+                    imgui.TextUnformatted("Engine: CFM56-5B7")
                 end
             end
             if ACF_ICAO == "A320" or ACF_ICAO == "A20N" then
@@ -6179,6 +6183,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if FLT_PHASE.PREFLIGHT or FLT_PHASE.PUSHBACK or FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
+            imgui.TextUnformatted("Time Since ENG SD: "..math.floor((TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME)/60).." min")
             if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
                 DEPARTURE_BRIEFING_BLEED_OPT = 1
                 FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
@@ -6195,6 +6200,20 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 DEPARTURE_BRIEFING_BLEED_OPT = 3
                 FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
                 FOPM_CONFIG_VARIABLE.APU_TO_PACKS = true
+            end
+            imgui.TextUnformatted("TO RWY:")
+            imgui.SameLine()
+            if string.find(MCDU1_WTITLE, "TAKE OFF") then
+                if string.sub(MCDU1_WLINE_1, -3) == "---" then
+                    FOPM_CONFIG_VARIABLE.TO_RWY = "---"
+                elseif string.sub(MCDU1_GLINE_1, -3) ~= "   " then
+                    FOPM_CONFIG_VARIABLE.TO_RWY = string.sub(MCDU1_GLINE_1, -3)
+                end
+            end
+            if FOPM_CONFIG_VARIABLE.TO_RWY == "-" then
+                imgui.TextUnformatted("---")
+            else
+                imgui.TextUnformatted(FOPM_CONFIG_VARIABLE.TO_RWY)
             end
             imgui.TextUnformatted("Flaps:")
             imgui.SameLine()
@@ -6214,6 +6233,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             imgui.TextUnformatted("V2:")
             imgui.SameLine()
             imgui.TextUnformatted(V2_SPEED)
+            imgui.TextUnformatted("Thrust:")
+            imgui.SameLine()
+            if THR_SETTING == -20 then
+                imgui.TextUnformatted("TOGA")
+            else
+                imgui.TextUnformatted("Flex "..THR_SETTING)
+            end
             imgui.TextUnformatted("Raining:")
             imgui.SameLine()
             if imgui.RadioButton("No", not FOPM_CONFIG_VARIABLE.RAINING) then

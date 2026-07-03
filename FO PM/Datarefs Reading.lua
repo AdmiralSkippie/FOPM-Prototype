@@ -142,9 +142,12 @@ dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA
 dataref("MCDU_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
 MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
 MCDU_FO_KEY_Fpln = "AirbusFBW/MCDU2Fpln"
-dataref("MCDU_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --
-dataref("MCDU_GLINE_2", "AirbusFBW/MCDU2cont2g", "readonly") -- text line SLAT retract to 0 --
-dataref("MCDU_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green DOT --
+dataref("MCDU2_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --
+dataref("MCDU2_GLINE_2", "AirbusFBW/MCDU2cont2g", "readonly") -- text line SLAT retract to 0 --
+dataref("MCDU2_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green DOT --
+dataref("MCDU1_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly")
+dataref("MCDU1_WLINE_1", "AirbusFBW/MCDU1cont1w", "readonly")
+dataref("MCDU1_WTITLE", "AirbusFBW/MCDU1titlew", "readonly")
 
 ---- INDICATIONS ----
 -- dataref("OXY_Press", "", "readonly")
@@ -179,6 +182,7 @@ dataref("RUDDER", "sim/flightmodel2/wing/rudder1_deg", "readonly", 10) -- 0 NTRL
     dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
     dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
 dataref("ENG_ATHR_MODE", "AirbusFBW/SPDmanaged", "readonly") -- 1 = Managed
+dataref("THR_SETTING", "toliss_airbus/performance/flextemp", "readonly")
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)
 dataref("INBD_SPOILERS", "AirbusFBW/SDSpoilerArray", "readonly", 0)
 dataref("CRONO", "AirbusFBW/ClockChronoValue", "readonly")

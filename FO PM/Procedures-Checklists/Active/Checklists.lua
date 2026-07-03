@@ -2,7 +2,7 @@
 -- FO/PM CHECKLIST --
 ---------------------
 
-FOPM_cklst_config_name = "Avianca 2021"
+FOPM_cklst_config_name = "Legacy"
 
 FOPM_checklist = {
     Before_start_checklist = {

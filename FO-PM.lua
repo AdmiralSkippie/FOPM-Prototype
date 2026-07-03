@@ -295,11 +295,11 @@ do_every_frame("flaps_voice_search()")
 ---------------------------------------
 
 -- PROCEDURES LOAD
-dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/Active/Procedures.lua")
+dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/"..prcl_to_load.."/Procedures.lua")
 logMsg("XXXXX   Procedures Loaded")
 
 -- CHECKLISTS LOAD
-dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/Active/Checklists.lua")
+dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/"..prcl_to_load.."/Checklists.lua")
 logMsg("XXXXX   Checklists Loaded")
 
 -- //////////////////////////////
@@ -5803,7 +5803,8 @@ function config_save()
         config:write('FOPM_plugin_version = "V1.1"'.."\n")
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
-        config:write("fo_speed = ".. fo_speed.."\n\n")
+        config:write("fo_speed = ".. fo_speed.."\n")
+        config:write('prcl_to_load = "'.. prcl_to_load..'"\n\n')
         config:write("FOPM_wleft = "..tostring(FOPM_wleft).."\n")
         config:write("FOPM_wtop = "..tostring(FOPM_wtop).."\n")
         config:write("FOPM_wright = "..tostring(FOPM_wright).."\n")
@@ -5822,6 +5823,7 @@ end
 local WND_SETTINGS = false
 local WND_MAIN = true
 local WND_BRIEFING = false
+local WND_PRCL_SEL = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
 local setting_change = false
 local acf_neo_type = "N"
@@ -5838,6 +5840,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BRIEFING = false
+            WND_PRCL_SEL = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
@@ -5847,6 +5850,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
+            WND_PRCL_SEL = false
         end
         imgui.SameLine()
         imgui.TextUnformatted("     ")
@@ -6108,6 +6112,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BRIEFING = false
+            WND_PRCL_SEL = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
@@ -6117,6 +6122,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
+            WND_PRCL_SEL = false
         end
         imgui.Spacing()
         imgui.Separator()
@@ -6393,6 +6399,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
+            WND_PRCL_SEL = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
@@ -6402,6 +6409,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
+            WND_PRCL_SEL = false
         end
         imgui.Spacing()
         imgui.Separator()
@@ -6410,6 +6418,15 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)
         imgui.TextUnformatted("Procedures: "..FOPM_proc_config_name)
         imgui.TextUnformatted("Checklists: "..FOPM_cklst_config_name)
+        if FOPM_proc_config_name ~= prcl_to_load then
+            imgui.TextUnformatted("Reload the script to see changes")
+        end
+        if imgui.SmallButton("Change PROC/CKLT Pack") then
+            WND_SETTINGS = false
+            WND_MAIN = false
+            WND_BRIEFING = false
+            WND_PRCL_SEL = true
+        end
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -6449,6 +6466,54 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             fo_speed = 1.1
             speak_only_essencials = true
             config_save()
+        end
+    end
+    if WND_PRCL_SEL then
+        imgui.Spacing()
+        if imgui.SmallButton("<-") then
+            WND_SETTINGS = true
+            WND_PRCL_SEL = false
+        end
+        imgui.SameLine()
+        if imgui.SmallButton("Main") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            WND_SETTINGS = false
+            WND_MAIN = true
+            WND_BRIEFING = false
+            WND_PRCL_SEL = false
+        end
+        imgui.SameLine()
+        if imgui.SmallButton("Briefing") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-20,FOPM_wtop,FOPM_wright,FOPM_wbottom-62)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            WND_SETTINGS = false
+            WND_MAIN = false
+            WND_BRIEFING = true
+            WND_PRCL_SEL = false
+        end
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("Packs Available")
+        if imgui.RadioButton("Airbus", prcl_to_load == "Airbus") then
+            prcl_to_load = "Airbus"
+        end
+        if imgui.RadioButton("Avianca 2022", prcl_to_load == "Avianca 2022") then
+            prcl_to_load = "Avianca 2022"
+        end
+        if imgui.RadioButton("Legacy", prcl_to_load == "Legacy") then
+            prcl_to_load = "Legacy"
+        end
+        if FOPM_proc_config_name ~= prcl_to_load then
+            imgui.TextUnformatted("Reload the script to see changes")
+            if imgui.SmallButton("SAVE") then
+                config_save()
+                WND_SETTINGS = true
+                WND_PRCL_SEL = false
+            end
         end
     end
 end

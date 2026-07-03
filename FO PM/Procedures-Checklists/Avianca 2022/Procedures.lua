@@ -216,7 +216,7 @@ FOPM_procedure = {
         [8] = {
             int_item = "ON_OETD",
             step_desition = true,
-            check = function() return not EXECUTE_OETD end,
+            check = function() return not FOPM_Procedures_Control.EXECUTE_OETD end,
         },
         [9] = {
             item = "AUTOBRAKES",
@@ -541,7 +541,7 @@ FOPM_procedure = {
         [31] = {
             int_item = "IAE_CHECK_TIME",
             step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.IAE_SD_TIME < 7200 end
+            check = function () return FOPM_CONFIG_VARIABLE.IAE_SD_TIME > 7200 end
         },
         [32] = {
             int_item = "TIME_COMP",

@@ -18,7 +18,7 @@ FOPM_checklist = {
             state = "CHECK"
         },
         [4] = {
-            item = "SEATBELTS",
+            item = "SEAT_BELTS",
             state = "ON",
             check = function () return SEATBELTS_SW == 1 end
         },
@@ -102,44 +102,49 @@ FOPM_checklist = {
     },
     Taxi_checklist = {
         [1] = {
-            item = "BEFORE_TAKEOFF_CHECKLIST"
+            item = "TAXI_CHECKLIST"
         },
         [2] = {
+            int_item = "OETD CHECK",
+            step_desition = true,
+            check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
+        },
+        [3] = {
             item = "FLIGHT_CONTROLS",
             state = "CHECK",
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end
         },
-        [3] = {
+        [4] = {
             item = "FLAPS_SETTING",
             state = "FLAPS"
         },
-        [4] = {
+        [5] = {
             item = "RADAR_AND_PRED_WS",
             state = "ON_AUTO",
             check = function () return (RADAR_SYS_SW == 0 or RADAR_SYS_SW == 2) and PWS_SW == 2 end
         },
-        [5] = {
+        [6] = {
             item = "ENGINE_MODE_SELECTOR",
             step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
         },
-        [6] = {
+        [7] = {
             state = "IGNITION",
             step_desition = true,
             to_step_desition = true,
             check = function () return ENG_Mode == 2 end,
         },
-        [7] = {
+        [8] = {
             state = "NORMAL",
             step_desition = true,
             to_step_desition = true,
             check = function () return ENG_Mode == 1 end,
         },
-        [8] = {
+        [9] = {
             item = "ECAM_MEMO",
             state = "TAKEOFF_NO_BLUE",
         },
-        [9] = {
+        [10] = {
             item = "CHECKLIST_COMPLETED"
         }
     },
@@ -169,7 +174,7 @@ FOPM_checklist = {
     },
     Lineup_checklist = {
         [1] = {
-            item = "BEFORE_TAKEOFF_CHECKLIST"
+            item = "LINEUP_CHECKLIST"
         },
         [2] = {
             item = "TAKEOFF_RUNWAY",

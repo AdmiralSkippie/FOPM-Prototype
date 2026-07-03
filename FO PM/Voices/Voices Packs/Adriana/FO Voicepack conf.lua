@@ -194,6 +194,8 @@ FO_voices_directory.RUNWAY_AND_SID.del = 1.207
 FO_voices_directory.FCU_ALTITUDE.del = 1.370
 FO_voices_directory.PARKING_BRAKE_OR_CHOCKS.del = 1.440
 FO_voices_directory.WING_LIGHTS.del = 0.972
+FO_voices_directory.TAXI_CHECKLIST.del = 1.254
+FO_voices_directory.LINEUP_CHECKLIST.del = 1.370
 -- FLIGHT PARAMETERS CALLOUTS
 FO_voices_directory.SPEED.del = 0.647
 FO_voices_directory.SINK_RATE.del = 0.781

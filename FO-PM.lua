@@ -1101,16 +1101,16 @@ function taxi_proc()
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 3
                                 FOPM_STEP_VARIABLE.STEP = 3
                             end
-                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "OETD CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "OETD CHECK" then
-                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "OETD CHECK" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "OETD CHECK" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 2
                                 FOPM_Procedures_Control.EXECUTE_OETD = true
                                 FOPM_STEP_VARIABLE.STEP = 3
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                             end
-                        elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
-                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
+                        elseif FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
+                            if FOPM_procedure.Taxi_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
                                 FOPM_STEP_VARIABLE.STEP = 3
                             else
@@ -1282,8 +1282,8 @@ function taxi_proc()
                 FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del) + fo_speed
                 FOPM_STEP_VARIABLE.STEP = 0
                 FOPM_STEP_VARIABLE.PROC_STEP = 0
-                FOPM_Procedures_Control.EXECUTE_BTP = false
-                FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = true
+                FOPM_Procedures_Control.EXECUTE_TXP = false
+                FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = true
                 FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
             else
                 FOPM_STEP_VARIABLE.STEP = 1
@@ -3567,7 +3567,7 @@ function one_engine_taxi_DEP()
                 if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].to_step_desition then
                     if FOPM_STEP_VARIABLE.DES_MADED then
                         FOPM_STEP_VARIABLE.PROC_OE_STEP = FOPM_STEP_VARIABLE.PROC_OE_STEP + 1
-                        FOPM_STEP_VARIABLE.PROC_OE_STEP = 3
+                        FOPM_STEP_VARIABLE.STEP_ONEENG = 3
                     else
                         if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].action_pre_check then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].action_pre_check.dataref then
@@ -4247,14 +4247,22 @@ function checklist_taxi()
                     if FOPM_STEP_VARIABLE.DES_MADED then
                         FOPM_STEP_VARIABLE.DES_MADED = false
                     end
-                    local speech = FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
-                    play_sound(FOPM_Talk[speech])
-                    FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item then
+                        local speech = FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
+                        play_sound(FOPM_Talk[speech])
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
+                    end
                     if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
                         if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
                             FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                         else
                             FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+                        end
+                    elseif FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].int_item == "OETD CHECK" then
+                        if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
+                            FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+                        else
+                            FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                         end
                     end
                 else
@@ -4358,9 +4366,9 @@ function checklist_departure_change()
                 if response_CHECK then
                     if FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
                         if FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            local speech = FL_VOICE_SRCH
+                            local speech = CONFIG_VOICE_SRCH
                             play_sound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
                         else
                             local speech = FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
                             play_sound(FOPM_Talk[speech])
@@ -4375,9 +4383,9 @@ function checklist_departure_change()
             elseif FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
                     if FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        local speech = FL_VOICE_SRCH
+                        local speech = CONFIG_VOICE_SRCH
                         play_sound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_POS[speech].del)
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_CONFIG[speech].del)
                     else
                         local speech = FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
                         play_sound(FOPM_Talk[speech])
@@ -5888,11 +5896,20 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
             if FOPM_checklist.Before_start_checklist then
-                if not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
-                    if imgui.SmallButton("Before Start CKL") then
-                        FOPM_TL_CHECKLIST.EX_BS_CL = true
+                if FOPM_checklist.Cockpit_preparation_checklist then
+                    if not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_CHECKLIST.CP_CL then
+                        if imgui.SmallButton("Before Start CKL") then
+                            FOPM_TL_CHECKLIST.EX_BS_CL = true
+                        end
+                        imgui.SameLine()
                     end
-                    imgui.SameLine()
+                else
+                    if not FOPM_TL_CHECKLIST.BS_CL and not FOPM_TL_CHECKLIST.EX_BS_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
+                        if imgui.SmallButton("Before Start CKL") then
+                            FOPM_TL_CHECKLIST.EX_BS_CL = true
+                        end
+                        imgui.SameLine()
+                    end
                 end
             end
             if FOPM_checklist.Securing_checklist then
@@ -5922,10 +5939,17 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     end
                 end
             end
+            if FOPM_checklist.Departure_change_checklist then
+                if not FOPM_TL_CHECKLIST.DC_CL and not FOPM_TL_CHECKLIST.EX_DC_CL then
+                    if imgui.SmallButton("Departure Change CKL") then
+                        FOPM_TL_CHECKLIST.EX_DC_CL = true
+                    end
+                end
+            end
         end
         if FLT_PHASE.TAXI_OUT then
             if FOPM_checklist.Taxi_checklist then
-                if not FOPM_TL_CHECKLIST.TX_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
+                if not FOPM_TL_CHECKLIST.TX_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE then
                     if imgui.SmallButton("Taxi CKL") then
                         FOPM_TL_CHECKLIST.EX_TX_CL = true
                     end
@@ -5946,9 +5970,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
             if FOPM_checklist.Lineup_checklist then
-                if FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_CHECKLIST.EX_LU_CL and FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE and not FOPM_TL_CHECKLIST.EX_BTO_CL_BTL then
+                if not FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_CHECKLIST.EX_LU_CL and FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE then
                     if imgui.SmallButton("Line Up CKL") then
-                        FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = true
+                        FOPM_TL_CHECKLIST.EX_LU_CL = true
                     end
                 end
             end

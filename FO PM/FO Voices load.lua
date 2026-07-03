@@ -233,6 +233,8 @@ FO_voices_directory = {
     FCU_ALTITUDE = {code = "CKL56", del = 0},
     PARKING_BRAKE_OR_CHOCKS = {code = "CKL57", del = 0},
     WING_LIGHTS = {code = "CKL58", del = 0},
+    TAXI_CHECKLIST = {code = "CKL59", del = 0},
+    LINEUP_CHECKLIST = {code = "CKL60", del = 0},
 }
 
 -- FLAP CONFIG DIRECTORY

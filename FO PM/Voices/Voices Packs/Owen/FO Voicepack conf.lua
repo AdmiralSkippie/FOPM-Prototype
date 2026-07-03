@@ -132,6 +132,7 @@ FO_voices_directory.SELECTED_SPEED.del = 1.277
 FO_voices_directory.RETRACTED.del = 0.643
 FO_voices_directory.DISARMED.del = 0.727
 FO_voices_directory.AUTO.del = 0.416
+FO_voices_directory.DESELECTED.del = 1.022
 -- CHECKLIST 1
 FO_voices_directory.BEFORE_START_CHECKLIST.del = 1.318
 FO_voices_directory.EFB_PREPARATION.del = 1.581
@@ -182,6 +183,17 @@ FO_voices_directory.NO_PORTABLE_SIGNS.del = 1.212
 FO_voices_directory.APU_AND_BATTERY.del = 1.351
 FO_voices_directory.BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE.del = 2.052
 FO_voices_directory.APU.del = 0.710
+FO_voices_directory.COCKPIT_PREPARATION_CHECKLIST.del = 1.629
+FO_voices_directory.RADIONAV_POSITION.del = 1.254
+-- CHECKLIST 6
+FO_voices_directory.TAKEOFF_SPEEDS_AND_THRUST.del = 1.493
+FO_voices_directory.FLAPS_SETTING.del = 0.869
+FO_voices_directory.RADAR_AND_PRED_WS.del = 1.776
+FO_voices_directory.DEPARTURE_CHANGE_CHECKLIST.del = 1.48
+FO_voices_directory.RUNWAY_AND_SID.del = 1.227
+FO_voices_directory.FCU_ALTITUDE.del = 1.3
+FO_voices_directory.PARKING_BRAKE_OR_CHOCKS.del = 1.485
+FO_voices_directory.WING_LIGHTS.del = 0.919
 -- FLIGHT PARAMETERS CALLOUTS
 FO_voices_directory.SPEED.del = 0.526
 FO_voices_directory.SINK_RATE.del = 0.934

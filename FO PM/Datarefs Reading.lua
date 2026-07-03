@@ -70,6 +70,7 @@ dataref("LANDLT_R_SW", "AirbusFBW/OHPLightSwitches", "writable", 5)
 dataref("TAXILT_SW", "AirbusFBW/OHPLightSwitches", "writable", 3)
 dataref("STROBE_SW", "AirbusFBW/OHPLightSwitches", "writable", 7) -- 1 Auto --
 dataref("RWYTOLT_SW", "AirbusFBW/OHPLightSwitches", "writable", 6)
+dataref("WINGLT_SW", "AirbusFBW/OHPLightSwitches", "writable", 1)
 dataref("TCAS_SW", "AirbusFBW/XPDRPower", "writable") -- 1/STBY 2/XPNDR 4/TA/RA --
 dataref("EFIS_RNG", "AirbusFBW/NDrangeFO", "writable") -- 0/10 --
 dataref("PWS_SW", "AirbusFBW/WXSwitchPWS", "writable") -- 2/ON --

@@ -34,8 +34,8 @@ FOPM_checklist = {
         },
         [7] = {
             AR_item = true,
-            item = "NAVAIDS_DESELECTION",
-            state = "CHECK",
+            item = "RADIONAV_POSITION",
+            state = "DESELECTED",
         },
         [8] = {
             item = "CHECKLIST_COMPLETED",
@@ -50,7 +50,7 @@ FOPM_checklist = {
             state = "SET"
         },
         [3] = {
-            item = "V1_VR_V2_FLEX_TEMP",
+            item = "TAKEOFF_SPEEDS_AND_THRUST",
             state = "CHECK"
         },
         [4] = {
@@ -110,11 +110,11 @@ FOPM_checklist = {
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end
         },
         [3] = {
-            item = "FLAPS",
+            item = "FLAPS_SETTING",
             state = "FLAPS"
         },
         [4] = {
-            item = "RADAR_&_PRED_WS",
+            item = "RADAR_AND_PRED_WS",
             state = "ON_AUTO",
             check = function () return (RADAR_SYS_SW == 0 or RADAR_SYS_SW == 2) and PWS_SW == 2 end
         },
@@ -148,19 +148,19 @@ FOPM_checklist = {
             item = "DEPARTURE_CHANGE_CHECKLIST"
         },
         [2] =  {
-            item = "RWY_&_SID",
+            item = "RUNWAY_AND_SID",
             state = "CHECK"
         },
         [3] = {
-            item = "FLAPS",
+            item = "FLAPS_SETTING",
             state = "FLAPS"
         },
         [4] = {
-            item = "V1_VR_V2_FLEX_TEMP",
+            item = "TAKEOFF_SPEEDS_AND_THRUST",
             state = "CHECK"
         },
         [5] = {
-            item = "FCU_ALT",
+            item = "FCU_ALTITUDE",
             state = "CHECK"
         },
         [6] = {
@@ -277,8 +277,8 @@ FOPM_checklist = {
         },
         [11] = {
             AR_item = true,
-            item = "NAVAIDS_DESELECTION",
-            state = "CHECK",
+            item = "RADIONAV_POSITION",
+            state = "DESELECTED",
         },
         [12] = {
             AR_item = true,
@@ -306,7 +306,7 @@ FOPM_checklist = {
             item = "AFTER_LANDING_CHECKLIST"
         },
         [2] = {
-            item = "RADAR_&_PRED_WS",
+            item = "RADAR_AND_PRED_WS",
             state = "OFF",
             check = function () return RADAR_SYS_SW == 1 and PWS_SW == 0 end
         },
@@ -319,7 +319,7 @@ FOPM_checklist = {
             item = "PARKING_CHECKLIST"
         },
         [2] = {
-            item = "PARKING_BRAKE",
+            item = "PARKING_BRAKE_OR_CHOCKS",
             state = "SET"
         },
         [3] = {
@@ -330,7 +330,7 @@ FOPM_checklist = {
         [4] = {
             item = "WING_LIGHTS",
             state = "OFF",
-            check = function () return SEATBELTS_SW == 0 end
+            check = function () return WINGLT_SW == 0 end
         },
         [5] = {
             item = "FUEL_PUMPS",

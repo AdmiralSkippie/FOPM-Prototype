@@ -150,6 +150,7 @@ FO_voices_directory = {
     RETRACTED = {code = "RETRACTED", del = 0},
     DISARMED = {code = "DISARMED", del = 0},
     AUTO = {code = "AUTO", del = 0},
+    DESELECTED = {code = "DESELECTED", del = 0},
 
 -- FLIGHT PARAMETERS CALLOUTS
     SPEED = {code = "SPEED", del = 0},
@@ -221,6 +222,17 @@ FO_voices_directory = {
     NO_PORTABLE_SIGNS = {code = "CKL45", del = 0},
     APU_AND_BATTERY = {code = "CKL46", del = 0},
     BEFORE_TAKEOFF_CHECKLIST_BELOW_THE_LINE = {code = "CKL47", del = 0},
+    COCKPIT_PREPARATION_CHECKLIST = {code = "CKL49", del = 0},
+    RADIONAV_POSITION = {code = "CKL50", del = 0},
+-- CHECKLIST 6 --
+    TAKEOFF_SPEEDS_AND_THRUST = {code = "CKL51", del = 0},
+    FLAPS_SETTING = {code = "CKL52", del = 0},
+    RADAR_AND_PRED_WS = {code = "CKL53", del = 0},
+    DEPARTURE_CHANGE_CHECKLIST = {code = "CKL54", del = 0},
+    RUNWAY_AND_SID = {code = "CKL55", del = 0},
+    FCU_ALTITUDE = {code = "CKL56", del = 0},
+    PARKING_BRAKE_OR_CHOCKS = {code = "CKL57", del = 0},
+    WING_LIGHTS = {code = "CKL58", del = 0},
 }
 
 -- FLAP CONFIG DIRECTORY

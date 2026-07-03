@@ -4902,10 +4902,10 @@ function checklist_approach()
                         else
                             FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
                         end
-                    elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "AUTOBRAKES" then
-                        if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
+                    elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "AUTOBRAKES" then
+                        if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
                             FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                        elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
+                        elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
                             FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
                         end
                     end
@@ -5049,12 +5049,12 @@ function checklist_landing()
             if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
                     if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
+                        if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
                             local speech = FL_VOICE_SRCH
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_POS[speech].del)
                         else
-                            local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
+                            local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
                             play_sound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
                         end
@@ -5066,12 +5066,12 @@ function checklist_landing()
                 end
             elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
+                    if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
                         local speech = FL_VOICE_SRCH
                         play_sound(FOPM_Talk[speech])
                         FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FLAP_POS[speech].del)
                     else
-                        local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
+                        local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
                         play_sound(FOPM_Talk[speech])
                         FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
                     end
@@ -5280,11 +5280,14 @@ function checklist_parking()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_PARK_CL = false
                 FOPM_TL_CHECKLIST.PARK_CL = true
+                FOPM_TL_CHECKLIST.CP_CL = false
                 FOPM_TL_CHECKLIST.BS_CL = false
                 FOPM_TL_CHECKLIST.BS_CL_BTL = false
                 FOPM_TL_CHECKLIST.AS_CL = false
+                FOPM_TL_CHECKLIST.TX_CL = false
                 FOPM_TL_CHECKLIST.BTO_CL = false
                 FOPM_TL_CHECKLIST.BTO_CL_BTL = false
+                FOPM_TL_CHECKLIST.LU_CL = false
                 FOPM_TL_CHECKLIST.ATO_CL = false
                 FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = false
                 FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = false

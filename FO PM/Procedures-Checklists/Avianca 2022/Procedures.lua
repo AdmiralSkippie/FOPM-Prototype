@@ -204,7 +204,7 @@ FOPM_procedure = {
         },
         [6] = {
             item = "PWS",
-            state = "ON",
+            state = "AUTO",
             action = {dataref = 2},
             dataref_name = "PWS_SW"
         },
@@ -404,8 +404,8 @@ FOPM_procedure = {
             item = "APU_BLEED",
             essential = true,
             state = "ON",
-            check = function () return APU_BLEED_STATE == 0 end,
-            action = {command = APU_BLEED_PB},
+            check = function () return APU_BLEED_STATE == 1 end,
+            action_check = {command = APU_BLEED_PB},
         },
         [7] = {
             item = "ENGINE_MODE_SELECTOR",
@@ -511,7 +511,6 @@ FOPM_procedure = {
             check = function () return not FOPM_TL_CHECKLIST.EX_AS_CL end
         },
         [25] = {
-            int_item = "CHK_VERIFICATION",
             check = function () return FOPM_TL_CHECKLIST.AS_CL end
         },
         [26] = {
@@ -532,7 +531,7 @@ FOPM_procedure = {
         [29] = {
             int_item = "PROC_COMP",
             step_desition = true,
-            check = function () return FOPM_STEP_VARIABLE.PROC_STEP == 29 end
+            check = function () return FOPM_STEP_VARIABLE.PROC_OE_STEP == 29 end
         },
         [30] = {
             int_item = "ENG_COMP",

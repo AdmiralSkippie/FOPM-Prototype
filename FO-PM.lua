@@ -3558,6 +3558,19 @@ end
 
 -- ONE ENGINE TAXI DEPARTURE
 function one_engine_taxi_DEP()
+    if FOPM_STEP_VARIABLE.PROC_OE_STEP == 32 then
+        if CRONO >= 300 then
+            local rindex = math.random(3)
+            play_sound(READY_FOR_TO[rindex])
+            FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
+        end
+    elseif FOPM_STEP_VARIABLE.PROC_OE_STEP == 33 then
+        if CRONO >= 120 then
+            local rindex = math.random(3)
+            play_sound(READY_FOR_TO[rindex])
+            FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
+        end
+    end
     if FOPM_STEP_VARIABLE.STEP_ONEENG == 0 then
         FOPM_STEP_VARIABLE.STEP_ONEENG = 1
         FOPM_STEP_VARIABLE.PROC_OE_STEP = 1
@@ -3651,9 +3664,6 @@ function one_engine_taxi_DEP()
                             end
                         elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].int_item == "TIME_COMP" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].item == "TIME_COMP" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].check() then
-                                local rindex = math.random(3)
-                                play_sound(READY_FOR_TO[rindex])
-                                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
                                 FOPM_STEP_VARIABLE.PROC_OE_STEP = FOPM_STEP_VARIABLE.PROC_OE_STEP + 1
                             end
                         elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].item == "FLTCTLCHK" then
@@ -4869,7 +4879,7 @@ function checklist_approach()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4879,7 +4889,7 @@ function checklist_approach()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4987,7 +4997,7 @@ function checklist_landing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4997,7 +5007,7 @@ function checklist_landing()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5105,7 +5115,7 @@ function checklist_after_landing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5115,7 +5125,7 @@ function checklist_after_landing()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5217,7 +5227,7 @@ function checklist_parking()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Parking_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Parking_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5311,7 +5321,7 @@ function checklist_securing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Securing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Securing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)

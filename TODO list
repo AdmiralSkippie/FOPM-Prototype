@@ -5,6 +5,10 @@ Desarrollar alerta proximidad al TOD **
 // DEBOGiN 1.1
 Actualizar el sistema para guardar la localizacion
 Diferenciar procedimientos paralelos
+Revisar porque no avisa el ready en OETD
+Revisar RNP AR items
+Arreglar retraccion de flaps en taxi in
+
 
 /////// FUTURO ///////
 Interaccion con servicios en tierra

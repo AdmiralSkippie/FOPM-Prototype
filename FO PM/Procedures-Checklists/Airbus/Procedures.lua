@@ -332,8 +332,8 @@ FOPM_procedure = {
         },
         [7] = {
             int_item = "FLAPS_RET",
+            step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.F_ATARGET == FOPM_CONFIG_VARIABLE.F_TARGET end,
-            action_check = {command = FLAPS_1UP}
         },
         [8] = {
             int_item = "FLAPS",

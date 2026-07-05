@@ -236,8 +236,8 @@ FOPM_checklist = {
         },
         [3] = {
             item = "SEAT_BELTS",
-            state = "OFF",
-            check = function () return SEATBELTS_SW == 0 end
+            state = "ON",
+            check = function () return SEATBELTS_SW == 1 end
         },
         [4] = {
             item = "MINIMUMS",

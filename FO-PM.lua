@@ -45,7 +45,7 @@ logMsg("XXXXX   Voices Pack Config Loaded")
 ----------------
 ---- PHASES ----
 ----------------
-local FLT_PHASE = {
+FOPM_TL_FLT_PHASE = {
     PREFLIGHT = true,
     PUSHBACK = false,
     ENG_START = false,
@@ -132,7 +132,7 @@ FOPM_TL_CHECKLIST = {
 -----------------------------
 ---- APPROACH PROCEDURES ----
 -----------------------------
-local APP_TYPE = {
+FOPM_TL_APP_TYPE = {
     ---- Especial Departure
     AR_DEP = false,
     ---- Precision APPROACH ----
@@ -228,7 +228,7 @@ FOPM_CONFIG_VARIABLE = {
     PASSED_TRANS_LVL= false,
     AUTOBRAKES = {
         LOW = true,
-        MEDIUM = true
+        MEDIUM = false
     },
     IAE_SD_TIME = math.floor(TIME),
     TO_RWY = "-"
@@ -896,10 +896,20 @@ function after_start_proc()
                         if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.dataref then
                             local dataref_name = FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].dataref_name
                             _G[dataref_name] = FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.dataref
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" or 
+                               FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" then
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + 0.9
+                            else
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            end
                         elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command then
                             command_once(FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].action_check.command)
-                            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLAPS" or 
+                               FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLAPS" then
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + 0.9
+                            else
+                                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                            end
                         end
                     else
                         if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
@@ -1581,7 +1591,7 @@ end
 
 ---- ENTER RWY
 function enter_rwy()
-    if FLT_PHASE.ON_RWY then
+    if FOPM_TL_FLT_PHASE.ON_RWY then
         if not FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE then
             if FOPM_STEP_VARIABLE.STEP_RWY == 0 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
@@ -1605,7 +1615,7 @@ function enter_rwy()
                 end
             end
             if FOPM_STEP_VARIABLE.STEP_RWY == 1.2 then
-                if not FLT_PHASE.TAXI_IN then
+                if not FOPM_TL_FLT_PHASE.TAXI_IN then
                     if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                         STROBE_SW = 2
                         FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
@@ -2578,7 +2588,7 @@ function ten_thausand_feet_DES()
     end
     if FOPM_STEP_VARIABLE.STEP == 4 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-            if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP or APP_TYPE.LDA_APP or APP_TYPE.FLS then
+            if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP or FOPM_TL_APP_TYPE.LDA_APP or FOPM_TL_APP_TYPE.FLS then
                 if not speak_only_essencials then
                     local speech = "LS"
                     play_sound(FOPM_Talk[speech])
@@ -2646,7 +2656,7 @@ end
 function ap_discn_behaviour()
     if FOPM_STEP_VARIABLE.STEP_AP == 0 then
         if AP_DISCN_ALARM == 1 then
-            if not APP_TYPE.ILS_APP and not APP_TYPE.MLS_APP then
+            if not FOPM_TL_APP_TYPE.ILS_APP and not FOPM_TL_APP_TYPE.MLS_APP then
                 FOPM_DELAY_VARIABLE.DELAY_AP = TIME + 2
                 FOPM_STEP_VARIABLE.STEP_AP = 1
             else
@@ -2754,7 +2764,7 @@ function flight_parameters_check()
         end
     end
     if TIME >= FPMTR.BANKDELAY then
-        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+        if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP then
             if (math.floor(ROLL_ANGLE*10)/10) > 7 or (math.floor(ROLL_ANGLE*10)/10) < -7 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
                     local speech = "BANK"
@@ -2796,7 +2806,7 @@ function flight_parameters_check()
         end
     end
     if TIME >= FPMTR.LOCDELAY then
-        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+        if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP then
             if FO_LOC_Avail == 1 and math.floor(RADIO_ALT) > 100 then
                 if math.floor(FO_LOC_Deviation*10)/10 < -0.5 or math.floor(FO_LOC_Deviation*10)/10 > 0.5 then
                     if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
@@ -2807,7 +2817,7 @@ function flight_parameters_check()
                     end
                 end
             end
-        elseif APP_TYPE.LDA_APP then
+        elseif FOPM_TL_APP_TYPE.LDA_APP then
             if FO_LOC_Avail == 1 and FO_FD_STATE == 1 and math.floor(RADIO_ALT) > 100 then
                 if math.floor(FO_LOC_Deviation*10)/10 < -0.5 or math.floor(FO_LOC_Deviation*10)/10 > 0.5 then
                     if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
@@ -2832,7 +2842,7 @@ function flight_parameters_check()
         end
     end
     if TIME >= FPMTR.GLIDEDELAY then
-        if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+        if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP then
             if FO_GS_Avail == 1 and math.floor(RADIO_ALT) > 100 then
                 if math.floor(FO_GS_Deviation*10)/10 < -0.5 or math.floor(FO_GS_Deviation*10)/10 > 0.5 then
                     if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
@@ -2843,7 +2853,7 @@ function flight_parameters_check()
                     end
                 end
             end
-        elseif APP_TYPE.LDA_APP then
+        elseif FOPM_TL_APP_TYPE.LDA_APP then
             if FO_GS_Avail == 1 and FO_FD_STATE == 1 and math.floor(RADIO_ALT) > 100 then
                 if math.floor(FO_GS_Deviation*10)/10 < -0.5 or math.floor(FO_GS_Deviation*10)/10 > 0.5 then
                     if TIME >= FOPM_DELAY_VARIABLE.DELAY_SPEACH then
@@ -2982,7 +2992,7 @@ function go_arround()
         end
         if FOPM_STEP_VARIABLE.STEP == 6 then
             if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                if APP_TYPE.ILS_APP or APP_TYPE.MLS_APP then
+                if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP then
                     FOPM_STEP_VARIABLE.STEP = 11
                 else
                     local speech = "FLIGHT_DIRECTORS"
@@ -3558,19 +3568,6 @@ end
 
 -- ONE ENGINE TAXI DEPARTURE
 function one_engine_taxi_DEP()
-    if FOPM_STEP_VARIABLE.PROC_OE_STEP == 32 then
-        if CRONO >= 300 then
-            local rindex = math.random(3)
-            play_sound(READY_FOR_TO[rindex])
-            FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
-        end
-    elseif FOPM_STEP_VARIABLE.PROC_OE_STEP == 33 then
-        if CRONO >= 120 then
-            local rindex = math.random(3)
-            play_sound(READY_FOR_TO[rindex])
-            FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
-        end
-    end
     if FOPM_STEP_VARIABLE.STEP_ONEENG == 0 then
         FOPM_STEP_VARIABLE.STEP_ONEENG = 1
         FOPM_STEP_VARIABLE.PROC_OE_STEP = 1
@@ -3662,10 +3659,6 @@ function one_engine_taxi_DEP()
                                 FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
                                 FOPM_STEP_VARIABLE.PROC_OE_STEP = FOPM_STEP_VARIABLE.PROC_OE_STEP + 1
                             end
-                        elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].int_item == "TIME_COMP" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].item == "TIME_COMP" then
-                            if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].check() then
-                                FOPM_STEP_VARIABLE.PROC_OE_STEP = FOPM_STEP_VARIABLE.PROC_OE_STEP + 1
-                            end
                         elseif FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].item == "FLTCTLCHK" then
                             if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].check() then
                                 FOPM_STEP_VARIABLE.PROC_OE_STEP = FOPM_STEP_VARIABLE.PROC_OE_STEP + 1
@@ -3746,9 +3739,15 @@ function one_engine_taxi_DEP()
                                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                                 end
                             else
-                                local speech = FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].state
-                                play_sound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                                if FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].state == "READY_FOR_TO" then
+                                    local rindex = math.random(3)
+                                    play_sound(READY_FOR_TO[rindex])
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY_TO_DIR[rindex].del) + fo_speed
+                                else
+                                    local speech = FOPM_procedure.One_engine_taxi_DEP[FOPM_STEP_VARIABLE.PROC_OE_STEP].state
+                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                                end
                             end
                         end
                     else
@@ -3927,7 +3926,7 @@ function checklist_cockpit_prep()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4007,7 +4006,7 @@ function checklist_before_start()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4087,7 +4086,7 @@ function checklist_before_start_BTL()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Before_start_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Before_start_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4165,7 +4164,7 @@ function checklist_after_start()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.After_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.After_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4243,7 +4242,7 @@ function checklist_taxi()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4353,7 +4352,7 @@ function checklist_departure_change()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Departure_change_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4431,7 +4430,7 @@ function checklist_before_takeoff()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Before_takeoff_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Before_takeoff_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4509,7 +4508,7 @@ function checklist_lineup()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4613,7 +4612,7 @@ function checklist_before_takeoff_BTL()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4723,7 +4722,7 @@ function checklist_after_takeoff()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.After_takeoff_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.After_takeoff_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4801,7 +4800,7 @@ function checklist_climb()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP then
                     local speech = FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4879,7 +4878,7 @@ function checklist_approach()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.RNAVAR_APP then
+                if FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4889,7 +4888,7 @@ function checklist_approach()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.CAT_II_III then
+                if FOPM_TL_APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -4997,7 +4996,7 @@ function checklist_landing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.RNAVAR_APP then
+                if FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5007,7 +5006,7 @@ function checklist_landing()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.CAT_II_III then
+                if FOPM_TL_APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5115,7 +5114,7 @@ function checklist_after_landing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.RNAVAR_APP then
+                if FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5125,7 +5124,7 @@ function checklist_after_landing()
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
             elseif FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
-                if APP_TYPE.CAT_II_III then
+                if FOPM_TL_APP_TYPE.CAT_II_III then
                     local speech = FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5227,7 +5226,7 @@ function checklist_parking()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Parking_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.RNAVAR_APP then
+                if FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Parking_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5321,7 +5320,7 @@ function checklist_securing()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist.Securing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if APP_TYPE.RNAVAR_APP then
+                if FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist.Securing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item
                     play_sound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del)
@@ -5397,50 +5396,50 @@ end
 
 -- ACTUAL FLIGHT PHASE
 function phase_check()
-    if FLT_PHASE.PREFLIGHT then
+    if FOPM_TL_FLT_PHASE.PREFLIGHT then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Preflight"
         if FOPM_checklist.Before_start_checklist_BTL then
             if FOPM_TL_CHECKLIST.BS_CL_BTL then
-                FLT_PHASE.PREFLIGHT = false
-                FLT_PHASE.PUSHBACK = true
+                FOPM_TL_FLT_PHASE.PREFLIGHT = false
+                FOPM_TL_FLT_PHASE.PUSHBACK = true
                 FOPM_TL_COMPLETED_PROC.PARK_PROC = false
             end
         else
             if FOPM_TL_CHECKLIST.BS_CL then
-                FLT_PHASE.PREFLIGHT = false
-                FLT_PHASE.PUSHBACK = true
+                FOPM_TL_FLT_PHASE.PREFLIGHT = false
+                FOPM_TL_FLT_PHASE.PUSHBACK = true
                 FOPM_TL_COMPLETED_PROC.PARK_PROC = false
             end
         end
     end
-    if FLT_PHASE.PUSHBACK then
+    if FOPM_TL_FLT_PHASE.PUSHBACK then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Pushback"
         if ENG_Mode == 2 then
-            FLT_PHASE.ENG_START = true
+            FOPM_TL_FLT_PHASE.ENG_START = true
         end
         if TAXILT_SW > 0 and FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
-            FLT_PHASE.ENG_START = false
-            FLT_PHASE.PUSHBACK = false
-            FLT_PHASE.TAXI_OUT = true
+            FOPM_TL_FLT_PHASE.ENG_START = false
+            FOPM_TL_FLT_PHASE.PUSHBACK = false
+            FOPM_TL_FLT_PHASE.TAXI_OUT = true
         end
-        if BEACON_STATE == 0 and not FLT_PHASE.ENG_START then
-            FLT_PHASE.PUSHBACK = false
-            FLT_PHASE.PREFLIGHT = true
+        if BEACON_STATE == 0 and not FOPM_TL_FLT_PHASE.ENG_START then
+            FOPM_TL_FLT_PHASE.PUSHBACK = false
+            FOPM_TL_FLT_PHASE.PREFLIGHT = true
         end
     end
     if FOPM_Procedures_Control.EXECUTE_ENRWY then
-        FLT_PHASE.ON_RWY = true
+        FOPM_TL_FLT_PHASE.ON_RWY = true
         FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
     end
     if FOPM_Procedures_Control.EXECUTE_EXRWY then
-        FLT_PHASE.ON_RWY = false
+        FOPM_TL_FLT_PHASE.ON_RWY = false
         FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = false
     end
-    if FLT_PHASE.TAXI_OUT then
+    if FOPM_TL_FLT_PHASE.TAXI_OUT then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Taxi Out"
         if THR_LEVER >= 2 then
-            FLT_PHASE.TAKEOFF = true
-            FLT_PHASE.TAXI_OUT = false
+            FOPM_TL_FLT_PHASE.TAKEOFF = true
+            FOPM_TL_FLT_PHASE.TAXI_OUT = false
             FOPM_TL_COMPLETED_PROC.AS_PROC_DONE = false
             command_GUP = false
             command_GDN = false
@@ -5448,27 +5447,33 @@ function phase_check()
             command_FLPS_1DN = false
         end
         if ENG_1_Master == 0 and ENG_2_Master == 0 and BEACON_STATE == 0 then
-            FLT_PHASE.PARKING = true
-            FLT_PHASE.TAXI_OUT = false
+            FOPM_TL_FLT_PHASE.PARKING = true
+            FOPM_TL_FLT_PHASE.TAXI_OUT = false
         end
     end
-    if FLT_PHASE.TAKEOFF then
+    if FOPM_TL_FLT_PHASE.TAKEOFF then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Takeoff"
         if GNDAIR_SW == 0 then
-            FLT_PHASE.ON_RWY = false
+            FOPM_TL_FLT_PHASE.ON_RWY = false
         end
         if ENG_1_REV ~= 0 or ENG_2_REV ~= 0 then
             FOPM_STEP_VARIABLE.STEP = 0
-            FLT_PHASE.REJECTED = true
-            FLT_PHASE.TAKEOFF = false
+            FOPM_TL_FLT_PHASE.REJECTED = true
+            FOPM_TL_FLT_PHASE.TAKEOFF = false
+            FOPM_TL_CHECKLIST.BTO_CL_BTL = false
+            FOPM_TL_CHECKLIST.LU_CL = false
+            FOPM_TL_CHECKLIST.TX_CL = false
+            FOPM_TL_CHECKLIST.BTO_CL = false
+            FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = false
+            FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
         end
         if FOPM_checklist.After_takeoff_checklist then
             if THR_STATE == 1 and FOPM_TL_CHECKLIST.ATO_CL then
                 FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
-                FLT_PHASE.CLIMB = true
-                APP_TYPE.AR_DEP = false
+                FOPM_TL_FLT_PHASE.CLIMB = true
+                FOPM_TL_APP_TYPE.AR_DEP = false
                 FOPM_CONFIG_VARIABLE.RAINING = false
-                FLT_PHASE.TAKEOFF = false
+                FOPM_TL_FLT_PHASE.TAKEOFF = false
                 FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
                 FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
                 FOPM_TL_COMPLETED_PROC.AL_PROC = false
@@ -5480,10 +5485,10 @@ function phase_check()
         else
             if THR_STATE == 1 and FOPM_TL_COMPLETED_PROC.TO_PROC_DONE then
                 FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
-                FLT_PHASE.CLIMB = true
-                APP_TYPE.AR_DEP = false
+                FOPM_TL_FLT_PHASE.CLIMB = true
+                FOPM_TL_APP_TYPE.AR_DEP = false
                 FOPM_CONFIG_VARIABLE.RAINING = false
-                FLT_PHASE.TAKEOFF = false
+                FOPM_TL_FLT_PHASE.TAKEOFF = false
                 FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
                 FOPM_TL_COMPLETED_PROC.ACF_CLEAN = false
                 FOPM_TL_COMPLETED_PROC.AL_PROC = false
@@ -5494,84 +5499,84 @@ function phase_check()
             end
         end
     end
-    if FLT_PHASE.REJECTED then
+    if FOPM_TL_FLT_PHASE.REJECTED then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Rejected"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
-            FLT_PHASE.REJECTED = false
-            FLT_PHASE.REJECTED_DES = true
+            FOPM_TL_FLT_PHASE.REJECTED = false
+            FOPM_TL_FLT_PHASE.REJECTED_DES = true
         end
     end
-    if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND then
+    if FOPM_TL_FLT_PHASE.CLIMB or FOPM_TL_FLT_PHASE.CRUISE or FOPM_TL_FLT_PHASE.DESCEND then
         if string.find(FMA_G_STATE, "CLB") then
             FOPM_CONFIG_VARIABLE.TXT_PHASE = "Climb"
-            FLT_PHASE.CLIMB = true
-            FLT_PHASE.CRUISE = false
-            FLT_PHASE.DESCEND = false
+            FOPM_TL_FLT_PHASE.CLIMB = true
+            FOPM_TL_FLT_PHASE.CRUISE = false
+            FOPM_TL_FLT_PHASE.DESCEND = false
         end
         if string.find(FMA_G_STATE, "CRZ") then
             FOPM_CONFIG_VARIABLE.TXT_PHASE = "Cruise"
-            FLT_PHASE.CLIMB = false
-            FLT_PHASE.CRUISE = true
-            FLT_PHASE.DESCEND = false
+            FOPM_TL_FLT_PHASE.CLIMB = false
+            FOPM_TL_FLT_PHASE.CRUISE = true
+            FOPM_TL_FLT_PHASE.DESCEND = false
         end
         if string.find(FMA_G_STATE, "DES") then
             FOPM_CONFIG_VARIABLE.TXT_PHASE = "Descend"
-            FLT_PHASE.CLIMB = false
-            FLT_PHASE.CRUISE = false
-            FLT_PHASE.DESCEND = true
+            FOPM_TL_FLT_PHASE.CLIMB = false
+            FOPM_TL_FLT_PHASE.CRUISE = false
+            FOPM_TL_FLT_PHASE.DESCEND = true
         end
         if FOPM_TL_CHECKLIST.APP_CL then
-            FLT_PHASE.CLIMB = false
-            FLT_PHASE.CRUISE = false
-            FLT_PHASE.DESCEND = false
-            FLT_PHASE.APPROACH = true
+            FOPM_TL_FLT_PHASE.CLIMB = false
+            FOPM_TL_FLT_PHASE.CRUISE = false
+            FOPM_TL_FLT_PHASE.DESCEND = false
+            FOPM_TL_FLT_PHASE.APPROACH = true
             FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = false
         end
     end
-    if FLT_PHASE.APPROACH then
+    if FOPM_TL_FLT_PHASE.APPROACH then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Approach"
         if FOPM_TL_CHECKLIST.LND_CL then
-            FLT_PHASE.APPROACH = false
-            FLT_PHASE.FINAL_APP = true
+            FOPM_TL_FLT_PHASE.APPROACH = false
+            FOPM_TL_FLT_PHASE.FINAL_APP = true
             FOPM_TL_COMPLETED_PROC.GA_PROC = false
             FPMTR.CONT_APP = true
             FOPM_STEP_VARIABLE.STEP_AL = 0
         end
     end
-    if FLT_PHASE.FINAL_APP then
+    if FOPM_TL_FLT_PHASE.FINAL_APP then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Final APP"
         if THR_LEVER == 3 then
-            FLT_PHASE.FINAL_APP = false
-            FLT_PHASE.GA = true
+            FOPM_TL_FLT_PHASE.FINAL_APP = false
+            FOPM_TL_FLT_PHASE.GA = true
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.DES_BRIEFING = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
-            FLT_PHASE.FINAL_APP = false
-            FLT_PHASE.DECELERATION = true
-            FLT_PHASE.ON_RWY = true
+            FOPM_TL_FLT_PHASE.FINAL_APP = false
+            FOPM_TL_FLT_PHASE.DECELERATION = true
+            FOPM_TL_FLT_PHASE.ON_RWY = true
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
         end
     end
-    if FLT_PHASE.GA then
+    if FOPM_TL_FLT_PHASE.GA then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Go Arround"
         if THR_STATE == 1 then
-            FLT_PHASE.GA = false
-            FLT_PHASE.TAKEOFF = true
+            FOPM_TL_FLT_PHASE.GA = false
+            FOPM_TL_FLT_PHASE.TAKEOFF = true
         end
     end
-    if FLT_PHASE.DECELERATION then
+    if FOPM_TL_FLT_PHASE.DECELERATION then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Decel"
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
-            FLT_PHASE.DECELERATION = false
+            FOPM_TL_FLT_PHASE.DECELERATION = false
             FOPM_CONFIG_VARIABLE.RAINING = false
-            FLT_PHASE.TAXI_IN = true
+            FOPM_TL_FLT_PHASE.TAXI_IN = true
         end
     end
-    if FLT_PHASE.TAXI_IN then
+    if FOPM_TL_FLT_PHASE.TAXI_IN then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Taxi In"
         if CRONO > 180 and not FOPM_TL_COMPLETED_PROC.OETA_DONE and not FOPM_CONFIG_VARIABLE.MINUTE3 then
             local speech = "CRONO3"
@@ -5581,28 +5586,28 @@ function phase_check()
             FOPM_CONFIG_VARIABLE.MINUTE3 = true
         end
         if PRKBRK_SW == 1 and ENG_1_Master == 0 and ENG_2_Master == 0 then
-            FLT_PHASE.TAXI_IN = false
-            FLT_PHASE.PARKING = true
+            FOPM_TL_FLT_PHASE.TAXI_IN = false
+            FOPM_TL_FLT_PHASE.PARKING = true
         end
     end
-    if FLT_PHASE.PARKING then
+    if FOPM_TL_FLT_PHASE.PARKING then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Parking"
         if FOPM_TL_CHECKLIST.PARK_CL then
             FOPM_CONFIG_VARIABLE.MINUTE3 = false
-            FLT_PHASE.PARKING = false
-            FLT_PHASE.PREFLIGHT = true
+            FOPM_TL_FLT_PHASE.PARKING = false
+            FOPM_TL_FLT_PHASE.PREFLIGHT = true
             FOPM_TL_COMPLETED_PROC.PF_DONE = false
             FOPM_TL_COMPLETED_PROC.TO_BRIEFING = false
             FOPM_TL_COMPLETED_PROC.FLTCTL_CHK = false
-            APP_TYPE.ILS_APP = false
-            APP_TYPE.MLS_APP = false
-            APP_TYPE.RNAV_APP = false
-            APP_TYPE.RNAVAR_APP = false
-            APP_TYPE.VOR_APP = false
-            APP_TYPE.NDB_APP = false
-            APP_TYPE.LDA_APP = false
-            APP_TYPE.FLS = false
-            APP_TYPE.CAT_II_III = false
+            FOPM_TL_APP_TYPE.ILS_APP = false
+            FOPM_TL_APP_TYPE.MLS_APP = false
+            FOPM_TL_APP_TYPE.RNAV_APP = false
+            FOPM_TL_APP_TYPE.RNAVAR_APP = false
+            FOPM_TL_APP_TYPE.VOR_APP = false
+            FOPM_TL_APP_TYPE.NDB_APP = false
+            FOPM_TL_APP_TYPE.LDA_APP = false
+            FOPM_TL_APP_TYPE.FLS = false
+            FOPM_TL_APP_TYPE.CAT_II_III = false
         end
     end
 end
@@ -5611,22 +5616,28 @@ do_every_frame("phase_check()")
 
 -- FO/PM MAIN LOGIC
 function FO_main_logic()
-    if FLT_PHASE.PREFLIGHT then
+    if FOPM_TL_FLT_PHASE.PREFLIGHT then
         if FOPM_Procedures_Control.EXECUTE_PCP then
             pre_cockpit_pre()
         end
     end
-    if FLT_PHASE.ENG_START then
+    if FOPM_TL_FLT_PHASE.ENG_START then
         if not FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
             if ENG_Mode == 1 then
                 after_start_proc()
             end
         end
     end
-    if FOPM_Procedures_Control.EXECUTE_OETD and not FOPM_TL_CHECKLIST.EX_BTO_CL and not FOPM_Procedures_Control.EXECUTE_BTP and not FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_Procedures_Control.EXECUTE_EXRWY then
+    if FOPM_Procedures_Control.EXECUTE_OETD and
+       not FOPM_TL_CHECKLIST.EX_BTO_CL and
+       not FOPM_TL_CHECKLIST.EX_TX_CL and
+       not FOPM_Procedures_Control.EXECUTE_BTP and
+       not FOPM_Procedures_Control.EXECUTE_TXP and
+       not FOPM_Procedures_Control.EXECUTE_ENRWY and
+       not FOPM_Procedures_Control.EXECUTE_EXRWY then
         one_engine_taxi_DEP()
     end
-    if FLT_PHASE.TAXI_OUT then
+    if FOPM_TL_FLT_PHASE.TAXI_OUT then
         if FOPM_Procedures_Control.EXECUTE_TXP then
             taxi_proc()
         end
@@ -5641,26 +5652,26 @@ function FO_main_logic()
         end
     end
     if FOPM_checklist.Before_takeoff_checklist_BTL then
-        if FOPM_TL_CHECKLIST.BTO_CL_BTL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+        if FOPM_TL_CHECKLIST.BTO_CL_BTL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and (not FOPM_TL_FLT_PHASE.REJECTED or FOPM_TL_FLT_PHASE.REJECTED_DES) then
             take_off_proc()
         end
     else
-        if FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FLT_PHASE.REJECTED then
+        if FOPM_TL_CHECKLIST.LU_CL and not FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and (not FOPM_TL_FLT_PHASE.REJECTED or FOPM_TL_FLT_PHASE.REJECTED_DES) then
             take_off_proc()
         end
     end
-    if FLT_PHASE.REJECTED then
+    if FOPM_TL_FLT_PHASE.REJECTED then
         touch_down()
     end
     if GNDAIR_SW == 0 then
-        if not FLT_PHASE.GA or not FOPM_Procedures_Control.EXECUTE_FLP then
+        if not FOPM_TL_FLT_PHASE.GA and not FOPM_Procedures_Control.EXECUTE_FLP then
             gear_command()
         end
         if not FOPM_Procedures_Control.EXECUTE_GEAR then
             flaps_commanded_change()
         end
     else
-        if command_FLPS_1UP or command_FLPS_1UP then
+        if command_FLPS_1UP or command_FLPS_1DN then
             command_FLPS_1UP = false
             command_FLPS_1DN = false
         end
@@ -5669,14 +5680,14 @@ function FO_main_logic()
             command_GDN = false
         end
     end
-    if FLT_PHASE.TAKEOFF then
+    if FOPM_TL_FLT_PHASE.TAKEOFF then
         if THR_STATE == 1 and fo_autoperform then
             if not FOPM_TL_COMPLETED_PROC.ACF_CLEAN and not string.find(FMA_G_STATE, "SRS") then
                 clean_up_auto()
             end
         end
     end
-    if FLT_PHASE.CLIMB then
+    if FOPM_TL_FLT_PHASE.CLIMB then
         if fo_autoperform then
             if (not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and IND_ALTITUDE > 14000) or FOPM_Procedures_Control.EXECUTE_10FT_CLB then
                 FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
@@ -5697,7 +5708,7 @@ function FO_main_logic()
             end
         end
     end
-    if FLT_PHASE.DESCEND then
+    if FOPM_TL_FLT_PHASE.DESCEND then
         if fo_autoperform then
             if (not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and IND_ALTITUDE < 14000) or FOPM_Procedures_Control.EXECUTE_10FT_DES then
                 ten_thausand_feet_DES()
@@ -5706,7 +5717,7 @@ function FO_main_logic()
             ten_thausand_feet_DES()
         end
     end
-    if FLT_PHASE.DESCEND or FLT_PHASE.APPROACH then
+    if FOPM_TL_FLT_PHASE.DESCEND or FOPM_TL_FLT_PHASE.APPROACH then
         if not FOPM_CONFIG_VARIABLE.PASSED_TRANS_LVL then
             if TRANSITION_LVL >= math.floor(IND_ALTITUDE) then
                 local speech = "TRNS_LVL"
@@ -5718,22 +5729,22 @@ function FO_main_logic()
             end
         end
     end
-    if FLT_PHASE.FINAL_APP then
+    if FOPM_TL_FLT_PHASE.FINAL_APP then
         ap_discn_behaviour()
-        if APP_TYPE.CAT_II_III and AP1_ENGAGE == 1 and AP2_ENGAGE == 1 then
+        if FOPM_TL_APP_TYPE.CAT_II_III and AP1_ENGAGE == 1 and AP2_ENGAGE == 1 then
             autoland_fma_check()
         end
         if math.floor(RADIO_ALT) < 1000 and FPMTR.CONT_APP then
             flight_parameters_check()
         end
     end
-    if FLT_PHASE.GA then
+    if FOPM_TL_FLT_PHASE.GA then
         go_arround()
     end
-    if FLT_PHASE.DECELERATION then
+    if FOPM_TL_FLT_PHASE.DECELERATION then
         touch_down()
     end
-    if FLT_PHASE.TAXI_IN then
+    if FOPM_TL_FLT_PHASE.TAXI_IN then
         if not FOPM_TL_COMPLETED_PROC.AL_PROC and SPDBRK_Lever == 0 then
             if not FOPM_Procedures_Control.EXECUTE_EXRWY then
                 after_landing_proc()
@@ -5752,7 +5763,7 @@ function FO_main_logic()
             brake_temp_check()
         end
     end
-    if FLT_PHASE.PARKING then
+    if FOPM_TL_FLT_PHASE.PARKING then
         if not FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
             brake_temp_check()
         end
@@ -5865,7 +5876,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-40,FOPM_wtop,FOPM_wright,FOPM_wbottom-82)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-40,FOPM_wtop,FOPM_wright,FOPM_wbottom-126)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_MAIN = false
@@ -5875,7 +5886,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-60,FOPM_wtop,FOPM_wright,FOPM_wbottom-144)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-60,FOPM_wtop,FOPM_wright,FOPM_wbottom-188)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
@@ -5888,18 +5899,17 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if imgui.SmallButton("X") then
             response_CHECK = true
         end
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
         -- DEBUGING
-            imgui.Separator()
-            imgui.Spacing()
-            imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
-            imgui.TextUnformatted("PROC_STEP: "..FOPM_STEP_VARIABLE.PROC_STEP)
-            imgui.TextUnformatted("PROC_OE_STEP: "..FOPM_STEP_VARIABLE.PROC_OE_STEP)
-            imgui.TextUnformatted("CKLST_STEP: "..FOPM_STEP_VARIABLE.CKLST_STEP)
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
         -- CHECKLIST
-        if FLT_PHASE.PREFLIGHT then
+        if FOPM_TL_FLT_PHASE.PREFLIGHT then
             if FOPM_checklist.Cockpit_preparation_checklist then
                 if not FOPM_TL_CHECKLIST.CP_CL and not FOPM_TL_CHECKLIST.EX_CP_CL and not FOPM_TL_CHECKLIST.EX_SEC_CL and FOPM_TL_COMPLETED_PROC.PF_DONE then
                     if imgui.SmallButton("Cockpit Preparation CKL") then
@@ -5940,7 +5950,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.PUSHBACK then
+        if FOPM_TL_FLT_PHASE.PUSHBACK then
             if FOPM_checklist.After_start_checklist then
                 if not FOPM_TL_CHECKLIST.AS_CL and
                 not FOPM_TL_CHECKLIST.EX_AS_CL and 
@@ -5960,7 +5970,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.TAXI_OUT then
+        if FOPM_TL_FLT_PHASE.TAXI_OUT then
             if FOPM_checklist.Taxi_checklist then
                 if not FOPM_TL_CHECKLIST.TX_CL and not FOPM_TL_CHECKLIST.EX_TX_CL and FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE then
                     if imgui.SmallButton("Taxi CKL") then
@@ -5997,7 +6007,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.TAKEOFF then
+        if FOPM_TL_FLT_PHASE.TAKEOFF then
             if FOPM_checklist.After_takeoff_checklist then
                 if FOPM_TL_COMPLETED_PROC.TO_PROC_DONE and not FOPM_TL_CHECKLIST.EX_ATO_CL then
                     if imgui.SmallButton("After Takeoff CKL") then
@@ -6006,7 +6016,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.CLIMB then
+        if FOPM_TL_FLT_PHASE.CLIMB then
             if FOPM_checklist.Climb_checklist then
                 if not FOPM_TL_CHECKLIST.CLB_CL and not FOPM_TL_CHECKLIST.EX_CLB_CL then
                     if imgui.SmallButton("Climb CKL") then
@@ -6015,7 +6025,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.DESCEND or FLT_PHASE.CLIMB then
+        if FOPM_TL_FLT_PHASE.DESCEND or FOPM_TL_FLT_PHASE.CLIMB then
             if  FOPM_checklist.Approach_checklist then
                 if FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not FOPM_TL_CHECKLIST.EX_APP_CL then
                     if imgui.SmallButton("Approach CKL") then
@@ -6024,7 +6034,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.APPROACH then
+        if FOPM_TL_FLT_PHASE.APPROACH then
             if FOPM_checklist.Approach_checklist then
                 if not FOPM_TL_CHECKLIST.LND_CL and not FOPM_TL_CHECKLIST.EX_LND_CL then
                     if imgui.SmallButton("Landing CKL") then
@@ -6033,7 +6043,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.TAXI_IN then
+        if FOPM_TL_FLT_PHASE.TAXI_IN then
             if FOPM_checklist.After_landing_checklist then
                 if not FOPM_TL_CHECKLIST.AL_CL and not FOPM_TL_CHECKLIST.EX_AL_CL and FOPM_TL_COMPLETED_PROC.AL_PROC then
                     if imgui.SmallButton("After Landing CKL") then
@@ -6042,7 +6052,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.PARKING then
+        if FOPM_TL_FLT_PHASE.PARKING then
             if FOPM_checklist.Parking_checklist then
                 if FOPM_TL_COMPLETED_PROC.PARK_PROC and not FOPM_TL_CHECKLIST.PARK_CL and not FOPM_TL_CHECKLIST.EX_PARK_CL then
                     if imgui.SmallButton("Parking CKL") then
@@ -6055,14 +6065,14 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        if FLT_PHASE.PREFLIGHT then
+        if FOPM_TL_FLT_PHASE.PREFLIGHT then
             if not FOPM_TL_COMPLETED_PROC.PF_DONE and not FOPM_Procedures_Control.EXECUTE_PCP then
                 if imgui.SmallButton("Preliminary Cockpit Prep.") then
                     FOPM_Procedures_Control.EXECUTE_PCP = true
                 end
             end
         end
-        if FLT_PHASE.TAXI_OUT then
+        if FOPM_TL_FLT_PHASE.TAXI_OUT then
             if FOPM_procedure.Taxi_procedure then
                 if not FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE and not FOPM_Procedures_Control.EXECUTE_TXP then
                     if imgui.SmallButton("Taxi Proc.") then
@@ -6088,12 +6098,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     imgui.SameLine()
                 end
             end
-            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FLT_PHASE.ON_RWY then
+            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_TL_FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Entry RWY") then
                     FOPM_Procedures_Control.EXECUTE_ENRWY = true
                 end
             end
-            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FLT_PHASE.ON_RWY then
+            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FOPM_TL_FLT_PHASE.ON_RWY then
                 if imgui.SmallButton("Exit RWY") then
                     FOPM_Procedures_Control.EXECUTE_EXRWY = true
                 end
@@ -6104,41 +6114,43 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-        if FLT_PHASE.REJECTED_DES then
+        if FOPM_TL_FLT_PHASE.REJECTED_DES then
             if imgui.SmallButton("Taxi OUT") then
-                FLT_PHASE.REJECTED_DES = false
-                FLT_PHASE.TAXI_OUT = true
+                FOPM_TL_FLT_PHASE.REJECTED_DES = false
+                FOPM_TL_FLT_PHASE.TAXI_OUT = true
                 FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = false
+                FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
+                FOPM_TL_CHECKLIST.LU_CL = false
                 FOPM_TL_CHECKLIST.BTO_CL_BTL = false
             end
             imgui.SameLine()
             if imgui.SmallButton("Taxi IN") then
                 FOPM_DELAY_VARIABLE.DELAY = TIME + 1
-                FLT_PHASE.REJECTED_DES = false
-                FLT_PHASE.TAXI_IN = true
+                FOPM_TL_FLT_PHASE.REJECTED_DES = false
+                FOPM_TL_FLT_PHASE.TAXI_IN = true
             end
         end
-        if FLT_PHASE.CLIMB then
+        if FOPM_TL_FLT_PHASE.CLIMB then
             if not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE and not FOPM_Procedures_Control.EXECUTE_10FT_CLB then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     FOPM_Procedures_Control.EXECUTE_10FT_CLB = true
                 end
             end
         end
-        if FLT_PHASE.DESCEND then
+        if FOPM_TL_FLT_PHASE.DESCEND then
             if not FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE and not FOPM_Procedures_Control.EXECUTE_10FT_DES then
                 if imgui.SmallButton("Crossing 10.000ft") then
                     FOPM_Procedures_Control.EXECUTE_10FT_DES = true
                 end
             end
         end
-        if FLT_PHASE.TAXI_IN then
-            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FLT_PHASE.ON_RWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
+        if FOPM_TL_FLT_PHASE.TAXI_IN then
+            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Entry RWY") then
                     FOPM_Procedures_Control.EXECUTE_ENRWY = true
                 end
             end
-            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FLT_PHASE.ON_RWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
+            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC and not FOPM_TL_CHECKLIST.EX_AL_CL then
                 if imgui.SmallButton("Exit RWY") then
                     FOPM_Procedures_Control.EXECUTE_EXRWY = true
                 end
@@ -6164,18 +6176,20 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Main") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+144)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
             WND_PRCL_SEL = false
         end
+        -- DEBUGING
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
         -- ACF/ENG TYPES
-        if FLT_PHASE.PREFLIGHT then
+        if FOPM_TL_FLT_PHASE.PREFLIGHT then
             if ACF_ICAO == "A319" then
                 if ENG_MODEL == 0 then
                     imgui.TextUnformatted("Aircraft Type: A319-132")
@@ -6233,7 +6247,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             imgui.Spacing()
         end
         -- DEPARTURE BRIEFING
-        if FLT_PHASE.PREFLIGHT or FLT_PHASE.PUSHBACK or FLT_PHASE.TAXI_OUT then
+        if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
             imgui.TextUnformatted("Time Since ENG SD: "..math.floor((TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME)/60).." min")
@@ -6302,9 +6316,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if imgui.RadioButton("Yes", FOPM_CONFIG_VARIABLE.RAINING) then
                 FOPM_CONFIG_VARIABLE.RAINING = true
             end
-            local dep_change, change = imgui.Checkbox("RNP AR Departure", APP_TYPE.AR_DEP)
+            local dep_change, change = imgui.Checkbox("RNP AR Departure", FOPM_TL_APP_TYPE.AR_DEP)
             if dep_change then
-                APP_TYPE.AR_DEP = change
+                FOPM_TL_APP_TYPE.AR_DEP = change
             end
             local dep_change, change = imgui.Checkbox("ONE Engine DEP", FOPM_Procedures_Control.ONEENG_TAXI_DEP)
             if dep_change then
@@ -6335,80 +6349,80 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         -- ARRIVAL BRIEFING
-        if FLT_PHASE.CLIMB or FLT_PHASE.CRUISE or FLT_PHASE.DESCEND or FLT_PHASE.APPROACH then
+        if FOPM_TL_FLT_PHASE.CLIMB or FOPM_TL_FLT_PHASE.CRUISE or FOPM_TL_FLT_PHASE.DESCEND or FOPM_TL_FLT_PHASE.APPROACH then
             imgui.TextUnformatted("Arrival Breafing")
-            if imgui.RadioButton("ILS/MLS", APP_TYPE.ILS_APP or APP_TYPE.MLS_APP) then
-                APP_TYPE.ILS_APP = true
-                APP_TYPE.MLS_APP = true
-                APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.VOR_APP = false
-                APP_TYPE.NDB_APP = false
-                APP_TYPE.LDA_APP = false
-                APP_TYPE.FLS = false
+            if imgui.RadioButton("ILS/MLS", FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP) then
+                FOPM_TL_APP_TYPE.ILS_APP = true
+                FOPM_TL_APP_TYPE.MLS_APP = true
+                FOPM_TL_APP_TYPE.RNAV_APP = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.VOR_APP = false
+                FOPM_TL_APP_TYPE.NDB_APP = false
+                FOPM_TL_APP_TYPE.LDA_APP = false
+                FOPM_TL_APP_TYPE.FLS = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("CAT II/III", APP_TYPE.CAT_II_III) then
-                APP_TYPE.ILS_APP = true
-                APP_TYPE.MLS_APP = true
-                APP_TYPE.CAT_II_III = true
-                APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.VOR_APP = false
-                APP_TYPE.NDB_APP = false
-                APP_TYPE.LDA_APP = false
-                APP_TYPE.FLS = false
+            if imgui.RadioButton("CAT II/III", FOPM_TL_APP_TYPE.CAT_II_III) then
+                FOPM_TL_APP_TYPE.ILS_APP = true
+                FOPM_TL_APP_TYPE.MLS_APP = true
+                FOPM_TL_APP_TYPE.CAT_II_III = true
+                FOPM_TL_APP_TYPE.RNAV_APP = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.VOR_APP = false
+                FOPM_TL_APP_TYPE.NDB_APP = false
+                FOPM_TL_APP_TYPE.LDA_APP = false
+                FOPM_TL_APP_TYPE.FLS = false
             end
-            if imgui.RadioButton("RNAV", APP_TYPE.RNAV_APP) then
-                APP_TYPE.ILS_APP = false
-                APP_TYPE.MLS_APP = false
-                APP_TYPE.CAT_II_III = false
-                APP_TYPE.RNAV_APP = true
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.VOR_APP = false
-                APP_TYPE.NDB_APP = false
-                APP_TYPE.LDA_APP = false
-            end
-            imgui.SameLine()
-            if imgui.RadioButton("FLS", APP_TYPE.FLS) then
-                APP_TYPE.ILS_APP = false
-                APP_TYPE.MLS_APP = false
-                APP_TYPE.CAT_II_III = false
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.FLS = true
-            end
-            if imgui.RadioButton("RNP AR", APP_TYPE.RNAVAR_APP) then
-                APP_TYPE.ILS_APP = false
-                APP_TYPE.MLS_APP = false
-                APP_TYPE.CAT_II_III = false
-                APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAVAR_APP = true
-                APP_TYPE.VOR_APP = false
-                APP_TYPE.NDB_APP = false
-                APP_TYPE.LDA_APP = false
-                APP_TYPE.FLS = false
-            end
-            if imgui.RadioButton("VOR/NDB", APP_TYPE.VOR_APP or APP_TYPE.NDB_APP) then
-                APP_TYPE.ILS_APP = false
-                APP_TYPE.MLS_APP = false
-                APP_TYPE.CAT_II_III = false
-                APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.VOR_APP = true
-                APP_TYPE.NDB_APP = true
-                APP_TYPE.LDA_APP = false
+            if imgui.RadioButton("RNAV", FOPM_TL_APP_TYPE.RNAV_APP) then
+                FOPM_TL_APP_TYPE.ILS_APP = false
+                FOPM_TL_APP_TYPE.MLS_APP = false
+                FOPM_TL_APP_TYPE.CAT_II_III = false
+                FOPM_TL_APP_TYPE.RNAV_APP = true
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.VOR_APP = false
+                FOPM_TL_APP_TYPE.NDB_APP = false
+                FOPM_TL_APP_TYPE.LDA_APP = false
             end
             imgui.SameLine()
-            if imgui.RadioButton("LDA", APP_TYPE.LDA_APP) then
-                APP_TYPE.ILS_APP = false
-                APP_TYPE.MLS_APP = false
-                APP_TYPE.CAT_II_III = false
-                APP_TYPE.RNAV_APP = false
-                APP_TYPE.RNAVAR_APP = false
-                APP_TYPE.VOR_APP = false
-                APP_TYPE.NDB_APP = false
-                APP_TYPE.LDA_APP = true
-                APP_TYPE.FLS = false
+            if imgui.RadioButton("FLS", FOPM_TL_APP_TYPE.FLS) then
+                FOPM_TL_APP_TYPE.ILS_APP = false
+                FOPM_TL_APP_TYPE.MLS_APP = false
+                FOPM_TL_APP_TYPE.CAT_II_III = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.FLS = true
+            end
+            if imgui.RadioButton("RNP AR", FOPM_TL_APP_TYPE.RNAVAR_APP) then
+                FOPM_TL_APP_TYPE.ILS_APP = false
+                FOPM_TL_APP_TYPE.MLS_APP = false
+                FOPM_TL_APP_TYPE.CAT_II_III = false
+                FOPM_TL_APP_TYPE.RNAV_APP = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = true
+                FOPM_TL_APP_TYPE.VOR_APP = false
+                FOPM_TL_APP_TYPE.NDB_APP = false
+                FOPM_TL_APP_TYPE.LDA_APP = false
+                FOPM_TL_APP_TYPE.FLS = false
+            end
+            if imgui.RadioButton("VOR/NDB", FOPM_TL_APP_TYPE.VOR_APP or FOPM_TL_APP_TYPE.NDB_APP) then
+                FOPM_TL_APP_TYPE.ILS_APP = false
+                FOPM_TL_APP_TYPE.MLS_APP = false
+                FOPM_TL_APP_TYPE.CAT_II_III = false
+                FOPM_TL_APP_TYPE.RNAV_APP = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.VOR_APP = true
+                FOPM_TL_APP_TYPE.NDB_APP = true
+                FOPM_TL_APP_TYPE.LDA_APP = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("LDA", FOPM_TL_APP_TYPE.LDA_APP) then
+                FOPM_TL_APP_TYPE.ILS_APP = false
+                FOPM_TL_APP_TYPE.MLS_APP = false
+                FOPM_TL_APP_TYPE.CAT_II_III = false
+                FOPM_TL_APP_TYPE.RNAV_APP = false
+                FOPM_TL_APP_TYPE.RNAVAR_APP = false
+                FOPM_TL_APP_TYPE.VOR_APP = false
+                FOPM_TL_APP_TYPE.NDB_APP = false
+                FOPM_TL_APP_TYPE.LDA_APP = true
+                FOPM_TL_APP_TYPE.FLS = false
             end
             if imgui.RadioButton("Raining", FOPM_CONFIG_VARIABLE.RAINING) then
                 FOPM_CONFIG_VARIABLE.RAINING = true
@@ -6441,7 +6455,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         if imgui.SmallButton("Main") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+126)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
@@ -6458,6 +6472,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_BRIEFING = true
             WND_PRCL_SEL = false
         end
+        -- DEBUGING
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -6469,6 +6485,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             imgui.TextUnformatted("Reload the script to see changes")
         end
         if imgui.SmallButton("Change PROC/CKLT Pack") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+55,FOPM_wtop,FOPM_wright,FOPM_wbottom+109)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = false
@@ -6518,13 +6537,16 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_PRCL_SEL then
         imgui.Spacing()
         if imgui.SmallButton("<-") then
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-55,FOPM_wtop,FOPM_wright,FOPM_wbottom-109)
+            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = true
             WND_PRCL_SEL = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-15,FOPM_wtop,FOPM_wright,FOPM_wbottom+17)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = true
@@ -6534,13 +6556,15 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-20,FOPM_wtop,FOPM_wright,FOPM_wbottom-62)
+            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-75,FOPM_wtop,FOPM_wright,FOPM_wbottom-171)
             FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
             WND_PRCL_SEL = false
         end
+        -- DEBUGING
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

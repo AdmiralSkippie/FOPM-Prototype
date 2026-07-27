@@ -163,7 +163,7 @@ FOPM_procedure = {
         [9] = {
             int_item = "FLAPS",
             essential = true,
-            state = CONFIG_VOICE_SRCH,
+            state = "CHECK",
             check = function () return FLAPS_State == -1 end
         },
         [10] = {

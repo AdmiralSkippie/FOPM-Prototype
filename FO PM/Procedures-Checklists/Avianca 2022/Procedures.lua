@@ -163,7 +163,7 @@ FOPM_procedure = {
         [9] = {
             int_item = "FLAPS",
             essential = true,
-            state = CONFIG_VOICE_SRCH,
+            state = "CHECK",
             check = function () return FLAPS_State == -1 end
         },
         [10] = {
@@ -547,12 +547,16 @@ FOPM_procedure = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
+            state = "READY_FOR_TO",
+            essential = true,
             check = function () return CRONO >= 300 end
         },
         [33] = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
+            state = "READY_FOR_TO",
+            essential = true,
             check = function () return CRONO >= 120 end
         },
         [34] = {

@@ -355,24 +355,24 @@ FOPM_checklist = {
         [1] = {
             item = "SECURING_CHECKLIST"
         },
-        [3] = {
+        [2] = {
             item = "OXYGEN",
             state = "OFF",
         },
-        [5] = {
+        [3] = {
             item = "EMERGENCY_EXIT_LIGHTS",
             state = "OFF",
         },
-        [8] = {
+        [4] = {
             item = "EFB",
             state = "OFF",
         },
-        [4] = {
+        [5] = {
             item = "BATTERIES",
             state = "OFF",
             check = function () return BAT_1_State == 0 and BAT_2_State == 0 end
         },
-        [9] = {
+        [6] = {
             item = "CHECKLIST_COMPLETED"
         }
     },

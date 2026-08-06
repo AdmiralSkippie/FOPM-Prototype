@@ -332,7 +332,7 @@ FOPM_procedure = {
         },
         [10] = {
             -- DELAY
-            action = {delay = 5 - fo_speed}
+            action = {delay = 5}
         },
         [11] = {
             state = "STARTING_APU",

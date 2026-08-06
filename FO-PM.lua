@@ -305,6 +305,108 @@ logMsg("XXXXX   Procedures Loaded")
 dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/"..prcl_to_load.."/Checklists.lua")
 logMsg("XXXXX   Checklists Loaded")
 
+------------------
+---- RECOVERY ----
+------------------
+local RECOVERY_AVAIL = true
+function save_backup()
+    local rute = SCRIPT_DIRECTORY .. "FO PM/FO_Recovery.lua"
+    local config = io.open(rute, "w")
+    if config then
+        config:write("-- FLT PHASE\n")
+        config:write("FOPM_TL_FLT_PHASE.PREFLIGHT = "..tostring(FOPM_TL_FLT_PHASE.PREFLIGHT).."\n")
+        config:write("FOPM_TL_FLT_PHASE.PUSHBACK = "..tostring(FOPM_TL_FLT_PHASE.PUSHBACK).."\n")
+        config:write("FOPM_TL_FLT_PHASE.ENG_START = "..tostring(FOPM_TL_FLT_PHASE.ENG_START).."\n")
+        config:write("FOPM_TL_FLT_PHASE.TAXI_OUT = "..tostring(FOPM_TL_FLT_PHASE.TAXI_OUT).."\n")
+        config:write("FOPM_TL_FLT_PHASE.ON_RWY = "..tostring(FOPM_TL_FLT_PHASE.ON_RWY).."\n")
+        config:write("FOPM_TL_FLT_PHASE.TAKEOFF = "..tostring(FOPM_TL_FLT_PHASE.TAKEOFF).."\n")
+        config:write("FOPM_TL_FLT_PHASE.REJECTED = "..tostring(FOPM_TL_FLT_PHASE.REJECTED).."\n")
+        config:write("FOPM_TL_FLT_PHASE.REJECTED_DES = "..tostring(FOPM_TL_FLT_PHASE.REJECTED_DES).."\n")
+        config:write("FOPM_TL_FLT_PHASE.CLIMB = "..tostring(FOPM_TL_FLT_PHASE.CLIMB).."\n")
+        config:write("FOPM_TL_FLT_PHASE.CRUISE = "..tostring(FOPM_TL_FLT_PHASE.CRUISE).."\n")
+        config:write("FOPM_TL_FLT_PHASE.DESCEND = "..tostring(FOPM_TL_FLT_PHASE.DESCEND).."\n")
+        config:write("FOPM_TL_FLT_PHASE.APPROACH = "..tostring(FOPM_TL_FLT_PHASE.APPROACH).."\n")
+        config:write("FOPM_TL_FLT_PHASE.FINAL_APP = "..tostring(FOPM_TL_FLT_PHASE.FINAL_APP).."\n")
+        config:write("FOPM_TL_FLT_PHASE.DECELERATION = "..tostring(FOPM_TL_FLT_PHASE.DECELERATION).."\n")
+        config:write("FOPM_TL_FLT_PHASE.GA = "..tostring(FOPM_TL_FLT_PHASE.GA).."\n")
+        config:write("FOPM_TL_FLT_PHASE.TAXI_IN = "..tostring(FOPM_TL_FLT_PHASE.TAXI_IN).."\n")
+        config:write("FOPM_TL_FLT_PHASE.PARKING = "..tostring(FOPM_TL_FLT_PHASE.PARKING).."\n")
+        config:write("-- PROCEDURES\n")
+        config:write("FOPM_TL_COMPLETED_PROC.PF_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.PF_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.TO_BRIEFING = "..tostring(FOPM_TL_COMPLETED_PROC.TO_BRIEFING).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.AS_PROC_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.AS_PROC_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.TO_PROC_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.ACF_CLEAN = "..tostring(FOPM_TL_COMPLETED_PROC.ACF_CLEAN).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.DES_BRIEFING = "..tostring(FOPM_TL_COMPLETED_PROC.DES_BRIEFING).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = "..tostring(FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.GA_PROC = "..tostring(FOPM_TL_COMPLETED_PROC.GA_PROC).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = "..tostring(FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.AL_PROC = "..tostring(FOPM_TL_COMPLETED_PROC.AL_PROC).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.PARK_PROC = "..tostring(FOPM_TL_COMPLETED_PROC.PARK_PROC).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.FLTCTL_CHK = "..tostring(FOPM_TL_COMPLETED_PROC.FLTCTL_CHK).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE).."\n")
+        config:write("FOPM_TL_COMPLETED_PROC.OETA_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.OETA_DONE).."\n")
+        config:write("FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = "..tostring(FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL).."\n")
+        config:write("FOPM_Procedures_Control.ONEENG_TAXI_DEP = "..tostring(FOPM_Procedures_Control.ONEENG_TAXI_DEP).."\n")
+        config:write("-- CHECKLITS\n")
+        config:write("FOPM_TL_CHECKLIST.CP_CL = "..tostring(FOPM_TL_CHECKLIST.CP_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.BS_CL = "..tostring(FOPM_TL_CHECKLIST.BS_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.BS_CL_BTL = "..tostring(FOPM_TL_CHECKLIST.BS_CL_BTL).."\n")
+        config:write("FOPM_TL_CHECKLIST.AS_CL = "..tostring(FOPM_TL_CHECKLIST.AS_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.TX_CL = "..tostring(FOPM_TL_CHECKLIST.TX_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.DC_CL = "..tostring(FOPM_TL_CHECKLIST.DC_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.BTO_CL = "..tostring(FOPM_TL_CHECKLIST.BTO_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.LU_CL = "..tostring(FOPM_TL_CHECKLIST.LU_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.BTO_CL_BTL = "..tostring(FOPM_TL_CHECKLIST.BTO_CL_BTL).."\n")
+        config:write("FOPM_TL_CHECKLIST.ATO_CL = "..tostring(FOPM_TL_CHECKLIST.ATO_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.CLB_CL = "..tostring(FOPM_TL_CHECKLIST.CLB_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.APP_CL = "..tostring(FOPM_TL_CHECKLIST.APP_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.LND_CL = "..tostring(FOPM_TL_CHECKLIST.LND_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.AL_CL = "..tostring(FOPM_TL_CHECKLIST.AL_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.PARK_CL = "..tostring(FOPM_TL_CHECKLIST.PARK_CL).."\n")
+        config:write("FOPM_TL_CHECKLIST.SEC_CL = "..tostring(FOPM_TL_CHECKLIST.SEC_CL).."\n")
+        config:write("-- APP TYPE\n")
+        config:write("FOPM_TL_APP_TYPE.AR_DEP = "..tostring(FOPM_TL_APP_TYPE.AR_DEP).."\n")
+        config:write("FOPM_TL_APP_TYPE.ILS_APP = "..tostring(FOPM_TL_APP_TYPE.ILS_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.MLS_APP = "..tostring(FOPM_TL_APP_TYPE.MLS_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.CAT_II_III = "..tostring(FOPM_TL_APP_TYPE.CAT_II_III).."\n")
+        config:write("FOPM_TL_APP_TYPE.RNAV_APP = "..tostring(FOPM_TL_APP_TYPE.RNAV_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.RNAVAR_APP = "..tostring(FOPM_TL_APP_TYPE.RNAVAR_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.VOR_APP = "..tostring(FOPM_TL_APP_TYPE.VOR_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.NDB_APP = "..tostring(FOPM_TL_APP_TYPE.NDB_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.LDA_APP = "..tostring(FOPM_TL_APP_TYPE.LDA_APP).."\n")
+        config:write("FOPM_TL_APP_TYPE.FLS = "..tostring(FOPM_TL_APP_TYPE.FLS).."\n")
+        config:write("-- CONFIG\n")
+        config:write("FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_ANGLE).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_CONFIG).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.RAINING = "..tostring(FOPM_CONFIG_VARIABLE.RAINING).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = "..tostring(FOPM_CONFIG_VARIABLE.PACKS_FOR_TO).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.APU_TO_PACKS = "..tostring(FOPM_CONFIG_VARIABLE.APU_TO_PACKS).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = "..tonumber(FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = "..tonumber(FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.GREENDOT = "..tonumber(FOPM_CONFIG_VARIABLE.GREENDOT).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.CHECK_SPEED = "..tonumber(FOPM_CONFIG_VARIABLE.CHECK_SPEED).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.F_TARGET = "..tonumber(FOPM_CONFIG_VARIABLE.F_TARGET).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.F_ATARGET = "..tonumber(FOPM_CONFIG_VARIABLE.F_ATARGET).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.MINUTE3 = "..tostring(FOPM_CONFIG_VARIABLE.MINUTE3).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.PASSED_TRANS_ALT = "..tostring(FOPM_CONFIG_VARIABLE.PASSED_TRANS_ALT).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.PASSED_TRANS_LVL = "..tostring(FOPM_CONFIG_VARIABLE.PASSED_TRANS_LVL).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW = "..tostring(FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM = "..tostring(FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.IAE_SD_TIME = "..tonumber(FOPM_CONFIG_VARIABLE.IAE_SD_TIME).."\n")
+        config:write("FOPM_CONFIG_VARIABLE.TO_RWY = "..'"'..tostring(FOPM_CONFIG_VARIABLE.TO_RWY)..'"'.."\n")
+        config:close()
+        RECOVERY_AVAIL = false
+    end
+end
+
 -- //////////////////////////////
 -- ///////// PROCEDURES /////////
 -- //////////////////////////////
@@ -458,6 +560,7 @@ function flt_ctl_chk()
         if TIME >= FOPM_DELAY_VARIABLE.DELAY then
             FOPM_TL_COMPLETED_PROC.FLTCTL_CHK = true
             FOPM_STEP_VARIABLE.STEP_FLT = 0
+            save_backup()
         else
             return
         end
@@ -708,6 +811,7 @@ function pre_cockpit_pre()
                 FOPM_STEP_VARIABLE.PROC_STEP = 0
                 FOPM_TL_COMPLETED_PROC.PF_DONE = true
                 FOPM_Procedures_Control.EXECUTE_PCP = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP = 1
             end
@@ -812,6 +916,7 @@ function after_start_proc()
                                 FOPM_STEP_VARIABLE.STEP = 3
                             else
                                 FOPM_STEP_VARIABLE.PROC_STEP = FOPM_STEP_VARIABLE.PROC_STEP + 1
+                                FOPM_STEP_VARIABLE.STEP = 3
                             end
                         elseif FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "FLTCTLCHK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "FLTCTLCHK" then
                             if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check() then
@@ -999,6 +1104,7 @@ function after_start_proc()
                 FOPM_STEP_VARIABLE.PROC_STEP = 0
                 FOPM_TL_COMPLETED_PROC.AS_PROC_DONE = true
                 FOPM_Procedures_Control.EXECUTE_ASP = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP = 1
             end
@@ -1295,6 +1401,7 @@ function taxi_proc()
                 FOPM_Procedures_Control.EXECUTE_TXP = false
                 FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = true
                 FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP = 1
             end
@@ -1582,6 +1689,7 @@ function before_takeoff_proc()
                 FOPM_Procedures_Control.EXECUTE_BTP = false
                 FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = true
                 FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP = 1
             end
@@ -1703,6 +1811,7 @@ function enter_rwy()
                     FOPM_STEP_VARIABLE.STEP_RWY = 0
                     FOPM_Procedures_Control.EXECUTE_ENRWY = false
                     FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = true
+                    save_backup()
                 else
                     return
                 end
@@ -1815,6 +1924,7 @@ function vacating_rwy()
             FOPM_STEP_VARIABLE.STEP_RWY = 0
             FOPM_Procedures_Control.EXECUTE_EXRWY = false
             FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
+            save_backup()
         else
             return
         end
@@ -2107,6 +2217,7 @@ function take_off_proc()
                 ENG_Mode = 1
                 FOPM_STEP_VARIABLE.STEP = 0
                 FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = true
+                save_backup()
             else
                 return
             end
@@ -2207,6 +2318,7 @@ function clean_up_auto()
                     FOPM_STEP_VARIABLE.STEP_CLEAN = 0
                     FOPM_DELAY_VARIABLE.DELAY = TIME + 1
                     FOPM_TL_COMPLETED_PROC.ACF_CLEAN = true
+                    save_backup()
                 else
                     return
                 end
@@ -2496,6 +2608,7 @@ function ten_thausand_feet_CLB()
             FOPM_STEP_VARIABLE.STEP = 0
             FOPM_Procedures_Control.EXECUTE_10FT_CLB = false
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = true
+            save_backup()
         else
             return
         end
@@ -2646,6 +2759,7 @@ function ten_thausand_feet_DES()
             FOPM_STEP_VARIABLE.STEP = 0
             FOPM_Procedures_Control.EXECUTE_10FT_DES = false
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = true
+            save_backup()
         else
             return
         end
@@ -2712,6 +2826,7 @@ function ap_discn_behaviour()
             FOPM_DELAY_VARIABLE.DELAY_AP = TIME + 0.5
             FOPM_STEP_VARIABLE.STEP_AP = 0
             FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = true
+            save_backup()
         else
             return
         end
@@ -3068,6 +3183,7 @@ function go_arround()
                 FOPM_Procedures_Control.EXECUTE_GEAR = false
                 FOPM_STEP_VARIABLE.STEP_FLT = 0
                 command_GUP = false
+                save_backup()
             else
                 return
             end
@@ -3129,6 +3245,7 @@ function touch_down()
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                     FOPM_STEP_VARIABLE.STEP = 0
                     FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = true
+                    save_backup()
                 end
             end
         end
@@ -3390,6 +3507,7 @@ function after_landing_proc()
                 FOPM_STEP_VARIABLE.PROC_STEP = 0
                 FOPM_Procedures_Control.EXECUTE_AL_PROC = false
                 FOPM_TL_COMPLETED_PROC.AL_PROC = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP = 1
             end
@@ -3409,8 +3527,10 @@ function brake_temp_check()
         end
         command_once(BRKFAN_PB)
         FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
+        save_backup()
     else
         FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = true
+        save_backup()
     end
 end
 
@@ -3560,6 +3680,7 @@ function parking_proc()
             FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del)
             FOPM_STEP_VARIABLE.STEP = 0
             FOPM_TL_COMPLETED_PROC.PARK_PROC = true
+            save_backup()
         else
             return
         end
@@ -3849,6 +3970,7 @@ function one_engine_taxi_DEP()
                 FOPM_STEP_VARIABLE.PROC_OE_STEP = 0
                 FOPM_Procedures_Control.EXECUTE_OETD = false
                 FOPM_Procedures_Control.ONEENG_TAXI_DEP = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_ONEENG = 1
             end
@@ -3908,6 +4030,7 @@ function one_engine_taxi_ARR()
             FOPM_STEP_VARIABLE.STEP_ONEENG = 0
             FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = false
             FOPM_Procedures_Control.EXECUTE_OETA = false
+            save_backup()
         else
             return
         end
@@ -3991,6 +4114,7 @@ function checklist_cockpit_prep()
                 FOPM_TL_CHECKLIST.CP_CL = true
                 FOPM_TL_CHECKLIST.PARK_CL = false
                 FOPM_TL_CHECKLIST.SEC_CL = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4071,6 +4195,7 @@ function checklist_before_start()
                 FOPM_TL_CHECKLIST.BS_CL = true
                 FOPM_TL_CHECKLIST.PARK_CL = false
                 FOPM_TL_CHECKLIST.SEC_CL = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4149,6 +4274,7 @@ function checklist_before_start_BTL()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_BS_CL_BTL = false
                 FOPM_TL_CHECKLIST.BS_CL_BTL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4227,6 +4353,7 @@ function checklist_after_start()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_AS_CL = false
                 FOPM_TL_CHECKLIST.AS_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4337,6 +4464,7 @@ function checklist_taxi()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_TX_CL = false
                 FOPM_TL_CHECKLIST.TX_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4415,6 +4543,7 @@ function checklist_departure_change()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_DC_CL = false
                 FOPM_TL_CHECKLIST.DC_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4493,6 +4622,7 @@ function checklist_before_takeoff()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_BTO_CL = false
                 FOPM_TL_CHECKLIST.BTO_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4597,6 +4727,7 @@ function checklist_lineup()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_LU_CL = false
                 FOPM_TL_CHECKLIST.LU_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4707,6 +4838,7 @@ function checklist_before_takeoff_BTL()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_BTO_CL_BTL = false
                 FOPM_TL_CHECKLIST.BTO_CL_BTL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4785,6 +4917,7 @@ function checklist_after_takeoff()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_ATO_CL = false
                 FOPM_TL_CHECKLIST.ATO_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4863,6 +4996,7 @@ function checklist_climb()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_CLB_CL = false
                 FOPM_TL_CHECKLIST.CLB_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -4981,6 +5115,7 @@ function checklist_approach()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_APP_CL = false
                 FOPM_TL_CHECKLIST.APP_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5099,6 +5234,7 @@ function checklist_landing()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_LND_CL = false
                 FOPM_TL_CHECKLIST.LND_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5211,6 +5347,7 @@ function checklist_after_landing()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_AL_CL = false
                 FOPM_TL_CHECKLIST.AL_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5305,6 +5442,7 @@ function checklist_parking()
                 FOPM_TL_CHECKLIST.LND_CL = false
                 FOPM_TL_CHECKLIST.AL_CL = false
                 FOPM_CONFIG_VARIABLE.MINUTE3 = false
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5383,6 +5521,7 @@ function checklist_securing()
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
                 FOPM_TL_CHECKLIST.EX_SEC_CL = false
                 FOPM_TL_CHECKLIST.SEC_CL = true
+                save_backup()
             else
                 FOPM_STEP_VARIABLE.STEP_CHECK = 1
             end
@@ -5403,12 +5542,14 @@ function phase_check()
                 FOPM_TL_FLT_PHASE.PREFLIGHT = false
                 FOPM_TL_FLT_PHASE.PUSHBACK = true
                 FOPM_TL_COMPLETED_PROC.PARK_PROC = false
+                save_backup()
             end
         else
             if FOPM_TL_CHECKLIST.BS_CL then
                 FOPM_TL_FLT_PHASE.PREFLIGHT = false
                 FOPM_TL_FLT_PHASE.PUSHBACK = true
                 FOPM_TL_COMPLETED_PROC.PARK_PROC = false
+                save_backup()
             end
         end
     end
@@ -5416,24 +5557,29 @@ function phase_check()
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Pushback"
         if ENG_Mode == 2 then
             FOPM_TL_FLT_PHASE.ENG_START = true
+            save_backup()
         end
         if TAXILT_SW > 0 and FOPM_TL_COMPLETED_PROC.AS_PROC_DONE then
             FOPM_TL_FLT_PHASE.ENG_START = false
             FOPM_TL_FLT_PHASE.PUSHBACK = false
             FOPM_TL_FLT_PHASE.TAXI_OUT = true
+            save_backup()
         end
         if BEACON_STATE == 0 and not FOPM_TL_FLT_PHASE.ENG_START then
             FOPM_TL_FLT_PHASE.PUSHBACK = false
             FOPM_TL_FLT_PHASE.PREFLIGHT = true
+            save_backup()
         end
     end
     if FOPM_Procedures_Control.EXECUTE_ENRWY then
         FOPM_TL_FLT_PHASE.ON_RWY = true
         FOPM_TL_COMPLETED_PROC.EXIT_RWY_DONE = false
+        save_backup()
     end
     if FOPM_Procedures_Control.EXECUTE_EXRWY then
         FOPM_TL_FLT_PHASE.ON_RWY = false
         FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = false
+        save_backup()
     end
     if FOPM_TL_FLT_PHASE.TAXI_OUT then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Taxi Out"
@@ -5445,16 +5591,19 @@ function phase_check()
             command_GDN = false
             command_FLPS_1UP = false
             command_FLPS_1DN = false
+            save_backup()
         end
         if ENG_1_Master == 0 and ENG_2_Master == 0 and BEACON_STATE == 0 then
             FOPM_TL_FLT_PHASE.PARKING = true
             FOPM_TL_FLT_PHASE.TAXI_OUT = false
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.TAKEOFF then
         FOPM_CONFIG_VARIABLE.TXT_PHASE = "Takeoff"
         if GNDAIR_SW == 0 then
             FOPM_TL_FLT_PHASE.ON_RWY = false
+            save_backup()
         end
         if ENG_1_REV ~= 0 or ENG_2_REV ~= 0 then
             FOPM_STEP_VARIABLE.STEP = 0
@@ -5466,6 +5615,7 @@ function phase_check()
             FOPM_TL_CHECKLIST.BTO_CL = false
             FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = false
             FOPM_TL_COMPLETED_PROC.BTO_PROC_DONE = false
+            save_backup()
         end
         if FOPM_checklist.After_takeoff_checklist then
             if THR_STATE == 1 and FOPM_TL_CHECKLIST.ATO_CL then
@@ -5481,6 +5631,7 @@ function phase_check()
                 command_GDN = false
                 command_FLPS_1UP = false
                 command_FLPS_1DN = false
+                save_backup()
             end
         else
             if THR_STATE == 1 and FOPM_TL_COMPLETED_PROC.TO_PROC_DONE then
@@ -5496,6 +5647,7 @@ function phase_check()
                 command_GDN = false
                 command_FLPS_1UP = false
                 command_FLPS_1DN = false
+                save_backup()
             end
         end
     end
@@ -5504,6 +5656,7 @@ function phase_check()
         if ENG_1_REV == 0 and ENG_2_REV == 0 then
             FOPM_TL_FLT_PHASE.REJECTED = false
             FOPM_TL_FLT_PHASE.REJECTED_DES = true
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.CLIMB or FOPM_TL_FLT_PHASE.CRUISE or FOPM_TL_FLT_PHASE.DESCEND then
@@ -5512,18 +5665,21 @@ function phase_check()
             FOPM_TL_FLT_PHASE.CLIMB = true
             FOPM_TL_FLT_PHASE.CRUISE = false
             FOPM_TL_FLT_PHASE.DESCEND = false
+            save_backup()
         end
         if string.find(FMA_G_STATE, "CRZ") then
             FOPM_CONFIG_VARIABLE.TXT_PHASE = "Cruise"
             FOPM_TL_FLT_PHASE.CLIMB = false
             FOPM_TL_FLT_PHASE.CRUISE = true
             FOPM_TL_FLT_PHASE.DESCEND = false
+            save_backup()
         end
         if string.find(FMA_G_STATE, "DES") then
             FOPM_CONFIG_VARIABLE.TXT_PHASE = "Descend"
             FOPM_TL_FLT_PHASE.CLIMB = false
             FOPM_TL_FLT_PHASE.CRUISE = false
             FOPM_TL_FLT_PHASE.DESCEND = true
+            save_backup()
         end
         if FOPM_TL_CHECKLIST.APP_CL then
             FOPM_TL_FLT_PHASE.CLIMB = false
@@ -5531,6 +5687,7 @@ function phase_check()
             FOPM_TL_FLT_PHASE.DESCEND = false
             FOPM_TL_FLT_PHASE.APPROACH = true
             FOPM_TL_COMPLETED_PROC.AP_DISCN_PROC = false
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.APPROACH then
@@ -5541,6 +5698,7 @@ function phase_check()
             FOPM_TL_COMPLETED_PROC.GA_PROC = false
             FPMTR.CONT_APP = true
             FOPM_STEP_VARIABLE.STEP_AL = 0
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.FINAL_APP then
@@ -5551,6 +5709,7 @@ function phase_check()
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.DES_BRIEFING = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
+            save_backup()
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
             FOPM_TL_FLT_PHASE.FINAL_APP = false
@@ -5559,6 +5718,7 @@ function phase_check()
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.GA then
@@ -5566,6 +5726,7 @@ function phase_check()
         if THR_STATE == 1 then
             FOPM_TL_FLT_PHASE.GA = false
             FOPM_TL_FLT_PHASE.TAKEOFF = true
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.DECELERATION then
@@ -5574,6 +5735,7 @@ function phase_check()
             FOPM_TL_FLT_PHASE.DECELERATION = false
             FOPM_CONFIG_VARIABLE.RAINING = false
             FOPM_TL_FLT_PHASE.TAXI_IN = true
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.TAXI_IN then
@@ -5584,10 +5746,12 @@ function phase_check()
             FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
             FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = true
             FOPM_CONFIG_VARIABLE.MINUTE3 = true
+            save_backup()
         end
         if PRKBRK_SW == 1 and ENG_1_Master == 0 and ENG_2_Master == 0 then
             FOPM_TL_FLT_PHASE.TAXI_IN = false
             FOPM_TL_FLT_PHASE.PARKING = true
+            save_backup()
         end
     end
     if FOPM_TL_FLT_PHASE.PARKING then
@@ -5608,6 +5772,7 @@ function phase_check()
             FOPM_TL_APP_TYPE.LDA_APP = false
             FOPM_TL_APP_TYPE.FLS = false
             FOPM_TL_APP_TYPE.CAT_II_III = false
+            save_backup()
         end
     end
 end
@@ -5903,6 +6068,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Separator()
         imgui.Spacing()
         imgui.TextUnformatted("FLT Phase: "..FOPM_CONFIG_VARIABLE.TXT_PHASE)
+        imgui.SameLine()
+        if RECOVERY_AVAIL then
+            if imgui.SmallButton("RECOVERY") then
+                dofile(SCRIPT_DIRECTORY .. "/FO PM/FO_Recovery.lua")
+                RECOVERY_AVAIL = false
+            end
+        end
         -- DEBUGING
 
         imgui.Spacing()
@@ -6331,9 +6503,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (BRIEF_CONF[bindex].del)
                     FOPM_TL_COMPLETED_PROC.TO_BRIEFING = true
                     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
                     WND_BRIEFING = false
                     WND_MAIN = true
+                    save_backup()
                 end
             else
                 if imgui.SmallButton("DEP CHANGE") then
@@ -6345,6 +6518,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
                     WND_BRIEFING = false
                     WND_MAIN = true
+                    save_backup()
                 end
             end
         end
@@ -6444,9 +6618,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (BRIEF_CONF[bindex].del)
                     FOPM_TL_COMPLETED_PROC.DES_BRIEFING = true
                     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
                     WND_BRIEFING = false
                     WND_MAIN = true
+                    save_backup()
                 end
             end
         end
@@ -6581,6 +6756,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if FOPM_proc_config_name ~= prcl_to_load then
             imgui.TextUnformatted("Reload the script to see changes")
             if imgui.SmallButton("SAVE") then
+                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-55,FOPM_wtop,FOPM_wright,FOPM_wbottom-109)
+                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
                 config_save()
                 WND_SETTINGS = true
                 WND_PRCL_SEL = false

@@ -354,6 +354,8 @@ function save_backup()
         config:write("FOPM_TL_COMPLETED_PROC.OETA_DONE = "..tostring(FOPM_TL_COMPLETED_PROC.OETA_DONE).."\n")
         config:write("FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = "..tostring(FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL).."\n")
         config:write("FOPM_Procedures_Control.ONEENG_TAXI_DEP = "..tostring(FOPM_Procedures_Control.ONEENG_TAXI_DEP).."\n")
+        config:write("FOPM_Procedures_Control.EXECUTE_OETD = "..tostring(FOPM_Procedures_Control.EXECUTE_OETD).."\n")
+        config:write("FOPM_STEP_VARIABLE.STEP_ONEENG = "..FOPM_STEP_VARIABLE.STEP_ONEENG.."\n")
         config:write("-- CHECKLITS\n")
         config:write("FOPM_TL_CHECKLIST.CP_CL = "..tostring(FOPM_TL_CHECKLIST.CP_CL).."\n")
         config:write("FOPM_TL_CHECKLIST.BS_CL = "..tostring(FOPM_TL_CHECKLIST.BS_CL).."\n")
@@ -383,8 +385,6 @@ function save_backup()
         config:write("FOPM_TL_APP_TYPE.LDA_APP = "..tostring(FOPM_TL_APP_TYPE.LDA_APP).."\n")
         config:write("FOPM_TL_APP_TYPE.FLS = "..tostring(FOPM_TL_APP_TYPE.FLS).."\n")
         config:write("-- CONFIG\n")
-        config:write("FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION).."\n")
-        config:write("FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_ANGLE).."\n")
         config:write("FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = "..tonumber(FOPM_CONFIG_VARIABLE.PT_TO_CONFIG).."\n")
         config:write("FOPM_CONFIG_VARIABLE.RAINING = "..tostring(FOPM_CONFIG_VARIABLE.RAINING).."\n")
         config:write("FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = "..tostring(FOPM_CONFIG_VARIABLE.PACKS_FOR_TO).."\n")
@@ -890,7 +890,7 @@ function after_start_proc()
                     if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check then
                         if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_CHECK" then
                             FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
-                            FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)")
+                            FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
                             FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
                             FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
                             FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
@@ -6460,6 +6460,20 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 imgui.TextUnformatted("1+F")
             else
                 imgui.TextUnformatted(FLAPS_TO_CONFIG)
+            end
+            imgui.SameLine()
+            imgui.TextUnformatted("Trim: ")
+            imgui.SameLine()
+            if string.find(MCDU1_WTITLE, "TAKE OFF") then
+                if string.match(MCDU_BLINE_3, "([UPDN]+)") then
+                    FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
+                    FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
+                end
+            end
+            if FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION == 0 then
+                imgui.TextUnformatted(FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION.."."..FOPM_CONFIG_VARIABLE.PT_TO_ANGLE)
+            else
+                imgui.TextUnformatted(FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION..FOPM_CONFIG_VARIABLE.PT_TO_ANGLE)
             end
             imgui.TextUnformatted("V1:")
             imgui.SameLine()

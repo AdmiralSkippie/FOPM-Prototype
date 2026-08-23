@@ -6422,7 +6422,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
             imgui.TextUnformatted("Departure Briefing")
             imgui.Spacing()
-            imgui.TextUnformatted("Time Since ENG SD: "..math.floor((TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME)/60).." min")
+            if ENG_MODEL == 0 then
+                imgui.TextUnformatted("Time Since ENG SD: "..math.floor((TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME)/60).." min")
+            end
             if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
                 DEPARTURE_BRIEFING_BLEED_OPT = 1
                 FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
@@ -6538,7 +6540,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         -- ARRIVAL BRIEFING
         if FOPM_TL_FLT_PHASE.CLIMB or FOPM_TL_FLT_PHASE.CRUISE or FOPM_TL_FLT_PHASE.DESCEND or FOPM_TL_FLT_PHASE.APPROACH then
-            imgui.TextUnformatted("Arrival Breafing")
+            imgui.TextUnformatted("Arrival Briefing")
             if imgui.RadioButton("ILS/MLS", FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP) then
                 FOPM_TL_APP_TYPE.ILS_APP = true
                 FOPM_TL_APP_TYPE.MLS_APP = true
@@ -6687,12 +6689,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.TextUnformatted("General Settings")
         imgui.Spacing()
-        local setting_change, change = imgui.Checkbox("FO Auto Perfomr", fo_autoperform)
+        local setting_change, change = imgui.Checkbox("FO Auto Perform", fo_autoperform)
         if setting_change then
             fo_autoperform = change
             config_save()
         end
-        imgui.TextUnformatted("Speak Only Essencials: ")
+        imgui.TextUnformatted("Speak Only Essentials: ")
         imgui.SameLine()
         if imgui.RadioButton("Yes", speak_only_essencials) then
             speak_only_essencials = true

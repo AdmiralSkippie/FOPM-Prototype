@@ -3,13 +3,13 @@
 
 ////////// CURRENT VERSION //////////
 
-Version 1.0 Main Release (Check "Version History" for more details)
+Version 1.1 Procedures online (Check "Version History" for more details)
 ____________________________________________________________________________________________________
 
 Hello there pilots and curious people welcome.
 Here you will find a short instruction how to install the plugin and one more thing to enhance your experience.
 Plese read the "Documentation" file to know how to operate with the FO.
-
+ 
 ///// HOW TO INSTALL /////
 
 ¡IMPORTANT DISCLAIMER! - To run the plugin you need to have the FlyWithLua installed in your sim.

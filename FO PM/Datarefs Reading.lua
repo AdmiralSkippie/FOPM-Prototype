@@ -140,7 +140,8 @@ dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 MCT/3 TOG
 dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 
 ---- MCDU ----
-dataref("MCDU_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
+dataref("MCDU2_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
+dataref("MCDU1_BLINE_3", "AirbusFBW/MCDU1cont3b", "readonly") -- text line --
 MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
 MCDU_FO_KEY_Fpln = "AirbusFBW/MCDU2Fpln"
 dataref("MCDU2_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --

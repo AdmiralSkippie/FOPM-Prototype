@@ -1,5 +1,5 @@
 -----------------------------------------
------ //// TOLISS FO / PM V1.0 //// -----
+----- //// TOLISS FO / PM V1.1 //// -----
 -----------------------------------------
 
 logMsg("XXXXX   FO/PM Initiate")
@@ -889,8 +889,8 @@ function after_start_proc()
                     end
                     if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].check then
                         if FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].int_item == "TRIM_CHECK" or FOPM_procedure.After_start_procedure[FOPM_STEP_VARIABLE.PROC_STEP].item == "TRIM_CHECK" then
-                            FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
-                            FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
+                            FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU2_BLINE_3, "([UPDN]+)")
+                            FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU2_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
                             FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
                             FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
                             FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
@@ -6462,12 +6462,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 imgui.TextUnformatted(FLAPS_TO_CONFIG)
             end
             imgui.SameLine()
-            imgui.TextUnformatted("Trim: ")
+            imgui.TextUnformatted("Trim:")
             imgui.SameLine()
             if string.find(MCDU1_WTITLE, "TAKE OFF") then
-                if string.match(MCDU_BLINE_3, "([UPDN]+)") then
-                    FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU_BLINE_3, "([UPDN]+)")
-                    FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
+                if string.find(MCDU1_BLINE_3, "([UPDN]+)") then
+                    FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU1_BLINE_3, "([UPDN]+)")
+                    FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU1_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
                 end
             end
             if FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION == 0 then

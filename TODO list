@@ -2,12 +2,7 @@ Arreglar bug que traba el FO QNH en 1013
 Desarrollar la toma del METAR en tierra como antes del descenso **
 Desarrollar alerta proximidad al TOD **
 
-// DEBOGiN 1.1
-Actualizar el sistema para guardar la localizacion
-Arreglar retraccion de flaps en taxi in
-Arreglar voz en AS proc para que diga la posicion
-Arreglar Exclsion de procedimientos
-Arreglar Securing Checklist
+// DEBOGiN 1.2
 
 
 /////// FUTURO ///////

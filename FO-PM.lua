@@ -169,6 +169,7 @@ FOPM_Procedures_Control = {
     EXECUTE_OETA = false,
     EXECUTE_FLP = false,
     EXECUTE_GEAR = false,
+    EXECUTE_BARO_SET = false,
 }
 
 ------------------
@@ -5529,6 +5530,103 @@ function checklist_securing()
     end
 end
 
+-- BARO SETTING
+-- DEBUGIN
+    local qnh_value = 0
+    local qnh_target = 0
+    local qnh_step = 0
+    local qnh_unit = "hPa"
+    local qnh_speed = 0.05
+    local qnh_digits = ""
+    local qnh_digit_index = 1
+    function set_baro_ref()
+        if qnh_step == 0 then
+            qnh_target = qnh_value
+            if qnh_value > 1500 then
+                qnh_unit = "InHg"
+            else
+                qnh_unit = "hPa"
+            end
+            qnh_digits = string.format("%d", qnh_target)
+            qnh_digit_index = 1    
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            qnh_step = 1
+        end
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+            if qnh_step == 1 then
+                if qnh_unit == "hPa" then
+                    BARO_UNIT_FO = 1
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    qnh_step = 2
+                elseif qnh_unit == "InHg" then
+                    BARO_UNIT_FO = 0
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    qnh_step = 2
+                end
+                play_sound(FOPM_Talk["BARO_REFERENCE"])
+            elseif qnh_step == 2 then
+                if BARO_STD_FO == 1 then
+                    command_once(FO_BARO_PUSH)
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    qnh_step = 3
+                elseif BARO_STD_FO == 0 then
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                    qnh_step = 3
+                end
+            elseif qnh_step == 3 then
+                if qnh_unit == "InHg" then
+                    if (math.floor(((FO_QNH*100)+0.5))) ~= qnh_target then
+                        if (math.floor(((FO_QNH*100)+0.5))) < qnh_target then
+                            BARO_ROTATE_FO = BARO_ROTATE_FO + 1
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + qnh_speed
+                            return
+                        elseif (math.floor(((FO_QNH*100)+0.5))) > qnh_target then
+                            BARO_ROTATE_FO = BARO_ROTATE_FO - 1
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + qnh_speed
+                            return
+                        end
+                    else
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        qnh_step = 4
+                    end
+                elseif qnh_unit == "hPa" then
+                    if (math.floor(((FO_QNH*33.8639)+0.5))) ~= qnh_target then
+                        if (math.floor(((FO_QNH*33.8639)+0.5))) < qnh_target then
+                            BARO_ROTATE_FO = BARO_ROTATE_FO + 1
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + qnh_speed
+                            return
+                        elseif (math.floor(((FO_QNH*33.8639)+0.5))) > qnh_target then
+                            BARO_ROTATE_FO = BARO_ROTATE_FO - 1
+                            FOPM_DELAY_VARIABLE.DELAY = TIME + qnh_speed
+                            return
+                        end
+                    else
+                        qnh_step = 4
+                    end
+                end
+            elseif qnh_step == 4 then
+            if qnh_digit_index <= #qnh_digits then
+                local d = qnh_digits:sub(qnh_digit_index, qnh_digit_index)
+                local voice = "N"..d
+ 
+                play_sound(FOPM_Talk[voice])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + FO_voices_directory[voice].del - 0.17
+                qnh_digit_index = qnh_digit_index + 1
+            else
+                qnh_step = 5
+            end
+ 
+        elseif qnh_step == 5 then
+            if math.floor(IND_ALTITUDE) >= TRANSITION_ALT then
+                command_once(FO_BARO_PULL)
+            end
+            play_sound(FOPM_Talk["SET"])
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            qnh_step = 0
+            FOPM_Procedures_Control.EXECUTE_BARO_SET = false
+        end
+    end
+end
 ---- //////////////////////////////
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
@@ -5936,6 +6034,9 @@ function FO_main_logic()
             parking_proc()
         end
     end
+    if FOPM_Procedures_Control.EXECUTE_BARO_SET then
+        set_baro_ref()
+    end
 end
 
 do_every_frame("FO_main_logic()")
@@ -6076,7 +6177,12 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         -- DEBUGING
-
+            _, qnh_value = imgui.InputInt("BARO",qnh_value)
+            if FOPM_Procedures_Control.EXECUTE_BARO_SET == false then
+                if imgui.SmallButton("SET") then
+                    FOPM_Procedures_Control.EXECUTE_BARO_SET = true
+                end
+            end
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

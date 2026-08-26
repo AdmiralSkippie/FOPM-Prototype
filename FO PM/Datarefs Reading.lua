@@ -53,7 +53,6 @@ ANTI_ICE_WING_PB = "toliss_airbus/antiicecommands/WingToggle"
 dataref("Y_ELEC_PUMP_PB", "AirbusFBW/HydOHPArray", "writable", 3) -- Y HYD PUMP PB --
 AUTOBRK_MAX_PB = "AirbusFBW/AbrkMax"
 TO_CONFIG_PB = "AirbusFBW/TOConfigPress"
---dataref("FO_QNH_PUSH", "AirbusFBW/BaroStdFO", "writable") -- FO_QNH_STD --
 dataref("ENG_1_BLEED_PB", "AirbusFBW/ENG1BleedSwitch", "writable") -- ENG1BLEED -- 
 dataref("ENG_2_BLEED_PB", "AirbusFBW/ENG2BleedSwitch", "writable") -- ENG2BLEED --
 
@@ -219,7 +218,11 @@ dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
     dataref("FO_QNH", "sim/cockpit/misc/barometer_setting2", "readonly") -- convertir a qnh
     dataref("ISIS_QNH", "AirbusFBW/ISIBaroSetting", "readonly")
     dataref("BARO_UNIT_CM","AirbusFBW/BaroUnitCapt", "readonly")
-    dataref("BARO_UNIT_FO","AirbusFBW/BaroUnitFO", "readonly")
+    dataref("BARO_UNIT_FO","AirbusFBW/BaroUnitFO", "writable") -- 0 = In.Hg
+    FO_BARO_PUSH = "toliss_airbus/copilot_baro_push"
+    FO_BARO_PULL = "toliss_airbus/copilot_baro_pull"
+    dataref("BARO_STD_FO", "AirbusFBW/BaroStdFO", "readonly") -- 1 standard
+    dataref("BARO_ROTATE_FO", "AirbusFBW/BaroKnobRotationFO", "writable") -- -1 izqueirda +1 derecha
 dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRESS
 dataref("RBRAKE_Press", "AirbusFBW/RightBrakeNeedle", "readonly")
 dataref("IND_ALTITUDE", "AirbusFBW/ALTFO", "readonly")

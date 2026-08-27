@@ -6205,6 +6205,7 @@ function FO_main_logic()
                 FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                 FOPM_CONFIG_VARIABLE.PASSED_TRANS_ALT = true
                 FOPM_CONFIG_VARIABLE.PASSED_TRANS_LVL = false
+                command_once(FO_BARO_PULL)
             end
         end
     end
@@ -6226,6 +6227,7 @@ function FO_main_logic()
                 FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                 FOPM_CONFIG_VARIABLE.PASSED_TRANS_ALT = false
                 FOPM_CONFIG_VARIABLE.PASSED_TRANS_LVL = true
+                command_once(FO_BARO_PUSH)
             end
         end
     end
@@ -6988,6 +6990,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     WND_BRIEFING = false
                     WND_MAIN = true
                     save_backup()
+                end
+            end
+            imgui.SameLine()
+            if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
+                if imgui.SmallButton("WX REQUEST") then
+                    FOPM_CONFIG_VARIABLE.WX_READY = false
+                    FOPM_Procedures_Control.EXECUTE_WX_REQ = true
                 end
             end
         end

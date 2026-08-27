@@ -263,7 +263,7 @@ dataref("RUDDER_TRIM_POS", "AirbusFBW/YawTrimPosition", "readonly")
     dataref("BARO_UNIT_CM","AirbusFBW/BaroUnitCapt", "readonly")
     dataref("BARO_UNIT_FO","AirbusFBW/BaroUnitFO", "writable") -- 0 = In.Hg
     FO_BARO_PUSH = "toliss_airbus/copilot_baro_push"
-    FO_BARO_PULL = "toliss_airbus/copilot_baro_pull"
+    FO_BARO_PULL = "toliss_airbus/copilot_baro_pull" -- to STD
     dataref("BARO_STD_FO", "AirbusFBW/BaroStdFO", "readonly") -- 1 standard
     dataref("BARO_ROTATE_FO", "AirbusFBW/BaroKnobRotationFO", "writable") -- -1 izqueirda +1 derecha
 dataref("LBRAKE_Press", "AirbusFBW/LeftBrakeNeedle", "readonly") -- 0.7 FULL PRESS

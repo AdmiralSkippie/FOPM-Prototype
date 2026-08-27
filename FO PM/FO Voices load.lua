@@ -64,14 +64,36 @@ if FOPM_AUDIO_READY then
     FOPM_ApplyAudioLevel()
 end
 
+-- SOUND BUDGET
+-- FlyWithLua KEEPS THE Fmod SOUNDS IN A FIXED 400 SLOT ARRAY AND DOES NOT BOUNDS
+-- CHECK IT ON PLAYBACK, GOING OVER IT CORRUPTS MEMORY AND CRASHES X-PLANE.
+-- THE ARRAY IS SHARED BY EVERY FlyWithLua SCRIPT, SO WE STOP WELL BELOW IT.
+FOPM_SOUND_LIMIT = 350
+FOPM_SOUND_COUNT = 0
+FOPM_SOUND_MISSING = {}
+
 -- SINGLE LOAD ENTRY POINT
+-- load_fmod_sound() ONLY STORES THE PATH, IT NEVER OPENS THE FILE AND NEVER FAILS,
+-- SO A MISSING OR MISNAMED .wav IS SILENT AT LOAD AND SILENT AT PLAYBACK.
+-- WE OPEN IT HERE SO A BROKEN VOICE PACK IS REPORTED INSTEAD OF JUST GOING QUIET.
 function FOPM_LoadSound(path)
     if not FOPM_AUDIO_READY then return nil end
-    local handle = load_fmod_sound(path)
-    if handle == nil then
-        logMsg("XXXXX   FO/PM Audio ERROR: can't load "..tostring(path))
+
+    local file = io.open(path, "rb")
+    if file == nil then
+        FOPM_SOUND_MISSING[#FOPM_SOUND_MISSING + 1] = path
+        logMsg("XXXXX   FO/PM Audio ERROR: missing file "..tostring(path))
+        return nil
     end
-    return handle
+    file:close()
+
+    if FOPM_SOUND_COUNT >= FOPM_SOUND_LIMIT then
+        logMsg("XXXXX   FO/PM Audio ERROR: sound limit of "..FOPM_SOUND_LIMIT.." reached, not loading "..tostring(path))
+        return nil
+    end
+
+    FOPM_SOUND_COUNT = FOPM_SOUND_COUNT + 1
+    return load_fmod_sound(path)
 end
 
 -- SINGLE PLAYBACK ENTRY POINT
@@ -80,6 +102,21 @@ function FOPM_PlaySound(handle)
     local play = FOPM_PLAY_ON_BUS[FOPM_AUDIO_BUS]
     if play == nil then return end
     play(handle)
+end
+
+-- SINGLE DURATION ENTRY POINT
+-- EVERY CALLOUT SPACES ITSELF OUT WITH THE del VALUE OF THE VOICE PACK CONFIG.
+-- A PROCEDURE OR CHECKLIST PACK POINTING AT A KEY THAT IS NOT IN THE VOICE
+-- DIRECTORY USED TO KILL THE WHOLE SCRIPT, NOW IT FALLS BACK AND NAMES THE KEY.
+FOPM_DEFAULT_DURATION = 1.0
+
+function FOPM_Duration(directory, key)
+    local entry = directory[key]
+    if entry == nil then
+        logMsg("XXXXX   FO/PM Audio ERROR: unknown voice key '"..tostring(key).."'")
+        return FOPM_DEFAULT_DURATION
+    end
+    return entry.del or FOPM_DEFAULT_DURATION
 end
 
 -- SINGLE STOP ENTRY POINT, STOPS EVERYTHING PLAYING ON THE FO/PM BUS
@@ -379,4 +416,12 @@ for _, pack in ipairs(FO_voice_config) do
     FOPM_LoadVoicePack(BRIEF_CONF,          BRIEFING_CONF,  pack)
     FOPM_LoadVoicePack(RDY,                 READY,          pack)
     FOPM_LoadVoicePack(RDY_TO_DIR,          READY_FOR_TO,   pack)
+end
+
+-- LOAD REPORT
+if FOPM_AUDIO_READY then
+    logMsg("XXXXX   FO/PM Audio: "..FOPM_SOUND_COUNT.." sounds loaded, "..#FOPM_SOUND_MISSING.." missing, budget "..FOPM_SOUND_LIMIT)
+    for _, path in ipairs(FOPM_SOUND_MISSING) do
+        logMsg("XXXXX   FO/PM Audio: missing -> "..path)
+    end
 end

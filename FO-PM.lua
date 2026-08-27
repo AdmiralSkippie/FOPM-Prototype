@@ -232,7 +232,9 @@ FOPM_CONFIG_VARIABLE = {
         MEDIUM = false
     },
     IAE_SD_TIME = math.floor(TIME),
-    TO_RWY = "-"
+    TO_RWY = "-",
+    DEP_ARRP = "",
+    ARR_ARRP = "",
 }
 
 -- FLIGHT PARAMETERS VARIABLES
@@ -5532,14 +5534,14 @@ end
 
 -- BARO SETTING
 -- DEBUGIN
-    local qnh_value = 0
-    local qnh_target = 0
-    local qnh_step = 0
-    local qnh_unit = "hPa"
-    local qnh_speed = 0.05
-    local qnh_digits = ""
-    local qnh_digit_index = 1
-    function set_baro_ref()
+local qnh_value = 0
+local qnh_target = 0
+local qnh_step = 0
+local qnh_unit = "hPa"
+local qnh_speed = 0.05
+local qnh_digits = ""
+local qnh_digit_index = 1
+function set_baro_ref()
         if qnh_step == 0 then
             qnh_target = qnh_value
             if qnh_value > 1500 then
@@ -5605,28 +5607,123 @@ end
                     end
                 end
             elseif qnh_step == 4 then
-            if qnh_digit_index <= #qnh_digits then
-                local d = qnh_digits:sub(qnh_digit_index, qnh_digit_index)
-                local voice = "N"..d
- 
-                play_sound(FOPM_Talk[voice])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + FO_voices_directory[voice].del - 0.17
-                qnh_digit_index = qnh_digit_index + 1
-            else
-                qnh_step = 5
+                if qnh_digit_index <= #qnh_digits then
+                    local d = qnh_digits:sub(qnh_digit_index, qnh_digit_index)
+                    local voice = "N"..d
+    
+                    play_sound(FOPM_Talk[voice])
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + FO_voices_directory[voice].del - 0.17
+                    qnh_digit_index = qnh_digit_index + 1
+                else
+                    qnh_step = 5
+                end
+    
+            elseif qnh_step == 5 then
+                if math.floor(IND_ALTITUDE) >= TRANSITION_ALT then
+                    command_once(FO_BARO_PULL)
+                end
+                play_sound(FOPM_Talk["SET"])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                qnh_step = 0
+                FOPM_Procedures_Control.EXECUTE_BARO_SET = false
             end
- 
-        elseif qnh_step == 5 then
-            if math.floor(IND_ALTITUDE) >= TRANSITION_ALT then
-                command_once(FO_BARO_PULL)
-            end
-            play_sound(FOPM_Talk["SET"])
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            qnh_step = 0
-            FOPM_Procedures_Control.EXECUTE_BARO_SET = false
+        end
+end
+
+-- WEATHER DATA EXTRACTION
+local function clean_mcdu_line(raw)
+    if not raw then return "" end
+    local s = tostring(raw)
+    s = s:gsub("%z", " ")
+    s = s:gsub("[^%w%s/%-%+%.]", " ")
+    s = s:gsub("%s+", " ")
+    s = s:gsub("^%s*(.-)%s*$", "%1")
+    return s
+end
+local function join_mcdu_lines(lines)
+    local parts = {}
+    for i = 1, #lines do
+        local l = clean_mcdu_line(lines[i])
+        if l ~= "" then
+            parts[#parts + 1] = l
         end
     end
+    return table.concat(parts, " ")
 end
+local QNH_HPA_MIN,  QNH_HPA_MAX  = 650,  1200
+local QNH_INHG_MIN, QNH_INHG_MAX = 2400, 3300
+local function is_icao(token)
+    return token:match("^%a%a%a%a$") ~= nil
+end
+local function is_timestamp(token)
+    return token:match("^%d%d%d%d%d%dZ$") ~= nil
+end
+local function parse_pressure(token)
+    local hpa = token:match("^Q(%d%d%d%d)$") or token:match("^Q(%d%d%d)$")
+    if hpa then
+        local v = tonumber(hpa)
+        if v >= QNH_HPA_MIN and v <= QNH_HPA_MAX then
+            return v, "hPa"
+        end
+    end
+    local inhg = token:match("^A(%d%d%d%d)$")
+    if inhg then
+        local v = tonumber(inhg)
+        if v >= QNH_INHG_MIN and v <= QNH_INHG_MAX then
+            return v, "InHg"
+        end
+    end
+
+    return nil
+end
+function extract_qnh_from_screen(text)
+    if not text or text == "" then return nil end
+
+    local tokens = {}
+    for t in text:gmatch("%S+") do
+        tokens[#tokens + 1] = t
+    end
+    local station = nil
+    for i = 1, #tokens do
+        if is_icao(tokens[i]) and tokens[i + 1] and is_timestamp(tokens[i + 1]) then
+            station = tokens[i]
+            break
+        end
+    end
+    if not station then return nil end
+    for i = 1, #tokens do
+        if tokens[i] == "RMK" then break end
+        local value, unit = parse_pressure(tokens[i])
+        if value then
+            return value, unit, station
+        end
+    end
+
+    return nil
+end
+function read_mcdu_green_text()
+    local lines = {
+        MCDU2_SHORT_GLINE_2, MCDU2_SHORT_GLINE_3, MCDU2_SHORT_GLINE_4,
+        MCDU2_SHORT_GLINE_5, MCDU2_SHORT_GLINE_6, MCDU2_SHORT_GLINE_7,
+        MCDU2_SHORT_GLINE_8, MCDU2_SHORT_GLINE_9, MCDU2_SHORT_GLINE_10,
+        MCDU2_SHORT_GLINE_11, MCDU2_SHORT_GLINE_12
+    }
+    return join_mcdu_lines(lines)
+end
+function read_qnh_from_mcdu(expected_icao)
+    local text = read_mcdu_green_text()
+    local value, unit, station = extract_qnh_from_screen(text)
+    if not value then
+        return nil, "NO_REPORT"
+    end
+    if expected_icao and station ~= expected_icao then
+        logMsg("FO/PM: METAR en pantalla es de "..tostring(station)..
+               ", se esperaba "..tostring(expected_icao))
+        return nil, "WRONG_STATION"
+    end
+    return value, unit
+end
+
 ---- //////////////////////////////
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
@@ -6177,7 +6274,24 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         -- DEBUGING
-            _, qnh_value = imgui.InputInt("BARO",qnh_value)
+            if qnh_value then
+                imgui.TextUnformatted("Value: "..qnh_value)
+            else
+                imgui.TextUnformatted("Value: ---")
+            end
+            if qnh_unit then
+                imgui.TextUnformatted("Unit: "..qnh_unit)
+            else
+                imgui.TextUnformatted("Unit: ---")
+            end
+            _, FOPM_CONFIG_VARIABLE.DEP_ARRP = imgui.InputText("DEP",FOPM_CONFIG_VARIABLE.DEP_ARRP,5)
+            if FOPM_Procedures_Control.EXECUTE_BARO_SET == false then
+                if imgui.SmallButton("Extract") then
+                    local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.DEP_ARRP)
+                    qnh_value = v
+                    qnh_unit = u
+                end
+            end
             if FOPM_Procedures_Control.EXECUTE_BARO_SET == false then
                 if imgui.SmallButton("SET") then
                     FOPM_Procedures_Control.EXECUTE_BARO_SET = true

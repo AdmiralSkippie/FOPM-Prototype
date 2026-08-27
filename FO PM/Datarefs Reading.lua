@@ -149,6 +149,17 @@ dataref("MCDU2_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green
 dataref("MCDU1_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly")
 dataref("MCDU1_WLINE_1", "AirbusFBW/MCDU1cont1w", "readonly")
 dataref("MCDU1_WTITLE", "AirbusFBW/MCDU1titlew", "readonly")
+dataref("MCDU2_SHORT_GLINE_2","AirbusFBW/MCDU2scont1g","readonly")
+dataref("MCDU2_SHORT_GLINE_3","AirbusFBW/MCDU2label2g","readonly")
+dataref("MCDU2_SHORT_GLINE_4","AirbusFBW/MCDU2scont2g","readonly")
+dataref("MCDU2_SHORT_GLINE_5","AirbusFBW/MCDU2label3g","readonly")
+dataref("MCDU2_SHORT_GLINE_6","AirbusFBW/MCDU2scont3g","readonly")
+dataref("MCDU2_SHORT_GLINE_7","AirbusFBW/MCDU2label4g","readonly")
+dataref("MCDU2_SHORT_GLINE_8","AirbusFBW/MCDU2scont4g","readonly")
+dataref("MCDU2_SHORT_GLINE_9","AirbusFBW/MCDU2label5g","readonly")
+dataref("MCDU2_SHORT_GLINE_10","AirbusFBW/MCDU2scont5g","readonly")
+dataref("MCDU2_SHORT_GLINE_11","AirbusFBW/MCDU2label6g","readonly")
+dataref("MCDU2_SHORT_GLINE_12","AirbusFBW/MCDU2scont6g","readonly")
 
 ---- INDICATIONS ----
 -- dataref("OXY_Press", "", "readonly")

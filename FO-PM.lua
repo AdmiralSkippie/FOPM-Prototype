@@ -6697,9 +6697,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_PRCL_SEL = false
         end
         -- DEBUGING
-            imgui.TextUnformatted(FOPM_STEP_VARIABLE.STEP)
-            imgui.TextUnformatted(MCDU2_WLINE_1)
-            imgui.TextUnformatted(MCDU2_GLINE_1)
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()

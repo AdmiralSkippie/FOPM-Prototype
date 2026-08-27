@@ -85,7 +85,7 @@ Structure with no essencials
                         if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY = TIME + (FO_voices_directory[speech].del)
                             else
                                 DELAY = TIME + fo_speed
@@ -103,7 +103,7 @@ Structure with no essencials
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                         if not speak_only_essencials then
                             local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FO_voices_directory[speech].del)
                         else
                             DELAY = TIME + fo_speed
@@ -136,7 +136,7 @@ Structure with no essencials
                 if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                     if not speak_only_essencials then
                         local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                        play_sound(FOPM_Talk[speech])
+                        FOPM_PlaySound(FOPM_Talk[speech])
                         DELAY = TIME + (FO_voices_directory[speech].del)
                     else
                         DELAY = TIME + fo_speed
@@ -163,7 +163,7 @@ Structure with no essencials
                         if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                             if not speak_only_essencials then
                                 local speech = FL_VOICE_SRCH
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                             else
                                 DELAY = TIME + fo_speed
@@ -171,7 +171,7 @@ Structure with no essencials
                         else
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                             else
                                 DELAY = TIME + fo_speed
@@ -194,7 +194,7 @@ Structure with no essencials
                             if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                                 if not speak_only_essencials then
                                     local speech = FL_VOICE_SRCH
-                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_PlaySound(FOPM_Talk[speech])
                                     DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                                 else
                                     DELAY = TIME + fo_speed
@@ -202,7 +202,7 @@ Structure with no essencials
                             else
                                 if not speak_only_essencials then
                                     local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                                    play_sound(FOPM_Talk[speech])
+                                    FOPM_PlaySound(FOPM_Talk[speech])
                                     DELAY = TIME + (FO_voices_directory[speech].del)
                                 else
                                     DELAY = TIME + fo_speed
@@ -217,7 +217,7 @@ Structure with no essencials
                         if TIME >= DELAY_CHECK then
                             if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
                             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item then
                                 DELAY_CHECK = TIME + 10
@@ -236,7 +236,7 @@ Structure with no essencials
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                         if not speak_only_essencials then
                             local speech = FL_VOICE_SRCH
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                         else
                             DELAY = TIME + fo_speed
@@ -244,7 +244,7 @@ Structure with no essencials
                     else
                         if not speak_only_essencials then
                             local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FO_voices_directory[speech].del)
                         else
                             DELAY = TIME + fo_speed
@@ -258,7 +258,7 @@ Structure with no essencials
             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                 if not speak_only_essencials then
                     local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                    play_sound(FOPM_Talk[speech])
+                    FOPM_PlaySound(FOPM_Talk[speech])
                     DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                 else
                     DELAY = TIME + fo_speed
@@ -274,7 +274,7 @@ Structure with no essencials
         if TIME >= DELAY then
             if PROC_STEP > #FOPM_procedure.Pre_cockpit_preparation then
                 local rindex = math.random(5)
-                play_sound(READY[rindex])
+                FOPM_PlaySound(READY[rindex])
                 DELAY = TIME + (RDY[rindex].del) + fo_speed
                 command_once(MCDU_FO_KEY_Fpln)
                 STEP = 0
@@ -300,7 +300,7 @@ Structure with essencials
                     else
                         if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                             local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FO_voices_directory[speech].del)
                         elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item then
                             DELAY = TIME + fo_speed
@@ -314,7 +314,7 @@ Structure with essencials
                     end
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                         local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                        play_sound(FOPM_Talk[speech])
+                        FOPM_PlaySound(FOPM_Talk[speech])
                         DELAY = TIME + (FO_voices_directory[speech].del)
                     elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item then
                         DELAY = TIME + fo_speed
@@ -343,7 +343,7 @@ Structure with essencials
                 end
                 if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                     local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                    play_sound(FOPM_Talk[speech])
+                    FOPM_PlaySound(FOPM_Talk[speech])
                     DELAY = TIME + (FO_voices_directory[speech].del)
                 elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item then
                     DELAY = TIME + fo_speed
@@ -366,11 +366,11 @@ Structure with essencials
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                         if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                             local speech = FL_VOICE_SRCH
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                         else
                             local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                            play_sound(FOPM_Talk[speech])
+                            FOPM_PlaySound(FOPM_Talk[speech])
                             DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                         end
                     else
@@ -389,11 +389,11 @@ Structure with essencials
                         if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                             if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                                 local speech = FL_VOICE_SRCH
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                             else
                                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY = TIME + (FO_voices_directory[speech].del)
                             end
                         else
@@ -405,7 +405,7 @@ Structure with essencials
                         if TIME >= DELAY_CHECK then
                             if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item then
                                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item
-                                play_sound(FOPM_Talk[speech])
+                                FOPM_PlaySound(FOPM_Talk[speech])
                                 DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
                             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].int_item then
                                 DELAY_CHECK = TIME + 10
@@ -423,11 +423,11 @@ Structure with essencials
                 if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                     if FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].item == "FLAPS" then
                         local speech = FL_VOICE_SRCH
-                        play_sound(FOPM_Talk[speech])
+                        FOPM_PlaySound(FOPM_Talk[speech])
                         DELAY = TIME + (FLAP_POS[speech].del) + fo_speed
                     else
                         local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                        play_sound(FOPM_Talk[speech])
+                        FOPM_PlaySound(FOPM_Talk[speech])
                         DELAY = TIME + (FO_voices_directory[speech].del)
                     end
                 else
@@ -437,7 +437,7 @@ Structure with essencials
                 PROC_STEP = PROC_STEP + 1
             elseif FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state then
                 local speech = FOPM_procedure.Pre_cockpit_preparation[PROC_STEP].state
-                play_sound(FOPM_Talk[speech])
+                FOPM_PlaySound(FOPM_Talk[speech])
                 DELAY = TIME + (FO_voices_directory[speech].del) + fo_speed
                 STEP = 3
                 PROC_STEP = PROC_STEP + 1
@@ -450,7 +450,7 @@ Structure with essencials
         if TIME >= DELAY then
             if PROC_STEP > #FOPM_procedure.Pre_cockpit_preparation then
                 local rindex = math.random(5)
-                play_sound(READY[rindex])
+                FOPM_PlaySound(READY[rindex])
                 DELAY = TIME + (RDY[rindex].del) + fo_speed
                 command_once(MCDU_FO_KEY_Fpln)
                 STEP = 0

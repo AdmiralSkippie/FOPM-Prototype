@@ -2,6 +2,100 @@
 ---- Voices Load System V 2.0 ----
 ----------------------------------
 
+------------------------------------
+------ FMOD AUDIO ENGINE V 1.1 -----
+------------------------------------
+-- ALL THE SOUND LOADING AND PLAYBACK OF THE FO/PM GOES THROUGH THIS SECTION.
+-- REQUIRES FlyWithLua NG+ 2.8.9 OR NEWER (X-Plane 12 Fmod SDK).
+
+-- OUTPUT BUS: "interior" (COCKPIT), "ui", "com1" (RADIO) OR "master"
+FOPM_AUDIO_BUS = "interior"
+
+-- FO/PM VOICE VOLUME, 0.0 = SILENT, 1.0 = NORMAL, UP TO 5.0
+FOPM_AUDIO_VOLUME = 1.0
+
+-- FMOD BUS DISPATCH
+local FOPM_PLAY_ON_BUS = {
+    interior = play_sound_on_interior_bus,
+    ui       = play_sound_on_ui_bus,
+    com1     = play_sound_on_com1_bus,
+    master   = play_sound_on_master_bus
+}
+
+local FOPM_STOP_ON_BUS = {
+    interior = stop_sound_on_interior_bus,
+    ui       = stop_sound_on_ui_bus,
+    com1     = stop_sound_on_com1_bus,
+    master   = stop_sound_on_master_bus
+}
+
+-- FlyWithLua CHANNEL GROUP DATAREFS, THEY START MUTED / AT ZERO VOLUME
+-- SO THE BUS MUST BE OPENED BEFORE ANYTHING CAN BE HEARD
+local FOPM_BUS_GROUP = {
+    interior = "FlyWithLua_InteriorChannelGroup",
+    ui       = "FlyWithLua_UIChannelGroup",
+    com1     = "FlyWithLua_Com1ChannelGroup",
+    master   = "FlyWithLua_MasterChannelGroup"
+}
+
+-- ENGINE AVAILABILITY, CHECKED ONCE AT LOAD
+FOPM_AUDIO_READY = type(load_fmod_sound) == "function" and FOPM_PLAY_ON_BUS[FOPM_AUDIO_BUS] ~= nil
+
+if not FOPM_AUDIO_READY then
+    logMsg("XXXXX   FO/PM Audio ERROR: Fmod not available on bus '"..tostring(FOPM_AUDIO_BUS).."', update FlyWithLua to NG+ 2.8.9 or newer")
+end
+
+-- OPENS THE BUS: SETS THE VOLUME AND CLEARS THE MUTE FLAG
+function FOPM_ApplyAudioLevel()
+    local group = FOPM_BUS_GROUP[FOPM_AUDIO_BUS]
+    if group == nil then return end
+    if XPLMFindDataRef(group.."/Volume") ~= nil then
+        set(group.."/Volume", FOPM_AUDIO_VOLUME)
+    else
+        logMsg("XXXXX   FO/PM Audio ERROR: dataref "..group.."/Volume not found")
+    end
+    if XPLMFindDataRef(group.."/Mute") ~= nil then
+        set(group.."/Mute", 0)
+    end
+    logMsg("XXXXX   FO/PM Audio: bus '"..FOPM_AUDIO_BUS.."' open at volume "..tostring(FOPM_AUDIO_VOLUME))
+end
+
+if FOPM_AUDIO_READY then
+    FOPM_ApplyAudioLevel()
+end
+
+-- SINGLE LOAD ENTRY POINT
+function FOPM_LoadSound(path)
+    if not FOPM_AUDIO_READY then return nil end
+    local handle = load_fmod_sound(path)
+    if handle == nil then
+        logMsg("XXXXX   FO/PM Audio ERROR: can't load "..tostring(path))
+    end
+    return handle
+end
+
+-- SINGLE PLAYBACK ENTRY POINT
+function FOPM_PlaySound(handle)
+    if handle == nil then return end
+    local play = FOPM_PLAY_ON_BUS[FOPM_AUDIO_BUS]
+    if play == nil then return end
+    play(handle)
+end
+
+-- SINGLE STOP ENTRY POINT, STOPS EVERYTHING PLAYING ON THE FO/PM BUS
+function FOPM_StopSound()
+    local stop = FOPM_STOP_ON_BUS[FOPM_AUDIO_BUS]
+    if stop == nil then return end
+    stop()
+end
+
+-- BULK VOICE PACK LOADER
+local function FOPM_LoadVoicePack(directory, target, pack)
+    for name, data in pairs(directory) do
+        target[name] = FOPM_LoadSound(SCRIPT_DIRECTORY.."FO PM/Voices/"..pack.."/"..data.code..".wav")
+    end
+end
+
 -- VOICE SEARCH DIRECTION
 FOPM_Talk = {}
 
@@ -277,33 +371,12 @@ RDY_TO_DIR = {
 }
 
 -- LOAD SYSTEM
-for config_option, file in ipairs(FO_voice_config) do
-    for name, data in pairs(FO_voices_directory) do
-        local codex = data.code
-        FOPM_Talk[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in pairs(FLAP_CONFIG) do
-        local codex = data.code
-        FOPM_Talk[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in pairs(FLAP_POS) do
-        local codex = data.code
-        FOPM_Talk[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in ipairs(BRAKE_WARN) do
-        local codex = data.code
-        BRAKE_WARNINGS[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in ipairs(BRIEF_CONF) do
-        local codex = data.code
-        BRIEFING_CONF[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in ipairs(RDY) do
-        local codex = data.code
-        READY[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
-    for name, data in ipairs(RDY_TO_DIR) do
-        local codex = data.code
-        READY_FOR_TO[name] = load_WAV_file(SCRIPT_DIRECTORY.."FO PM/Voices/"..file.."/"..codex..".wav")
-    end
+for _, pack in ipairs(FO_voice_config) do
+    FOPM_LoadVoicePack(FO_voices_directory, FOPM_Talk,      pack)
+    FOPM_LoadVoicePack(FLAP_CONFIG,         FOPM_Talk,      pack)
+    FOPM_LoadVoicePack(FLAP_POS,            FOPM_Talk,      pack)
+    FOPM_LoadVoicePack(BRAKE_WARN,          BRAKE_WARNINGS, pack)
+    FOPM_LoadVoicePack(BRIEF_CONF,          BRIEFING_CONF,  pack)
+    FOPM_LoadVoicePack(RDY,                 READY,          pack)
+    FOPM_LoadVoicePack(RDY_TO_DIR,          READY_FOR_TO,   pack)
 end

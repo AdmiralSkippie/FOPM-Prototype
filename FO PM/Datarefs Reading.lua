@@ -139,27 +139,59 @@ dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 MCT/3 TOG
 dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 
 ---- MCDU ----
-dataref("MCDU2_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
-dataref("MCDU1_BLINE_3", "AirbusFBW/MCDU1cont3b", "readonly") -- text line --
-MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
-MCDU_FO_KEY_Fpln = "AirbusFBW/MCDU2Fpln"
-dataref("MCDU2_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --
-dataref("MCDU2_GLINE_2", "AirbusFBW/MCDU2cont2g", "readonly") -- text line SLAT retract to 0 --
-dataref("MCDU2_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green DOT --
-dataref("MCDU1_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly")
-dataref("MCDU1_WLINE_1", "AirbusFBW/MCDU1cont1w", "readonly")
-dataref("MCDU1_WTITLE", "AirbusFBW/MCDU1titlew", "readonly")
-dataref("MCDU2_SHORT_GLINE_2","AirbusFBW/MCDU2scont1g","readonly")
-dataref("MCDU2_SHORT_GLINE_3","AirbusFBW/MCDU2label2g","readonly")
-dataref("MCDU2_SHORT_GLINE_4","AirbusFBW/MCDU2scont2g","readonly")
-dataref("MCDU2_SHORT_GLINE_5","AirbusFBW/MCDU2label3g","readonly")
-dataref("MCDU2_SHORT_GLINE_6","AirbusFBW/MCDU2scont3g","readonly")
-dataref("MCDU2_SHORT_GLINE_7","AirbusFBW/MCDU2label4g","readonly")
-dataref("MCDU2_SHORT_GLINE_8","AirbusFBW/MCDU2scont4g","readonly")
-dataref("MCDU2_SHORT_GLINE_9","AirbusFBW/MCDU2label5g","readonly")
-dataref("MCDU2_SHORT_GLINE_10","AirbusFBW/MCDU2scont5g","readonly")
-dataref("MCDU2_SHORT_GLINE_11","AirbusFBW/MCDU2label6g","readonly")
-dataref("MCDU2_SHORT_GLINE_12","AirbusFBW/MCDU2scont6g","readonly")
+    -- MCDU 1 CONT--
+        dataref("MCDU1_BLINE_3", "AirbusFBW/MCDU1cont3b", "readonly") -- text line --
+        dataref("MCDU1_GLINE_1", "AirbusFBW/MCDU1cont1g", "readonly")
+        dataref("MCDU1_WLINE_1", "AirbusFBW/MCDU1cont1w", "readonly")
+        dataref("MCDU1_WTITLE", "AirbusFBW/MCDU1titlew", "readonly")
+    -- MCDU 1 COMMANDS --
+
+    -- MCDU 2 CONT --
+        dataref("MCDU2_WTITLE", "AirbusFBW/MCDU2titlew", "readonly")
+        dataref("MCDU2_WLINE_1","AirbusFBW/MCDU2cont1w","readonly")
+        dataref("MCDU2_WLINE_2","AirbusFBW/MCDU2cont2w","readonly")
+        dataref("MCDU2_WLINE_3","AirbusFBW/MCDU2cont3w","readonly")
+        dataref("MCDU2_BLINE_3", "AirbusFBW/MCDU2cont3b", "readonly") -- text line --
+        dataref("MCDU2_BLINE_6","AirbusFBW/MCDU2cont6b","readonly")
+        dataref("MCDU2_GLINE_1", "AirbusFBW/MCDU2cont1g", "readonly") -- text line FLP retract to FLP1 --
+        dataref("MCDU2_GLINE_2", "AirbusFBW/MCDU2cont2g", "readonly") -- text line SLAT retract to 0 --
+        dataref("MCDU2_GLINE_3", "AirbusFBW/MCDU2cont3g", "readonly") -- text line Green DOT --
+        dataref("MCDU2_SHORT_GLINE_2","AirbusFBW/MCDU2scont1g","readonly")
+        dataref("MCDU2_SHORT_GLINE_3","AirbusFBW/MCDU2label2g","readonly")
+        dataref("MCDU2_SHORT_GLINE_4","AirbusFBW/MCDU2scont2g","readonly")
+        dataref("MCDU2_SHORT_GLINE_5","AirbusFBW/MCDU2label3g","readonly")
+        dataref("MCDU2_SHORT_GLINE_6","AirbusFBW/MCDU2scont3g","readonly")
+        dataref("MCDU2_SHORT_GLINE_7","AirbusFBW/MCDU2label4g","readonly")
+        dataref("MCDU2_SHORT_GLINE_8","AirbusFBW/MCDU2scont4g","readonly")
+        dataref("MCDU2_SHORT_GLINE_9","AirbusFBW/MCDU2label5g","readonly")
+        dataref("MCDU2_SHORT_GLINE_10","AirbusFBW/MCDU2scont5g","readonly")
+        dataref("MCDU2_SHORT_GLINE_11","AirbusFBW/MCDU2label6g","readonly")
+        dataref("MCDU2_SHORT_GLINE_12","AirbusFBW/MCDU2scont6g","readonly")
+        dataref("MCDU2_SHORT_WLINE_1","AirbusFBW/MCDU2label1w","readonly")
+        dataref("MCDU2_SHORT_WLINE_2","AirbusFBW/MCDU2scont1w","readonly")
+        dataref("MCDU2_SHORT_WLINE_3","AirbusFBW/MCDU2label2w","readonly")
+        dataref("MCDU2_SHORT_WLINE_4","AirbusFBW/MCDU2scont2w","readonly")
+        dataref("MCDU2_SHORT_WLINE_5","AirbusFBW/MCDU2label3w","readonly")
+        dataref("MCDU2_SHORT_WLINE_6","AirbusFBW/MCDU2scont3w","readonly")
+        dataref("MCDU2_SHORT_WLINE_7","AirbusFBW/MCDU2label4w","readonly")
+        dataref("MCDU2_SHORT_WLINE_8","AirbusFBW/MCDU2scont4w","readonly")
+        dataref("MCDU2_SHORT_WLINE_9","AirbusFBW/MCDU2label5w","readonly")
+        dataref("MCDU2_SHORT_WLINE_10","AirbusFBW/MCDU2scont5w","readonly")
+        dataref("MCDU2_SHORT_WLINE_11","AirbusFBW/MCDU2label6w","readonly")
+        dataref("MCDU2_SHORT_WLINE_12","AirbusFBW/MCDU2scont6w","readonly")
+    -- MCDU 2 COMMANDS --
+        MCDU_FO_KEY_Perf = "AirbusFBW/MCDU2Perf"
+        MCDU_FO_KEY_Fpln = "AirbusFBW/MCDU2Fpln"
+        MCDU_FO_KEY_Menu = "AirbusFBW/MCDU2Menu"
+        MCDU_FO_KEY_L1 = "AirbusFBW/MCDU2LSK1L"
+        MCDU_FO_KEY_L2 = "AirbusFBW/MCDU2LSK2L"
+        MCDU_FO_KEY_L3 = "AirbusFBW/MCDU2LSK3L"
+        MCDU_FO_KEY_L4 = "AirbusFBW/MCDU2LSK4L"
+        MCDU_FO_KEY_L5 = "AirbusFBW/MCDU2LSK5L"
+        MCDU_FO_KEY_L6 = "AirbusFBW/MCDU2LSK6L"
+        MCDU_FO_KEY_R1 = "AirbusFBW/MCDU2LSK1R"
+        MCDU_FO_KEY_R2 = "AirbusFBW/MCDU2LSK2R"
+        MCDU_FO_KEY_R6 = "AirbusFBW/MCDU2LSK6R"
 
 ---- INDICATIONS ----
 -- dataref("OXY_Press", "", "readonly")

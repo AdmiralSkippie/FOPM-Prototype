@@ -170,6 +170,7 @@ FOPM_Procedures_Control = {
     EXECUTE_FLP = false,
     EXECUTE_GEAR = false,
     EXECUTE_BARO_SET = false,
+    EXECUTE_WX_REQ = false
 }
 
 ------------------
@@ -233,8 +234,10 @@ FOPM_CONFIG_VARIABLE = {
     },
     IAE_SD_TIME = math.floor(TIME),
     TO_RWY = "-",
-    DEP_ARRP = "",
-    ARR_ARRP = "",
+    DEP_ARRP = "----",
+    ARR_ARRP = "----",
+    ALT_ARRP = "----",
+    WX_READY = false
 }
 
 -- FLIGHT PARAMETERS VARIABLES
@@ -5541,6 +5544,8 @@ local qnh_unit = "hPa"
 local qnh_speed = 0.05
 local qnh_digits = ""
 local qnh_digit_index = 1
+local search_line = 0
+-- SET BARO REF
 function set_baro_ref()
         if qnh_step == 0 then
             qnh_target = qnh_value
@@ -5724,6 +5729,137 @@ function read_qnh_from_mcdu(expected_icao)
     return value, unit
 end
 
+-- WEATHER REQUEST
+function weather_request()
+    if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+        if FOPM_STEP_VARIABLE.STEP == 0 then -- INICIO
+            if FOPM_CONFIG_VARIABLE.WX_READY then -- EVITA BUCLE O REPETICION INECESARIA
+                FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+            else
+                FOPM_STEP_VARIABLE.STEP = 1
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 1 then -- INICIO DE NAVEGACION
+            command_once(MCDU_FO_KEY_Menu)
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 2
+        elseif FOPM_STEP_VARIABLE.STEP == 2 then
+            command_once(MCDU_FO_KEY_L2)
+            FOPM_STEP_VARIABLE.STEP = 3
+        elseif FOPM_STEP_VARIABLE.STEP == 3 then -- COMPROBACION DEL SISTEMA ACTIVO
+            if string.find(MCDU2_WTITLE, "ATSU DATALINK") then
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 4
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 4 then
+            command_once(MCDU_FO_KEY_R1)
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 5
+        elseif FOPM_STEP_VARIABLE.STEP == 5 then
+            command_once(MCDU_FO_KEY_R2)
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 6
+        elseif FOPM_STEP_VARIABLE.STEP == 6 then -- VERIFICACION/EXTRACCION DE AEROPUERTOS
+            if string.sub(MCDU2_WLINE_1, -4) == "----" or string.sub(MCDU2_WLINE_2, -4) == "----" then -- DEP/ARR ARRP
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 0
+                FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+                command_once(MCDU_FO_KEY_Fpln)
+            elseif string.sub(MCDU2_WLINE_3, -4) == "----" then -- ALT_ARRP
+                FOPM_CONFIG_VARIABLE.DEP_ARRP = string.sub(MCDU2_GLINE_1, -4)
+                FOPM_CONFIG_VARIABLE.ARR_ARRP = string.sub(MCDU2_GLINE_2, -4)
+                FOPM_CONFIG_VARIABLE.ALT_ARRP = "----"
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 7
+            else
+                FOPM_CONFIG_VARIABLE.DEP_ARRP = string.sub(MCDU2_GLINE_1, -4)
+                FOPM_CONFIG_VARIABLE.ARR_ARRP = string.sub(MCDU2_GLINE_2, -4)
+                FOPM_CONFIG_VARIABLE.ALT_ARRP = string.sub(MCDU2_GLINE_3, -4)
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 7
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 7 then -- VERIFICACION DE SISTEMA ACTIVO
+            if string.find(MCDU2_BLINE_6, "METAR*") then
+                command_once(MCDU_FO_KEY_R6)
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 8
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 0
+                FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+                command_once(MCDU_FO_KEY_Fpln)
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 8 then -- VERIFICACION DE REQUEST ENVIADO
+            if string.find(MCDU2_BLINE_6, "METAR*") then
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 9
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 9 then -- NAVEGACINO A MENSAJES RECIBIDOS
+            command_once(MCDU_FO_KEY_L6)
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 10
+        elseif FOPM_STEP_VARIABLE.STEP == 10 then
+            command_once(MCDU_FO_KEY_R6)
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed + 5
+            FOPM_STEP_VARIABLE.STEP = 11
+            search_line = 2
+        elseif FOPM_STEP_VARIABLE.STEP == 11 then -- BUSQUEDA DEL METAR CORRECTO
+            if search_line < 11 then
+                if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
+                    if string.find((_G["MCDU2_SHORT_WLINE_"..search_line]), "METAR "..FOPM_CONFIG_VARIABLE.DEP_ARRP) then
+                        command_once(_G["MCDU_FO_KEY_L"..(search_line/2)])
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        FOPM_STEP_VARIABLE.STEP = 12
+                    else
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        search_line = search_line + 2
+                        return
+                    end
+                else
+                    if string.find((_G["MCDU2_SHORT_WLINE_"..search_line]), "METAR "..FOPM_CONFIG_VARIABLE.ARR_ARRP) then
+                        command_once(_G["MCDU_FO_KEY_L"..(search_line/2)])
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        FOPM_STEP_VARIABLE.STEP = 12
+                    else
+                        FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                        search_line = search_line + 2
+                        return
+                    end
+                end
+            else
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 0
+                FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+                command_once(MCDU_FO_KEY_Fpln)
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 12 then -- EXTRAE LOS DATOS
+            if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
+                local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.DEP_ARRP)
+                qnh_value = v
+                qnh_unit = u
+            else
+                local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.ARR_ARRP)
+                qnh_value = v
+                qnh_unit = u
+            end
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 13
+        elseif FOPM_STEP_VARIABLE.STEP == 13 then -- AJUSTA EL ALTIMETRO
+            FOPM_Procedures_Control.EXECUTE_BARO_SET = true
+            FOPM_STEP_VARIABLE.STEP = 14
+        elseif FOPM_STEP_VARIABLE.STEP == 14 then
+            if not FOPM_Procedures_Control.EXECUTE_BARO_SET then
+                FOPM_STEP_VARIABLE.STEP = 15
+            end
+        elseif FOPM_STEP_VARIABLE.STEP == 15 then
+            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+            FOPM_STEP_VARIABLE.STEP = 0
+            FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+            FOPM_CONFIG_VARIABLE.WX_READY = true
+            command_once(MCDU_FO_KEY_Fpln)
+        end
+    end
+end
+
 ---- //////////////////////////////
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
@@ -5826,6 +5962,7 @@ function phase_check()
                 command_GDN = false
                 command_FLPS_1UP = false
                 command_FLPS_1DN = false
+                FOPM_CONFIG_VARIABLE.WX_READY = false
                 save_backup()
             end
         else
@@ -5842,6 +5979,7 @@ function phase_check()
                 command_GDN = false
                 command_FLPS_1UP = false
                 command_FLPS_1DN = false
+                FOPM_CONFIG_VARIABLE.WX_READY = false
                 save_backup()
             end
         end
@@ -5904,6 +6042,7 @@ function phase_check()
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.DES_BRIEFING = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
+            FOPM_CONFIG_VARIABLE.WX_READY = false
             save_backup()
         end
         if ENG_1_REV > 0 or ENG_2_REV > 0 then
@@ -5913,6 +6052,7 @@ function phase_check()
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_CLB_DONE = false
             FOPM_TL_COMPLETED_PROC.TEN_THAUSAND_FEET_DES_DONE = false
             FOPM_STEP_VARIABLE.STEP_AL = 0
+            FOPM_CONFIG_VARIABLE.WX_READY = false
             save_backup()
         end
     end
@@ -6134,6 +6274,9 @@ function FO_main_logic()
     if FOPM_Procedures_Control.EXECUTE_BARO_SET then
         set_baro_ref()
     end
+    if FOPM_Procedures_Control.EXECUTE_WX_REQ then
+        weather_request()
+    end
 end
 
 do_every_frame("FO_main_logic()")
@@ -6274,29 +6417,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         -- DEBUGING
-            if qnh_value then
-                imgui.TextUnformatted("Value: "..qnh_value)
-            else
-                imgui.TextUnformatted("Value: ---")
-            end
-            if qnh_unit then
-                imgui.TextUnformatted("Unit: "..qnh_unit)
-            else
-                imgui.TextUnformatted("Unit: ---")
-            end
-            _, FOPM_CONFIG_VARIABLE.DEP_ARRP = imgui.InputText("DEP",FOPM_CONFIG_VARIABLE.DEP_ARRP,5)
-            if FOPM_Procedures_Control.EXECUTE_BARO_SET == false then
-                if imgui.SmallButton("Extract") then
-                    local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.DEP_ARRP)
-                    qnh_value = v
-                    qnh_unit = u
-                end
-            end
-            if FOPM_Procedures_Control.EXECUTE_BARO_SET == false then
-                if imgui.SmallButton("SET") then
-                    FOPM_Procedures_Control.EXECUTE_BARO_SET = true
-                end
-            end
+
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -6576,7 +6697,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_PRCL_SEL = false
         end
         -- DEBUGING
-
+            imgui.TextUnformatted(FOPM_STEP_VARIABLE.STEP)
+            imgui.TextUnformatted(MCDU2_WLINE_1)
+            imgui.TextUnformatted(MCDU2_GLINE_1)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -6645,23 +6768,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             if ENG_MODEL == 0 then
                 imgui.TextUnformatted("Time Since ENG SD: "..math.floor((TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME)/60).." min")
             end
-            if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
-                DEPARTURE_BRIEFING_BLEED_OPT = 1
-                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
-                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = false
-            end
-            imgui.SameLine()
-            if imgui.RadioButton("PACKS On", DEPARTURE_BRIEFING_BLEED_OPT == 2) then
-                DEPARTURE_BRIEFING_BLEED_OPT = 2
-                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = true
-                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = false
-            end
-            imgui.SameLine()
-            if imgui.RadioButton("APU to PACKS", DEPARTURE_BRIEFING_BLEED_OPT == 3) then
-                DEPARTURE_BRIEFING_BLEED_OPT = 3
-                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
-                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = true
-            end
+            imgui.TextUnformatted("FLIGHT: "..FOPM_CONFIG_VARIABLE.DEP_ARRP.." -> "..FOPM_CONFIG_VARIABLE.ARR_ARRP.." / "..FOPM_CONFIG_VARIABLE.ALT_ARRP)
             imgui.TextUnformatted("TO RWY:")
             imgui.SameLine()
             if string.find(MCDU1_WTITLE, "TAKE OFF") then
@@ -6708,12 +6815,30 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             imgui.TextUnformatted("V2:")
             imgui.SameLine()
             imgui.TextUnformatted(V2_SPEED)
+            imgui.TextUnformatted("Baro Ref: "..qnh_unit.." "..qnh_value)
             imgui.TextUnformatted("Thrust:")
             imgui.SameLine()
             if THR_SETTING == -20 then
                 imgui.TextUnformatted("TOGA")
             else
                 imgui.TextUnformatted("Flex "..THR_SETTING)
+            end
+            if imgui.RadioButton("PACKS Off", DEPARTURE_BRIEFING_BLEED_OPT == 1) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 1
+                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
+                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("PACKS On", DEPARTURE_BRIEFING_BLEED_OPT == 2) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 2
+                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = true
+                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = false
+            end
+            imgui.SameLine()
+            if imgui.RadioButton("APU to PACKS", DEPARTURE_BRIEFING_BLEED_OPT == 3) then
+                DEPARTURE_BRIEFING_BLEED_OPT = 3
+                FOPM_CONFIG_VARIABLE.PACKS_FOR_TO = false
+                FOPM_CONFIG_VARIABLE.APU_TO_PACKS = true
             end
             imgui.TextUnformatted("Raining:")
             imgui.SameLine()
@@ -6755,6 +6880,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     WND_BRIEFING = false
                     WND_MAIN = true
                     save_backup()
+                end
+            end
+            imgui.SameLine()
+            if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
+                if imgui.SmallButton("WX REQUEST") then
+                    FOPM_CONFIG_VARIABLE.WX_READY = false
+                    FOPM_Procedures_Control.EXECUTE_WX_REQ = true
                 end
             end
         end

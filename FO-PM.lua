@@ -277,6 +277,7 @@ function engine_math()
 end
 
 do_every_frame("engine_math()")
+do_every_frame("FOPM_SpeechQueueRun()")
 
 
 ------------------------------
@@ -4043,6 +4044,75 @@ function one_engine_taxi_ARR()
     end
 end
 
+-- ///////////////////////////////////
+-- ///// CHECKLIST ANSWER ENGINE /////
+-- ///////////////////////////////////
+
+-- LAST QNH READ FROM A METAR, MIRRORED HERE SO THE CHECKLIST PACKS CAN SEE IT.
+-- THE STATION IS KEPT TOO, SO AN ARRIVAL ITEM NEVER VALIDATES OR READS BACK A
+-- DEPARTURE QNH THAT IS STILL SITTING IN MEMORY.
+FOPM_METAR = {QNH = nil, UNIT = nil, STATION = nil}
+
+-- RETURNS THE METAR QNH ONLY IF IT BELONGS TO THE AIRPORT THAT MATTERS RIGHT NOW
+function FOPM_MetarQNH()
+    if FOPM_METAR.QNH == nil then return nil end
+    local expected
+    if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
+        expected = FOPM_CONFIG_VARIABLE.DEP_ARRP
+    else
+        expected = FOPM_CONFIG_VARIABLE.ARR_ARRP
+    end
+    if expected and FOPM_METAR.STATION and FOPM_METAR.STATION ~= expected then
+        return nil
+    end
+    return FOPM_METAR.QNH, FOPM_METAR.UNIT
+end
+
+-- TRUE WHEN AN ALTIMETER READING IN INHG MATCHES THE METAR QNH, USING THE SAME
+-- ROUNDING set_baro_ref() USES TO DRIVE THE KNOB
+local function baro_matches(setting, qnh, unit)
+    if unit == "InHg" then
+        return math.floor((setting * 100) + 0.5) == qnh
+    end
+    return math.floor((setting * 33.8639) + 0.5) == qnh
+end
+
+-- CHECKLIST CHECK FOR BARO REFERENCE.
+-- WITH A USABLE METAR BOTH ALTIMETERS MUST SIT ON THAT QNH.
+-- WITHOUT ONE IT FALLS BACK TO THE OLD RULE, CP AND FO SIMPLY AGREE.
+function FOPM_BaroCheck()
+    local qnh, unit = FOPM_MetarQNH()
+    if qnh == nil then
+        return CM_QNH == FO_QNH
+    end
+    return baro_matches(CM_QNH, qnh, unit) and baro_matches(FO_QNH, qnh, unit)
+end
+
+-- SPEAKS THE ANSWER OF A CHECKLIST ITEM AND RETURNS HOW LONG IT TAKES.
+-- BARO REFERENCE SPELLS THE METAR QNH DIGIT BY DIGIT AND THEN SAYS ITS STATE,
+-- THE SAME WAY set_baro_ref() DOES. EVERY OTHER ITEM IS ONE PLAIN CLIP.
+function FOPM_AnswerSay(entry)
+    local state = entry.state
+    if entry.item == "BARO_REFERENCE" then
+        local qnh = FOPM_MetarQNH()
+        if qnh then
+            local keys = {}
+            local digits = string.format("%d", qnh)
+            for i = 1, #digits do
+                keys[#keys + 1] = "N"..digits:sub(i, i)
+            end
+            keys[#keys + 1] = state
+            return FOPM_SayList(keys, -0.17)
+        end
+    end
+    if state == "FLAPS" then
+        FOPM_PlaySound(FOPM_Talk[FL_VOICE_SRCH])
+        return FOPM_Duration(FLAP_POS, FL_VOICE_SRCH)
+    end
+    FOPM_PlaySound(FOPM_Talk[state])
+    return FOPM_Duration(FO_voices_directory, state)
+end
+
 -- //////////////////////////////
 -- ///////// CHECKLISTS /////////
 -- //////////////////////////////
@@ -4077,15 +4147,7 @@ function checklist_cockpit_prep()
             if FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
                     if FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            local speech = FL_VOICE_SRCH
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                        else
-                            local speech = FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                        end
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
                         FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                     else
@@ -4094,15 +4156,7 @@ function checklist_cockpit_prep()
                 end
             elseif FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        local speech = FL_VOICE_SRCH
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                    else
-                        local speech = FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                    end
+                    FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Cockpit_preparation_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
@@ -4158,15 +4212,7 @@ function checklist_before_start()
             if FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
                     if FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            local speech = FL_VOICE_SRCH
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                        else
-                            local speech = FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                        end
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
                         FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                     else
@@ -4175,15 +4221,7 @@ function checklist_before_start()
                 end
             elseif FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        local speech = FL_VOICE_SRCH
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                    else
-                        local speech = FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                    end
+                    FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Before_start_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
@@ -4961,15 +4999,7 @@ function checklist_climb()
             if FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
                     if FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            local speech = FL_VOICE_SRCH
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                        else
-                            local speech = FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                        end
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
                         FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                     else
@@ -4978,15 +5008,7 @@ function checklist_climb()
                 end
             elseif FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        local speech = FL_VOICE_SRCH
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                    else
-                        local speech = FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                    end
+                    FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Climb_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
@@ -5080,15 +5102,7 @@ function checklist_approach()
             if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
                     if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            local speech = FL_VOICE_SRCH
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                        else
-                            local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                        end
+                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
                         FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                     else
@@ -5097,15 +5111,7 @@ function checklist_approach()
                 end
             elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        local speech = FL_VOICE_SRCH
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_POS, speech))
-                    else
-                        local speech = FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].state
-                        FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                    end
+                    FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP])
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
@@ -5537,7 +5543,7 @@ end
 
 -- BARO SETTING
 -- DEBUGIN
-local qnh_value = 0
+local qnh_value = 1013
 local qnh_target = 0
 local qnh_step = 0
 local qnh_unit = "hPa"
@@ -5622,7 +5628,6 @@ function set_baro_ref()
                 else
                     qnh_step = 5
                 end
-    
             elseif qnh_step == 5 then
                 if math.floor(IND_ALTITUDE) >= TRANSITION_ALT then
                     command_once(FO_BARO_PULL)
@@ -5836,10 +5841,16 @@ function weather_request()
                 local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.DEP_ARRP)
                 qnh_value = v
                 qnh_unit = u
+                FOPM_METAR.QNH = v
+                FOPM_METAR.UNIT = u
+                FOPM_METAR.STATION = v and FOPM_CONFIG_VARIABLE.DEP_ARRP or nil
             else
                 local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.ARR_ARRP)
                 qnh_value = v
                 qnh_unit = u
+                FOPM_METAR.QNH = v
+                FOPM_METAR.UNIT = u
+                FOPM_METAR.STATION = v and FOPM_CONFIG_VARIABLE.ARR_ARRP or nil
             end
             FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
             FOPM_STEP_VARIABLE.STEP = 13
@@ -6352,6 +6363,7 @@ function config_save()
         config:write('FOPM_plugin_version = "V1.1"'.."\n")
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
+        config:write("fo_wx_req = " .. tostring(fo_wx_req) .. "\n")
         config:write("fo_speed = ".. fo_speed.."\n")
         config:write('prcl_to_load = "'.. prcl_to_load..'"\n\n')
         config:write("FOPM_wleft = "..tostring(FOPM_wleft).."\n")
@@ -6882,11 +6894,32 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     save_backup()
                 end
             end
-            imgui.SameLine()
-            if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
-                if imgui.SmallButton("WX REQUEST") then
-                    FOPM_CONFIG_VARIABLE.WX_READY = false
-                    FOPM_Procedures_Control.EXECUTE_WX_REQ = true
+            if fo_wx_req then
+                imgui.SameLine()
+                if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
+                    if imgui.SmallButton("WX REQUEST") then
+                        FOPM_CONFIG_VARIABLE.WX_READY = false
+                        FOPM_Procedures_Control.EXECUTE_WX_REQ = true
+                    end
+                end
+            else
+                imgui.TextUnformatted("Set Baro Ref:")
+                imgui.SameLine()
+                _, qnh_value = imgui.InputInt("", qnh_value)
+                if (qnh_value >= 785 and qnh_value <= 1100) or (qnh_value >= 2200 and qnh_value <= 3248) then
+                    if not FOPM_Procedures_Control.EXECUTE_BARO_SET then
+                        if imgui.SmallButton("SET") then
+                            if qnh_value > 1500 then
+                                FOPM_METAR.UNIT = "InHg"
+                            else
+                                FOPM_METAR.UNIT = "hPa"
+                            end
+                            FOPM_METAR.QNH     = qnh_value
+                            FOPM_METAR.STATION = nil
+                            FOPM_Procedures_Control.EXECUTE_BARO_SET = true
+                            FOPM_Procedures_Control.EXECUTE_BARO_SET = true
+                        end
+                    end
                 end
             end
         end
@@ -6991,12 +7024,44 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     WND_MAIN = true
                     save_backup()
                 end
+            else
+                if imgui.SmallButton("ARR/APP CHANGE") then
+                    local bindex = math.random(4)
+                    FOPM_PlaySound(BRIEFING_CONF[bindex])
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRIEF_CONF, bindex))
+                    FOPM_TL_COMPLETED_PROC.DES_BRIEFING = true
+                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
+                    WND_BRIEFING = false
+                    WND_MAIN = true
+                    save_backup()
+                end
             end
-            imgui.SameLine()
-            if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
-                if imgui.SmallButton("WX REQUEST") then
-                    FOPM_CONFIG_VARIABLE.WX_READY = false
-                    FOPM_Procedures_Control.EXECUTE_WX_REQ = true
+            if fo_wx_req then
+                imgui.SameLine()
+                if not FOPM_Procedures_Control.EXECUTE_WX_REQ then
+                    if imgui.SmallButton("WX REQUEST") then
+                        FOPM_CONFIG_VARIABLE.WX_READY = false
+                        FOPM_Procedures_Control.EXECUTE_WX_REQ = true
+                    end
+                end
+            else
+                imgui.TextUnformatted("Set Baro Ref:")
+                imgui.SameLine()
+                _, qnh_value = imgui.InputInt("", qnh_value)
+                if (qnh_value >= 785 and qnh_value <= 1100) or (qnh_value >= 2200 and qnh_value <= 3248) then
+                    if not FOPM_Procedures_Control.EXECUTE_BARO_SET then
+                        if imgui.SmallButton("SET") then
+                            if qnh_value > 1500 then
+                                FOPM_METAR.UNIT = "InHg"
+                            else
+                                FOPM_METAR.UNIT = "hPa"
+                            end
+                            FOPM_METAR.QNH     = qnh_value
+                            FOPM_METAR.STATION = nil
+                            FOPM_Procedures_Control.EXECUTE_BARO_SET = true
+                        end
+                    end
                 end
             end
         end
@@ -7054,6 +7119,11 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         local setting_change, change = imgui.Checkbox("FO Auto Perform", fo_autoperform)
         if setting_change then
             fo_autoperform = change
+            config_save()
+        end
+        local WX_setting, WX_set_chg = imgui.Checkbox("FO Request Weather (Hoppie Required)", fo_wx_req)
+        if WX_setting then
+            fo_wx_req = WX_set_chg
             config_save()
         end
         imgui.TextUnformatted("Speak Only Essentials: ")

@@ -30,7 +30,7 @@ FOPM_checklist = {
         [6] = {
             item = "BARO_REFERENCE",
             state = "SET",
-            check = function () return CM_QNH == FO_QNH end
+            check = function () return FOPM_BaroCheck() end
         },
         [7] = {
             AR_item = true,
@@ -232,7 +232,8 @@ FOPM_checklist = {
         },
         [2] = {
             item = "BARO_REFERENCE",
-            state = "SET"
+            state = "SET",
+            check = function () return FOPM_BaroCheck() end
         },
         [3] = {
             item = "SEAT_BELTS",

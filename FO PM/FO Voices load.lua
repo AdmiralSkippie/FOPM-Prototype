@@ -119,8 +119,50 @@ function FOPM_Duration(directory, key)
     return entry.del or FOPM_DEFAULT_DURATION
 end
 
+-- SPEECH QUEUE
+-- SOME ANSWERS ARE MORE THAN ONE CLIP, LIKE SPELLING A QNH DIGIT BY DIGIT.
+-- FOPM_SayList PLAYS THE FIRST CLIP, LEAVES THE REST QUEUED AND RETURNS THE
+-- TOTAL DURATION, SO THE CALLER KEEPS SETTING ITS DELAY EXACTLY AS BEFORE.
+local FOPM_QUEUE = {}
+local FOPM_QUEUE_DUE = 0
+
+function FOPM_SayList(keys, gap)
+    gap = gap or 0
+    FOPM_QUEUE = {}
+    local total = 0
+    for i = 1, #keys do
+        local d = FOPM_Duration(FO_voices_directory, keys[i])
+        if i < #keys then
+            d = d + gap
+        end
+        if i == 1 then
+            FOPM_PlaySound(FOPM_Talk[keys[i]])
+            FOPM_QUEUE_DUE = TIME + d
+        else
+            FOPM_QUEUE[#FOPM_QUEUE + 1] = {key = keys[i], dur = d}
+        end
+        total = total + d
+    end
+    return total
+end
+
+-- CALLED EVERY FRAME, RELEASES THE NEXT CLIP WHEN THE PREVIOUS ONE IS DONE
+function FOPM_SpeechQueueRun()
+    if #FOPM_QUEUE == 0 then return end
+    if TIME < FOPM_QUEUE_DUE then return end
+    local nxt = table.remove(FOPM_QUEUE, 1)
+    FOPM_PlaySound(FOPM_Talk[nxt.key])
+    FOPM_QUEUE_DUE = TIME + nxt.dur
+end
+
+-- DROPS ANYTHING STILL QUEUED
+function FOPM_SpeechQueueClear()
+    FOPM_QUEUE = {}
+end
+
 -- SINGLE STOP ENTRY POINT, STOPS EVERYTHING PLAYING ON THE FO/PM BUS
 function FOPM_StopSound()
+    FOPM_QUEUE = {}
     local stop = FOPM_STOP_ON_BUS[FOPM_AUDIO_BUS]
     if stop == nil then return end
     stop()

@@ -5,6 +5,7 @@
 FOPM_plugin_version = "V1.1"
 speak_only_essencials = true
 fo_autoperform = false
+fo_wx_req = false
 fo_speed = 0.85
 prcl_to_load = "Airbus"
 

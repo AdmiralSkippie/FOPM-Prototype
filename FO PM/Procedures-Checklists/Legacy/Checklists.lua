@@ -48,7 +48,7 @@ FOPM_checklist = {
         [10] = {
             item = "BARO_REFERENCE",
             state = "SET",
-            check = function () return CM_QNH == FO_QNH end
+            check = function () return FOPM_BaroCheck() end
         },
         [11] = {
             item = "DOWN_TO_THE_LINE",
@@ -292,6 +292,7 @@ FOPM_checklist = {
         [7] = {
             item = "BARO_REFERENCE",
             state = "SET",
+            check = function () return FOPM_BaroCheck() end
         },
         [8] = {
             item = "MINIMUMS",

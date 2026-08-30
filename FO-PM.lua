@@ -5837,23 +5837,28 @@ function weather_request()
                 command_once(MCDU_FO_KEY_Fpln)
             end
         elseif FOPM_STEP_VARIABLE.STEP == 12 then -- EXTRAE LOS DATOS
+            local station
             if FOPM_TL_FLT_PHASE.PREFLIGHT or FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT then
-                local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.DEP_ARRP)
-                qnh_value = v
-                qnh_unit = u
-                FOPM_METAR.QNH = v
-                FOPM_METAR.UNIT = u
-                FOPM_METAR.STATION = v and FOPM_CONFIG_VARIABLE.DEP_ARRP or nil
+                station = FOPM_CONFIG_VARIABLE.DEP_ARRP
             else
-                local v, u = read_qnh_from_mcdu(FOPM_CONFIG_VARIABLE.ARR_ARRP)
+                station = FOPM_CONFIG_VARIABLE.ARR_ARRP
+            end
+            local v, u = read_qnh_from_mcdu(station)
+            if v == nil then -- SIN QNH USABLE, SE SALE SIN TOCAR EL ALTIMETRO
+                logMsg("XXXXX   FO/PM WX: METAR sin QNH usable ("..tostring(u).."), peticion cancelada")
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 0
+                FOPM_Procedures_Control.EXECUTE_WX_REQ = false
+                command_once(MCDU_FO_KEY_Fpln)
+            else
                 qnh_value = v
                 qnh_unit = u
                 FOPM_METAR.QNH = v
                 FOPM_METAR.UNIT = u
-                FOPM_METAR.STATION = v and FOPM_CONFIG_VARIABLE.ARR_ARRP or nil
+                FOPM_METAR.STATION = station
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
+                FOPM_STEP_VARIABLE.STEP = 13
             end
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-            FOPM_STEP_VARIABLE.STEP = 13
         elseif FOPM_STEP_VARIABLE.STEP == 13 then -- AJUSTA EL ALTIMETRO
             FOPM_Procedures_Control.EXECUTE_BARO_SET = true
             FOPM_STEP_VARIABLE.STEP = 14
@@ -6354,7 +6359,7 @@ do_every_frame("FO_checklist()")
 
 -- SAVE CONFIGURATION FUNCTION
 function config_save()
-    local rute = SCRIPT_DIRECTORY .. "FO PM/FO COnfig.lua"
+    local rute = SCRIPT_DIRECTORY .. "FO PM/FO Config.lua"
     local config = io.open(rute, "w")
     if config then
         config:write("--------------------------\n")
@@ -6762,10 +6767,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     acf_neo_type = "NY"
                 end
                 if ENG_MODEL == 2 then
-                    imgui.TextUnformatted("Aircraft Type: A320-272"..acf_neo_type)
+                    imgui.TextUnformatted("Aircraft Type: A321-272"..acf_neo_type)
                     imgui.TextUnformatted("Engine: PW 1130G-JM")
                 elseif ENG_MODEL == 3 then
-                    imgui.TextUnformatted("Aircraft Type: A320-253"..acf_neo_type)
+                    imgui.TextUnformatted("Aircraft Type: A321-253"..acf_neo_type)
                     imgui.TextUnformatted("Engine: CFM LEAP-1A33")
                 end
             end

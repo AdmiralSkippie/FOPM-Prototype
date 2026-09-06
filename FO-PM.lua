@@ -3174,7 +3174,9 @@ function go_arround()
             if FOPM_STEP_VARIABLE.STEP == 11 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                     FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
-                    FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
+                    if string.match(MCDU2_GLINE_2, "(%d+)") then
+                        FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
+                    end
                     FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     FOPM_STEP_VARIABLE.STEP = 12

@@ -24,7 +24,7 @@ dataref("TIME", "sim/time/total_running_time_sec", "readonly")
 -- /////////////////////////////////
 
 -- RANDOMIZER --
-math.randomseed(os.clock())
+math.randomseed(os.time() + math.floor(os.clock() * 1000000))
 
 -- CONFIG LOAD
 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO Config.lua")

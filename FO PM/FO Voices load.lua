@@ -71,29 +71,91 @@ end
 FOPM_SOUND_LIMIT = 350
 FOPM_SOUND_COUNT = 0
 FOPM_SOUND_MISSING = {}
+FOPM_SOUND_UNMEASURED = {}
+
+-- DURATION READER
+-- FlyWithLua's Fmod BINDING EXPOSES NO LENGTH QUERY, SO THE DURATION IS TAKEN
+-- FROM THE .wav ITSELF: A PCM RIFF/WAVE LASTS data_size / byte_rate SECONDS,
+-- AND BOTH NUMBERS LIVE IN THE HEADER. THE CHUNKS ARE WALKED INSTEAD OF
+-- ASSUMING A 44 BYTE HEADER, SO A PACK WHOSE FILES CARRY A LIST/INFO CHUNK
+-- BEFORE THE AUDIO IS STILL MEASURED CORRECTLY.
+local function FOPM_LeUint(s)
+    local v = 0
+    for i = #s, 1, -1 do
+        v = (v * 256) + s:byte(i)
+    end
+    return v
+end
+
+function FOPM_WavDuration(file)
+    if file:seek("set", 0) == nil then return nil end
+    local riff = file:read(12)
+    if riff == nil or #riff < 12 then return nil end
+    if riff:sub(1, 4) ~= "RIFF" or riff:sub(9, 12) ~= "WAVE" then return nil end
+
+    local file_size = file:seek("end")
+    if file_size == nil then return nil end
+
+    local pos = 12
+    local byte_rate, data_size
+
+    while (pos + 8) <= file_size do
+        if file:seek("set", pos) == nil then break end
+        local head = file:read(8)
+        if head == nil or #head < 8 then break end
+        local id   = head:sub(1, 4)
+        local size = FOPM_LeUint(head:sub(5, 8))
+
+        if id == "fmt " then
+            local fmt = file:read(16)
+            if fmt ~= nil and #fmt == 16 then
+                byte_rate = FOPM_LeUint(fmt:sub(9, 12))
+            end
+        elseif id == "data" then
+            -- A TRUNCATED FILE DECLARES MORE AUDIO THAN IT ACTUALLY CARRIES
+            local available = file_size - (pos + 8)
+            if size < available then data_size = size else data_size = available end
+        end
+
+        if byte_rate ~= nil and data_size ~= nil then break end
+
+        pos = pos + 8 + size
+        if (size % 2) == 1 then pos = pos + 1 end -- RIFF CHUNKS ARE WORD ALIGNED
+    end
+
+    if byte_rate == nil or byte_rate <= 0 or data_size == nil then return nil end
+    return data_size / byte_rate
+end
 
 -- SINGLE LOAD ENTRY POINT
 -- load_fmod_sound() ONLY STORES THE PATH, IT NEVER OPENS THE FILE AND NEVER FAILS,
 -- SO A MISSING OR MISNAMED .wav IS SILENT AT LOAD AND SILENT AT PLAYBACK.
--- WE OPEN IT HERE SO A BROKEN VOICE PACK IS REPORTED INSTEAD OF JUST GOING QUIET.
+-- WE OPEN IT HERE SO A BROKEN VOICE PACK IS REPORTED INSTEAD OF JUST GOING QUIET,
+-- AND WE MEASURE IT WHILE IT IS OPEN. RETURNS THE HANDLE AND THE DURATION.
 function FOPM_LoadSound(path)
-    if not FOPM_AUDIO_READY then return nil end
+    if not FOPM_AUDIO_READY then return nil, nil end
 
     local file = io.open(path, "rb")
     if file == nil then
         FOPM_SOUND_MISSING[#FOPM_SOUND_MISSING + 1] = path
         logMsg("XXXXX   FO/PM Audio ERROR: missing file "..tostring(path))
-        return nil
+        return nil, nil
     end
+    local duration = FOPM_WavDuration(file)
     file:close()
+
+    if duration == nil then
+        FOPM_SOUND_UNMEASURED[#FOPM_SOUND_UNMEASURED + 1] = path
+        logMsg("XXXXX   FO/PM Audio ERROR: cannot read .wav duration from "..tostring(path))
+    end
 
     if FOPM_SOUND_COUNT >= FOPM_SOUND_LIMIT then
         logMsg("XXXXX   FO/PM Audio ERROR: sound limit of "..FOPM_SOUND_LIMIT.." reached, not loading "..tostring(path))
-        return nil
+        return nil, duration
     end
 
     FOPM_SOUND_COUNT = FOPM_SOUND_COUNT + 1
-    return load_fmod_sound(path)
+    return load_fmod_sound(path), duration
 end
 
 -- SINGLE PLAYBACK ENTRY POINT
@@ -105,9 +167,12 @@ function FOPM_PlaySound(handle)
 end
 
 -- SINGLE DURATION ENTRY POINT
--- EVERY CALLOUT SPACES ITSELF OUT WITH THE del VALUE OF THE VOICE PACK CONFIG.
+-- EVERY CALLOUT SPACES ITSELF OUT WITH THE del VALUE OF ITS DIRECTORY ENTRY,
+-- WHICH THE LOADER MEASURES FROM THE .wav. A PACK CONFIG MAY STILL OVERRIDE IT.
 -- A PROCEDURE OR CHECKLIST PACK POINTING AT A KEY THAT IS NOT IN THE VOICE
 -- DIRECTORY USED TO KILL THE WHOLE SCRIPT, NOW IT FALLS BACK AND NAMES THE KEY.
+-- A del OF ZERO MEANS NOTHING WAS MEASURED OR CONFIGURED, NOT AN INSTANT
+-- CALLOUT, SO IT FALLS BACK TOO INSTEAD OF LETTING THE VOICES RUN TOGETHER.
 FOPM_DEFAULT_DURATION = 1.0
 
 function FOPM_Duration(directory, key)
@@ -116,7 +181,10 @@ function FOPM_Duration(directory, key)
         logMsg("XXXXX   FO/PM Audio ERROR: unknown voice key '"..tostring(key).."'")
         return FOPM_DEFAULT_DURATION
     end
-    return entry.del or FOPM_DEFAULT_DURATION
+    if entry.del == nil or entry.del <= 0 then
+        return FOPM_DEFAULT_DURATION
+    end
+    return entry.del
 end
 
 -- SPEECH QUEUE
@@ -169,9 +237,16 @@ function FOPM_StopSound()
 end
 
 -- BULK VOICE PACK LOADER
+-- STORES THE HANDLE AND STAMPS THE MEASURED DURATION ONTO THE DIRECTORY ENTRY,
+-- SO NO PACK HAS TO DECLARE ITS del BY HAND ANY MORE. THE PACK CONFIG IS READ
+-- AFTER THIS, SO A PACK THAT STILL SETS del KEEPS OVERRIDING THE MEASUREMENT.
 local function FOPM_LoadVoicePack(directory, target, pack)
     for name, data in pairs(directory) do
-        target[name] = FOPM_LoadSound(SCRIPT_DIRECTORY.."FO PM/Voices/"..pack.."/"..data.code..".wav")
+        local handle, duration = FOPM_LoadSound(SCRIPT_DIRECTORY.."FO PM/Voices/"..pack.."/"..data.code..".wav")
+        target[name] = handle
+        if duration ~= nil then
+            data.del = duration
+        end
     end
 end
 
@@ -462,8 +537,12 @@ end
 
 -- LOAD REPORT
 if FOPM_AUDIO_READY then
-    logMsg("XXXXX   FO/PM Audio: "..FOPM_SOUND_COUNT.." sounds loaded, "..#FOPM_SOUND_MISSING.." missing, budget "..FOPM_SOUND_LIMIT)
+    logMsg("XXXXX   FO/PM Audio: "..FOPM_SOUND_COUNT.." sounds loaded, "..#FOPM_SOUND_MISSING.." missing, "
+           ..#FOPM_SOUND_UNMEASURED.." unmeasured, budget "..FOPM_SOUND_LIMIT)
     for _, path in ipairs(FOPM_SOUND_MISSING) do
         logMsg("XXXXX   FO/PM Audio: missing -> "..path)
+    end
+    for _, path in ipairs(FOPM_SOUND_UNMEASURED) do
+        logMsg("XXXXX   FO/PM Audio: unmeasured, using "..FOPM_DEFAULT_DURATION.."s -> "..path)
     end
 end

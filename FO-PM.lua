@@ -1,5 +1,5 @@
 -----------------------------------------
------ //// TOLISS FO / PM V1.1 //// -----
+----- //// TOLISS FO / PM V1.2 //// -----
 -----------------------------------------
 
 logMsg("XXXXX   FO/PM Initiate")
@@ -6365,7 +6365,7 @@ function config_save()
         config:write("--------------------------\n")
         config:write("---- FO CONFIGURATION ----\n")
         config:write("--------------------------\n\n")
-        config:write('FOPM_plugin_version = "V1.1"'.."\n")
+        config:write('FOPM_plugin_version = "'..FOPM_plugin_version..'"\n')
         config:write("speak_only_essencials = " .. tostring(speak_only_essencials) .. "\n")
         config:write("fo_autoperform = " .. tostring(fo_autoperform) .. "\n")
         config:write("fo_wx_req = " .. tostring(fo_wx_req) .. "\n")

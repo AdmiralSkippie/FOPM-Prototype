@@ -2,7 +2,7 @@
 ---- FO CONFIGURATION ----
 --------------------------
 
-FOPM_plugin_version = "V1.1"
+FOPM_plugin_version = "V1.2"
 speak_only_essencials = true
 fo_autoperform = false
 fo_wx_req = false

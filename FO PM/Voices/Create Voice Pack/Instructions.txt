@@ -6,7 +6,7 @@ I hope that you are enjoying the plugin.
 This document will teach you how to create and set the config of your voice pack, if you want to record a voice or use AI, you are free to do it, but follow this instructions.
 
 The plugin uses a system which loads every single callout from 1 folder it calls "Active", in there are all the sounds and the "FO Voicepack conf.lua" file
-which sets the config and duration of each sound into the plugin, you need to save the folder with other name than "Active".
+which sets the config of the pack into the plugin, you need to save the folder with other name than "Active".
 
 Each sound file must be in this specific format:
 WAV file (.wav)
@@ -24,20 +24,22 @@ And the second part, after the "|", it's the audio, the speech or callout that i
 
     ARM <=== If you find something like this in the file, without the "|", it means that the speech and the file name is the same, for this example the speech is "ARM", and the file will be "ARM.wav"
 
-When you have the file, with the format specs, take note of the duration.
-in the same folder (FO PM/Voices/Create Voice Pack) is another file named "Config Template.lua" in there you will find:
+In the same folder (FO PM/Voices/Create Voice Pack) is another file named "Config Template.lua" in there you will find:
 
 FOPM_voicepack_name = "TEMPLATE"  <=== That is your pack name, is at your own and it will be showed in the plugin, in the settings page. Be sure that the name is between "", if not, it will cause a crash.
 
-FO_voices_directory.OFF.del = 0   <=== That is the duration of each speech or callout.
+And that is all you have to write. NEW IN V1.2: you no longer take note of the duration of anything.
+When the pack is loaded the plugin opens every .wav and reads its exact duration from the file itself, and uses it to create the delay that
+prevents the callouts from overlapping. So you just record the file, name it right, and you are done. If you re-record a callout later and it
+comes out longer or shorter, the plugin picks up the new length on its own, there is nothing to keep in sync.
 
-The system takes every duration of all the files each one, and use it to create a delay to prevent overlapping between the callouts, so be carefull when set each duration.
-Take note that the text in capitals (OFF) are the callout in reference.
+If you ever want one callout to be spaced out by something other than its real length, you can still force it in the config file and it
+overrides the measured value:
 
-So for example: we have the OFF callout with a duration of 0.856s,
-In the folder, the file name need to be like this:     OFF.wav
-And in the config file you write this:                 FO_voices_directory.OFF.del = 0.856
-The time is set in seconds (s) not in miliseconds, just for your notice.
+    FO_voices_directory.OFF.del = 0.856
+
+The time is set in seconds (s) not in miliseconds, just for your notice. Take note that the text in capitals (OFF) are the callout in reference.
+You will almost never need this, leave the section empty and the real durations are used.
 
 When you have all your files ready, put it in a folder all together, without subfolders, (Name of your choice), and the config file save it in the same folder with the name "FO Voicepack conf.lua"
 
@@ -47,10 +49,12 @@ NOTES:
 1. Be carefull with all the names, capitals, symbols, spaces, all of them, if you dont set the names correctly, the system will not recognize the files and not will load, causing a crash when try to play it.
 2. Check that the files are truly a WAV file, .wav 16 bit PCM, check twice if its necesary, if there is a error with the format, the system will not load the sound and crash when try to play it
    The 22050 Hz is highly recommended to save RAM space, if you export the sound with a higher Frequency, the system will be load it but it will take more unnecessary space in memory.
-3. The "Voices list.txt" and the config file are internally divided into multiple sections, this is just for structure and organization, for you and I, use it to ensure that you have all the sounds and have a order.
+   If a file is not a readable PCM .wav the plugin cannot measure it, it will say so in the X-Plane log (Log.txt, look for the "FO/PM Audio" lines) and fall back to a 1 second delay for that
+   callout, so if one of your callouts sounds cut off or rushed, check the log first, it will name the file.
+3. The "Voices list.txt" is internally divided into multiple sections, this is just for structure and organization, for you and I, use it to ensure that you have all the sounds and have a order.
 4. The sections "BRAKE TEMP WARNING", "POST BRIEFING", "READY SPEECH" and "READY FOR T/O" are customizable, it means that if you want to put another speech than specefied, you are free to do it
-   Just be carefull with the duration of each one, and the number, each category has multiple speeches that the systems randomly choose only one per play, if you put less, at some point the system might choose a nil speech
-   causing a crash, and if you put more, the system only will load and play the established number.
+   You don't have to worry about the duration, the plugin measures whatever you record, but do be carefull with the number, each category has multiple speeches that the systems randomly choose only one per play,
+   if you put less, at some point the system might choose a nil speech causing a crash, and if you put more, the system only will load and play the established number.
    The others sections are according with the SOP and are mandatory as specified.
 
 That's it, now you can produce your own Voice pack to use it in your flights, share it with your partners and/or public to share with the comunity.

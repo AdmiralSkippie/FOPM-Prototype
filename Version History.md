@@ -1,6 +1,22 @@
 
 # VERSION HISTORY
 
+# Version V1.2
+
+---
+
+## Functional changes
+
+**Callout durations are now measured automatically**
+The plugin no longer depends on a table of hand written durations to space out the First Officer's callouts. When a voice pack is loaded it now reads the exact length of every .wav straight from the file itself, and uses that to time the speech.
+
+As a pilot you will not notice any difference, the FO speaks exactly as he did before. The change is for anyone building a voice pack, because it removes the longest and most error prone part of the job: you record the file, name it correctly, and that is all. There is no duration to measure, no number to type in, and nothing to keep in sync when you re-record a callout later. A pack can no longer fall out of step with its own audio, and the few durations in the default packs that had drifted slightly from their files are now exact.
+
+The "FO Voicepack conf.lua" file of every pack now carries only the pack name. If you ever want one callout to be spaced out by something other than its real length you can still declare it there, and it will override the measurement.
+
+**Missing or unreadable voice files no longer run the callouts together**
+If a file is missing, or is not a readable PCM .wav, the plugin now reports it in the X-Plane log naming the file, and falls back to a one second spacing for that callout instead of leaving it with no spacing at all and letting the FO talk over himself.
+
 # Version V1.1 Procedures online
 
 ---

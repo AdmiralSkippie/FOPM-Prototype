@@ -418,7 +418,7 @@ function save_backup()
     end
 end
 
-do_sometimes("save_backup()")
+do_often("save_backup()")
 
 -- //////////////////////////////
 -- ///////// PROCEDURES /////////
@@ -6260,7 +6260,7 @@ function FO_main_logic()
         if FOPM_TL_APP_TYPE.CAT_II_III and AP1_ENGAGE == 1 and AP2_ENGAGE == 1 then
             autoland_fma_check()
         end
-        if math.floor(RADIO_ALT) < 1000 and FPMTR.CONT_APP then
+        if math.floor(RADIO_ALT) < 1000 then
             flight_parameters_check()
         end
     end
@@ -6403,14 +6403,140 @@ local setting_change = false
 local acf_neo_type = "N"
 FO_INTERFACE = nil
 
+-- //////////////////////////////////
+-- ///////// PAGE GEOMETRY //////////
+-- //////////////////////////////////
+-- EVERY PAGE CHANGE USED TO CARRY ITS OWN HAND TUNED PAIR OF DELTAS, ONE PAIR
+-- FOR EACH ORDERED PAIR OF PAGES. ALL OF THEM TURNED OUT TO BE THE PLAIN
+-- DIFFERENCE BETWEEN FIVE PAGE SIZES, SO ONLY THE SIZES LIVE HERE NOW AND THE
+-- DELTA IS WORKED OUT WHEN THE PAGE CHANGES.
+-- ONLY THE DIFFERENCE IS EVER APPLIED, NEVER AN ABSOLUTE SIZE, SO A WINDOW THE
+-- USER RESIZED BY HAND KEEPS ITS OWN SIZE ACROSS PAGE CHANGES AS IT ALWAYS DID.
+-- THE TOP RIGHT CORNER IS THE ANCHOR, top AND right NEVER MOVE.
+local FOPM_PAGE_SIZE = {
+    MAIN     = {w = 250, h = 125},
+    MAIN_DC  = {w = 251, h = 179}, -- MAIN WHILE IT CARRIES THE EXTRA "Departure Change CKL" BUTTON
+    BRIEFING = {w = 310, h = 313},
+    SETTINGS = {w = 290, h = 251},
+    PRCL_SEL = {w = 235, h = 142}
+}
+
+-- CONTENT HEIGHT ACTUALLY MEASURED ON SCREEN, IN BOXELS. A DIFFERENCE IS ONLY
+-- TAKEN FROM HERE WHEN BOTH PAGES HAVE BEEN MEASURED, SO A MEASURED HEIGHT IS
+-- NEVER SUBTRACTED FROM A SEEDED ONE.
+local FOPM_PAGE_MEASURED = {}
+FOPM_AUTOSIZE = true
+local FOPM_AUTOSIZE_OK = nil -- nil UNTIL THE imgui CALLS HAVE BEEN TRIED ONCE
+
+-- THE MAIN PAGE ONLY GROWS THE EXTRA "Departure Change CKL" BUTTON WHILE IT IS
+-- ACTUALLY DRAWN, WHICH IS IN PUSHBACK AND TAXI OUT AND NOWHERE ELSE
+local function FOPM_main_has_dc()
+    if not (FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT) then return false end
+    if not FOPM_checklist.Departure_change_checklist then return false end
+    return (not FOPM_TL_CHECKLIST.DC_CL) and (not FOPM_TL_CHECKLIST.EX_DC_CL)
+end
+
+local function FOPM_active_page()
+    if WND_BRIEFING then return "BRIEFING" end
+    if WND_SETTINGS then return "SETTINGS" end
+    if WND_PRCL_SEL then return "PRCL_SEL" end
+    if FOPM_main_has_dc() then return "MAIN_DC" end
+    return "MAIN"
+end
+
+-- RESIZES FROM THE PAGE ON SCREEN TO THE ONE ABOUT TO BE SHOWN.
+-- CALL IT BEFORE FLIPPING THE WND_ FLAGS, IT READS THE CURRENT PAGE FROM THEM.
+function FOPM_resize_to(to)
+    if FO_INTERFACE == nil then return end
+    local from = FOPM_active_page()
+    if to == "MAIN" and FOPM_main_has_dc() then to = "MAIN_DC" end
+    local a, b = FOPM_PAGE_SIZE[from], FOPM_PAGE_SIZE[to]
+    if a == nil or b == nil or from == to then return end
+    local dh
+    if FOPM_PAGE_MEASURED[from] ~= nil and FOPM_PAGE_MEASURED[to] ~= nil then
+        dh = FOPM_PAGE_MEASURED[to] - FOPM_PAGE_MEASURED[from]
+    else
+        dh = b.h - a.h
+    end
+    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-(b.w-a.w),FOPM_wtop,FOPM_wright,FOPM_wbottom-dh)
+    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+end
+
+-- READS HOW TALL THE PAGE REALLY DREW. ONLY DIFFERENCES BETWEEN PAGES ARE EVER
+-- USED, SO THE TITLE BAR AND THE PADDING CANCEL OUT AND DO NOT NEED MODELLING.
+local function FOPM_measure_raw(wnd)
+    local ww, wh = imgui.GetWindowSize()
+    if type(wh) ~= "number" or wh <= 0 then return nil end
+    local cy = imgui.GetCursorPosY()
+    if type(cy) ~= "number" then return nil end
+    local left, top, right, bottom = float_wnd_get_geometry(wnd)
+    return cy * ((top - bottom) / wh)
+end
+
+-- NOTHING IS RESIZED HERE. FORCING A SIZE EVERY FRAME WOULD FIGHT THE USER
+-- RESIZING BY HAND, SO THE MEASUREMENT IS ONLY REMEMBERED AND USED THE NEXT
+-- TIME THE PAGE CHANGES. WRAPPED IN pcall BECAUSE THESE TWO imgui CALLS ARE NOT
+-- USED ANYWHERE ELSE IN THE PLUGIN AND MAY NOT EXIST IN EVERY FlyWithLua BUILD.
+function FOPM_MeasurePage(wnd)
+    if not FOPM_AUTOSIZE or FOPM_AUTOSIZE_OK == false then return end
+    local ok, h = pcall(FOPM_measure_raw, wnd)
+    if not ok then
+        FOPM_AUTOSIZE_OK = false
+        logMsg("XXXXX   FO/PM UI: imgui measuring not available, page sizes fall back to the built in table")
+        return
+    end
+    FOPM_AUTOSIZE_OK = true
+    if type(h) == "number" and h > 40 and h < 2000 then
+        FOPM_PAGE_MEASURED[FOPM_active_page()] = h
+    end
+end
+
+-- PUTS THE NEXT WIDGET FLUSH WITH THE RIGHT EDGE, WHATEVER THE WINDOW SIZE IS.
+-- imgui.SameLine() TAKES AN OPTIONAL X, SO THE BUTTON IS PLACED AT
+-- (WINDOW WIDTH - BUTTON WIDTH) INSTEAD OF BEING PUSHED ALONG BY A FIXED
+-- SPACER THAT CANNOT KNOW HOW WIDE THE WINDOW IS.
+-- DEGRADES IN THREE STEPS: MEASURED LABEL, THEN A FIXED BUTTON WIDTH, THEN THE
+-- OLD SPACER, SO A FlyWithLua BUILD WITHOUT THESE CALLS STILL DRAWS THE ROW.
+local FOPM_RIGHT_ALIGN_OK = nil
+local FOPM_RIGHT_MARGIN = 10
+
+local function FOPM_right_align_raw(label)
+    local ww = imgui.GetWindowSize()
+    if type(ww) ~= "number" or ww <= 0 then return false end
+    local bw = 20
+    if type(imgui.CalcTextSize) == "function" then
+        local tw = imgui.CalcTextSize(label)
+        if type(tw) == "number" and tw > 0 then bw = tw + 10 end
+    end
+    local px = ww - bw - FOPM_RIGHT_MARGIN
+    if px <= 0 then return false end
+    imgui.SameLine(px)
+    return true
+end
+
+function FOPM_SameLineRight(label)
+    if FOPM_RIGHT_ALIGN_OK ~= false then
+        local ok, placed = pcall(FOPM_right_align_raw, label)
+        if ok then
+            FOPM_RIGHT_ALIGN_OK = true
+            if placed then return end
+        else
+            FOPM_RIGHT_ALIGN_OK = false
+            logMsg("XXXXX   FO/PM UI: imgui right align not available, the X button keeps its fixed spacing")
+        end
+    end
+    imgui.SameLine()
+    imgui.TextUnformatted("     ")
+    imgui.SameLine()
+end
+
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_MAIN then -- MAIN WINDOW
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-40,FOPM_wtop,FOPM_wright,FOPM_wbottom-126)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("SETTINGS")
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BRIEFING = false
@@ -6418,17 +6544,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-60,FOPM_wtop,FOPM_wright,FOPM_wbottom-188)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("BRIEFING")
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
             WND_PRCL_SEL = false
         end
-        imgui.SameLine()
-        imgui.TextUnformatted("     ")
-        imgui.SameLine()
+        FOPM_SameLineRight("X")
         if imgui.SmallButton("X") then
             response_CHECK = true
         end
@@ -6705,9 +6827,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_BRIEFING then -- BRIEFING WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Settings") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+20,FOPM_wtop,FOPM_wright,FOPM_wbottom+62)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("SETTINGS")
             WND_SETTINGS = true
             WND_MAIN = false
             WND_BRIEFING = false
@@ -6715,9 +6835,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("MAIN")
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
@@ -6888,8 +7006,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_PlaySound(BRIEFING_CONF[bindex])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRIEF_CONF, bindex))
                     FOPM_TL_COMPLETED_PROC.TO_BRIEFING = true
-                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
+                    FOPM_resize_to("MAIN")
                     WND_BRIEFING = false
                     WND_MAIN = true
                     NEED_SAVE = true
@@ -6900,8 +7017,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_PlaySound(BRIEFING_CONF[bindex])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRIEF_CONF, bindex))
                     FOPM_TL_CHECKLIST.DC_CL = false
-                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
+                    FOPM_resize_to("MAIN")
                     WND_BRIEFING = false
                     WND_MAIN = true
                     NEED_SAVE = true
@@ -7031,8 +7147,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_PlaySound(BRIEFING_CONF[bindex])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRIEF_CONF, bindex))
                     FOPM_TL_COMPLETED_PROC.DES_BRIEFING = true
-                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
+                    FOPM_resize_to("MAIN")
                     WND_BRIEFING = false
                     WND_MAIN = true
                     NEED_SAVE = true
@@ -7043,8 +7158,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     FOPM_PlaySound(BRIEFING_CONF[bindex])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRIEF_CONF, bindex))
                     FOPM_TL_COMPLETED_PROC.DES_BRIEFING = true
-                    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+60,FOPM_wtop,FOPM_wright,FOPM_wbottom+188)
+                    FOPM_resize_to("MAIN")
                     WND_BRIEFING = false
                     WND_MAIN = true
                     NEED_SAVE = true
@@ -7082,9 +7196,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_SETTINGS then -- SETTINGS WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Main") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+126)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("MAIN")
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
@@ -7092,9 +7204,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-20,FOPM_wtop,FOPM_wright,FOPM_wbottom-62)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("BRIEFING")
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
@@ -7116,9 +7226,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             imgui.TextUnformatted("Reload the script to see changes")
         end
         if imgui.SmallButton("Change PROC/CKLT Pack") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+55,FOPM_wtop,FOPM_wright,FOPM_wbottom+109)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("PRCL_SEL")
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = false
@@ -7173,17 +7281,13 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
     if WND_PRCL_SEL then
         imgui.Spacing()
         if imgui.SmallButton("<-") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-55,FOPM_wtop,FOPM_wright,FOPM_wbottom-109)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("SETTINGS")
             WND_SETTINGS = true
             WND_PRCL_SEL = false
         end
         imgui.SameLine()
         if imgui.SmallButton("Main") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-15,FOPM_wtop,FOPM_wright,FOPM_wbottom+17)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("MAIN")
             WND_SETTINGS = false
             WND_MAIN = true
             WND_BRIEFING = false
@@ -7191,9 +7295,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         imgui.SameLine()
         if imgui.SmallButton("Briefing") then
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-            float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-75,FOPM_wtop,FOPM_wright,FOPM_wbottom-171)
-            FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+            FOPM_resize_to("BRIEFING")
             WND_SETTINGS = false
             WND_MAIN = false
             WND_BRIEFING = true
@@ -7217,76 +7319,102 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if FOPM_proc_config_name ~= prcl_to_load then
             imgui.TextUnformatted("Reload the script to see changes")
             if imgui.SmallButton("SAVE") then
-                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-55,FOPM_wtop,FOPM_wright,FOPM_wbottom-109)
-                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+                FOPM_resize_to("SETTINGS")
                 config_save()
                 WND_SETTINGS = true
                 WND_PRCL_SEL = false
             end
         end
     end
+    FOPM_MeasurePage(FO_INTERFACE)
 end
 
 -- FLOAT WINDOWS MASTER
 
+-- GEOMETRY SANITY CHECK
+-- A GEOMETRY READ BACK FROM A WINDOW THAT WAS ALREADY GONE, OR SAVED ON A
+-- MONITOR THAT IS NO LONGER THERE, COMES OUT AS nil OR AS AN ABSURD
+-- COORDINATE. APPLYING IT WOULD PUT THE INTERFACE WHERE NOBODY CAN REACH IT.
+local function FOPM_geometry_valid()
+    if type(FOPM_wleft) ~= "number" or type(FOPM_wtop) ~= "number" or
+       type(FOPM_wright) ~= "number" or type(FOPM_wbottom) ~= "number" then
+        return false
+    end
+    if FOPM_wleft < 0 or FOPM_wleft > 10000 or
+       FOPM_wtop < 0 or FOPM_wtop > 10000 or
+       FOPM_wright < 0 or FOPM_wright > 10000 or
+       FOPM_wbottom < 0 or FOPM_wbottom > 10000 then
+        return false
+    end
+    return true
+end
+
+-- READS THE GEOMETRY AND WRITES IT TO THE CONFIG.
+-- THE PAGE IS COLLAPSED BACK TO MAIN FIRST BECAUSE THE PAGE FLAGS ARE NOT
+-- PERSISTED AND EVERY FRESH LOAD STARTS ON MAIN, SO SAVING A SETTINGS SIZED
+-- RECT WOULD REOPEN THE MAIN PAGE AT THE WRONG SIZE ON THE NEXT SESSION.
+local function FOPM_save_geometry()
+    FOPM_resize_to("MAIN")
+    WND_SETTINGS = false
+    WND_MAIN = true
+    WND_BRIEFING = false
+    WND_PRCL_SEL = false
+    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+    if not FOPM_geometry_valid() then
+        FOPM_wleft = nil
+        FOPM_wtop = nil
+        FOPM_wright = nil
+        FOPM_wbottom = nil
+    end
+    config_save()
+end
+
+-- SINGLE CLOSE PATH
+-- THE HANDLE ITSELF IS THE OPEN/CLOSED STATE, THERE IS NOTHING ELSE TO KEEP IN
+-- STEP. RUNS ONCE: WHOEVER GETS THERE FIRST CLEARS THE HANDLE AND THE SECOND
+-- CALLER FINDS nil AND DOES NOTHING.
+local function FOPM_interface_cleanup()
+    if FO_INTERFACE == nil then return end
+    FOPM_save_geometry()
+    FO_INTERFACE = nil
+end
+
+-- CALLED BY FlyWithLua WHEN THE WINDOW GOES AWAY, WHICH IS HOW CLOSING WITH THE
+-- NATIVE X ENDS UP IN THE SAME PLACE AS THE COMMAND AND THE MACRO. THE WINDOW
+-- IS STILL ALIVE INSIDE THIS CALLBACK, SO ITS GEOMETRY CAN STILL BE READ, AND
+-- IT MUST NOT BE DESTROYED HERE.
+function on_interface_closed(wnd)
+    FOPM_interface_cleanup()
+end
+
 function show_interface()
+    if FO_INTERFACE then return end
     FO_INTERFACE = float_wnd_create(250, 125, 1, true)
     float_wnd_set_title(FO_INTERFACE, "FO/PM")
     float_wnd_set_imgui_builder(FO_INTERFACE, "FO_imgui_builder")
-    if FOPM_wleft then
+    if type(float_wnd_set_onclose) == "function" then
+        float_wnd_set_onclose(FO_INTERFACE, "on_interface_closed")
+    else
+        logMsg("XXXXX   FO/PM UI: float_wnd_set_onclose not available in this FlyWithLua build, closing with the X will not save the position")
+    end
+    if FOPM_geometry_valid() then
         float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom)
     end
 end
 
-
 function hide_interface()
-    if FO_INTERFACE then
-        if not WND_MAIN then
-            if WND_BRIEFING then
-                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+59,FOPM_wtop,FOPM_wright,FOPM_wbottom+134)
-                WND_SETTINGS = false
-                WND_MAIN = true
-                WND_BRIEFING = false
-            elseif WND_SETTINGS then
-                FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-                float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft+40,FOPM_wtop,FOPM_wright,FOPM_wbottom+82)
-                WND_SETTINGS = false
-                WND_MAIN = true
-                WND_BRIEFING = false
-            end
-        end
-        FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-        if FOPM_wleft > 10000 or FOPM_wleft < 0 then
-            FOPM_wleft = nil
-            FOPM_wtop = nil
-            FOPM_wright = nil
-            FOPM_wbottom = nil
-        end
-        config_save()
-        float_wnd_destroy(FO_INTERFACE)
-    end
+    if FO_INTERFACE == nil then return end
+    local wnd = FO_INTERFACE
+    FOPM_interface_cleanup() -- SAVES WHILE THE WINDOW IS STILL ALIVE, THEN CLEARS THE HANDLE
+    float_wnd_destroy(wnd)   -- IF THIS FIRES on_interface_closed IT FINDS nil AND DOES NOTHING
 end
 
-FOinterface_show_only_once = 0
-FOinterface_hide_only_once = 0
-
 function toggle_interface()
-	show_wnd = not show_wnd
-	if show_wnd then
-		if FOinterface_show_only_once == 0 then
-			show_interface()
-			FOinterface_show_only_once = 1
-			FOinterface_hide_only_once = 0
-		end
-	else
-		if FOinterface_hide_only_once == 0 then
-			hide_interface()
-			FOinterface_hide_only_once = 1
-			FOinterface_show_only_once = 0
-		end
-	end
+    if FO_INTERFACE then
+        hide_interface()
+    else
+        show_interface()
+    end
 end
 
 -- MACRO/COMMANDS

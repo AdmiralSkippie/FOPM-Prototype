@@ -95,6 +95,7 @@ FOPM_TL_COMPLETED_PROC = {
 ---- CHECKLISTS VARIABLES ----
 ------------------------------
 FOPM_TL_CHECKLIST = {
+    ACT_CL = "",
     CP_CL = false,
     EX_CP_CL = false,
     BS_CL = false,
@@ -6406,13 +6407,7 @@ FO_INTERFACE = nil
 -- //////////////////////////////////
 -- ///////// PAGE GEOMETRY //////////
 -- //////////////////////////////////
--- EVERY PAGE CHANGE USED TO CARRY ITS OWN HAND TUNED PAIR OF DELTAS, ONE PAIR
--- FOR EACH ORDERED PAIR OF PAGES. ALL OF THEM TURNED OUT TO BE THE PLAIN
--- DIFFERENCE BETWEEN FIVE PAGE SIZES, SO ONLY THE SIZES LIVE HERE NOW AND THE
--- DELTA IS WORKED OUT WHEN THE PAGE CHANGES.
--- ONLY THE DIFFERENCE IS EVER APPLIED, NEVER AN ABSOLUTE SIZE, SO A WINDOW THE
--- USER RESIZED BY HAND KEEPS ITS OWN SIZE ACROSS PAGE CHANGES AS IT ALWAYS DID.
--- THE TOP RIGHT CORNER IS THE ANCHOR, top AND right NEVER MOVE.
+
 local FOPM_PAGE_SIZE = {
     MAIN     = {w = 250, h = 125},
     MAIN_DC  = {w = 251, h = 179}, -- MAIN WHILE IT CARRIES THE EXTRA "Departure Change CKL" BUTTON
@@ -6421,15 +6416,10 @@ local FOPM_PAGE_SIZE = {
     PRCL_SEL = {w = 235, h = 142}
 }
 
--- CONTENT HEIGHT ACTUALLY MEASURED ON SCREEN, IN BOXELS. A DIFFERENCE IS ONLY
--- TAKEN FROM HERE WHEN BOTH PAGES HAVE BEEN MEASURED, SO A MEASURED HEIGHT IS
--- NEVER SUBTRACTED FROM A SEEDED ONE.
 local FOPM_PAGE_MEASURED = {}
 FOPM_AUTOSIZE = true
 local FOPM_AUTOSIZE_OK = nil -- nil UNTIL THE imgui CALLS HAVE BEEN TRIED ONCE
 
--- THE MAIN PAGE ONLY GROWS THE EXTRA "Departure Change CKL" BUTTON WHILE IT IS
--- ACTUALLY DRAWN, WHICH IS IN PUSHBACK AND TAXI OUT AND NOWHERE ELSE
 local function FOPM_main_has_dc()
     if not (FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT) then return false end
     if not FOPM_checklist.Departure_change_checklist then return false end
@@ -6444,8 +6434,6 @@ local function FOPM_active_page()
     return "MAIN"
 end
 
--- RESIZES FROM THE PAGE ON SCREEN TO THE ONE ABOUT TO BE SHOWN.
--- CALL IT BEFORE FLIPPING THE WND_ FLAGS, IT READS THE CURRENT PAGE FROM THEM.
 function FOPM_resize_to(to)
     if FO_INTERFACE == nil then return end
     local from = FOPM_active_page()
@@ -6463,8 +6451,6 @@ function FOPM_resize_to(to)
     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
 end
 
--- READS HOW TALL THE PAGE REALLY DREW. ONLY DIFFERENCES BETWEEN PAGES ARE EVER
--- USED, SO THE TITLE BAR AND THE PADDING CANCEL OUT AND DO NOT NEED MODELLING.
 local function FOPM_measure_raw(wnd)
     local ww, wh = imgui.GetWindowSize()
     if type(wh) ~= "number" or wh <= 0 then return nil end
@@ -6474,10 +6460,6 @@ local function FOPM_measure_raw(wnd)
     return cy * ((top - bottom) / wh)
 end
 
--- NOTHING IS RESIZED HERE. FORCING A SIZE EVERY FRAME WOULD FIGHT THE USER
--- RESIZING BY HAND, SO THE MEASUREMENT IS ONLY REMEMBERED AND USED THE NEXT
--- TIME THE PAGE CHANGES. WRAPPED IN pcall BECAUSE THESE TWO imgui CALLS ARE NOT
--- USED ANYWHERE ELSE IN THE PLUGIN AND MAY NOT EXIST IN EVERY FlyWithLua BUILD.
 function FOPM_MeasurePage(wnd)
     if not FOPM_AUTOSIZE or FOPM_AUTOSIZE_OK == false then return end
     local ok, h = pcall(FOPM_measure_raw, wnd)
@@ -6492,12 +6474,6 @@ function FOPM_MeasurePage(wnd)
     end
 end
 
--- PUTS THE NEXT WIDGET FLUSH WITH THE RIGHT EDGE, WHATEVER THE WINDOW SIZE IS.
--- imgui.SameLine() TAKES AN OPTIONAL X, SO THE BUTTON IS PLACED AT
--- (WINDOW WIDTH - BUTTON WIDTH) INSTEAD OF BEING PUSHED ALONG BY A FIXED
--- SPACER THAT CANNOT KNOW HOW WIDE THE WINDOW IS.
--- DEGRADES IN THREE STEPS: MEASURED LABEL, THEN A FIXED BUTTON WIDTH, THEN THE
--- OLD SPACER, SO A FlyWithLua BUILD WITHOUT THESE CALLS STILL DRAWS THE ROW.
 local FOPM_RIGHT_ALIGN_OK = nil
 local FOPM_RIGHT_MARGIN = 10
 
@@ -7312,9 +7288,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         end
         if imgui.RadioButton("Avianca 2022", prcl_to_load == "Avianca 2022") then
             prcl_to_load = "Avianca 2022"
-        end
-        if imgui.RadioButton("Legacy", prcl_to_load == "Legacy") then
-            prcl_to_load = "Legacy"
         end
         if FOPM_proc_config_name ~= prcl_to_load then
             imgui.TextUnformatted("Reload the script to see changes")

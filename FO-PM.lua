@@ -4257,9 +4257,7 @@ function fopm_checklist_engine()
                         else
                             if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
                                (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
-                                local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].state
-                                FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP])
                             end
                         end
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
@@ -4280,9 +4278,7 @@ function fopm_checklist_engine()
                     else
                         if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
                            (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
-                            local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].state
-                            FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
+                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP])
                         end
                     end
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
@@ -5265,7 +5261,9 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         -- CHECKLIST
         if FOPM_TL_CHECKLIST.EXECUTE_CL then
             if fopm_show_checklist then
-                imgui.TextUnformatted(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item_name.."... "..FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item_answer)
+                if FOPM_STEP_VARIABLE.CKLST_STEP <= #FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL] then
+                    imgui.TextUnformatted(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item_name.."... "..FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item_answer)
+                end
             else
                 imgui.TextUnformatted("Executing Checklist")
             end
@@ -5743,7 +5741,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                             else
                                 FOPM_METAR.UNIT = "hPa"
                             end
-                            FOPM_METAR.QNH     = qnh_value
+                            FOPM_METAR.QNH = qnh_value
                             FOPM_METAR.STATION = nil
                             FOPM_Procedures_Control.EXECUTE_BARO_SET = true
                             FOPM_Procedures_Control.EXECUTE_BARO_SET = true

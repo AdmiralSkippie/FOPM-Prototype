@@ -2972,18 +2972,44 @@ function FOPM_BaroCheck()
     return baro_matches(CM_QNH, qnh, unit) and baro_matches(FO_QNH, qnh, unit)
 end
 
+-- VALUES ABOVE 1500 ARE INHG (2992), BELOW ARE HPA (1013), SAME RULE AS set_baro_ref()
+function FOPM_BaroWord(qnh)
+    if qnh > 1500 then
+        return "ALTIMETER"
+    end
+    return "QNH"
+end
+
+-- RUNWAY SIDE LETTER TO ITS VOICE KEY
+local rwy_side_voice = {L = "LEFT", R = "RIGHT", C = "CENTER"}
+
 -- SPEAKS THE ANSWER OF A CHECKLIST ITEM AND RETURNS HOW LONG IT TAKES.
--- BARO REFERENCE SPELLS THE METAR QNH DIGIT BY DIGIT AND THEN SAYS ITS STATE,
--- THE SAME WAY set_baro_ref() DOES. EVERY OTHER ITEM IS ONE PLAIN CLIP.
+-- BARO REFERENCE SAYS QNH/ALTIMETER, SPELLS THE METAR QNH DIGIT BY DIGIT AND
+-- THEN SAYS ITS STATE, THE SAME WAY set_baro_ref() DOES.
+-- TAKEOFF RUNWAY SPELLS THE RUNWAY NUMBER, ITS SIDE IF IT HAS ONE AND THE STATE.
+-- EVERY OTHER ITEM IS ONE PLAIN CLIP.
 function FOPM_AnswerSay(entry)
     local state = entry.state
     if entry.item == "BARO_REFERENCE" then
         local qnh = FOPM_MetarQNH()
         if qnh then
-            local keys = {}
+            local keys = {FOPM_BaroWord(qnh)}
             local digits = string.format("%d", qnh)
             for i = 1, #digits do
                 keys[#keys + 1] = "N"..digits:sub(i, i)
+            end
+            keys[#keys + 1] = state
+            return FOPM_SayList(keys, -0.17)
+        end
+    elseif entry.item == "TAKEOFF_RUNWAY" then
+        local number, side = string.match(tostring(FOPM_CONFIG_VARIABLE.TO_RWY), "(%d+)%s*([LRC]?)")
+        if number then
+            local keys = {}
+            for i = 1, #number do
+                keys[#keys + 1] = "N"..number:sub(i, i)
+            end
+            if rwy_side_voice[side] then
+                keys[#keys + 1] = rwy_side_voice[side]
             end
             keys[#keys + 1] = state
             return FOPM_SayList(keys, -0.17)
@@ -3229,7 +3255,7 @@ function set_baro_ref()
                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     qnh_step = 2
                 end
-                FOPM_PlaySound(FOPM_Talk["BARO_REFERENCE"])
+                FOPM_PlaySound(FOPM_Talk[FOPM_BaroWord(qnh_target)])
             elseif qnh_step == 2 then
                 if BARO_STD_FO == 1 then
                     command_once(FO_BARO_PUSH)

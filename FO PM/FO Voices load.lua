@@ -396,6 +396,11 @@ FO_voices_directory = {
     DISARMED = {code = "DISARMED", del = 0},
     AUTO = {code = "AUTO", del = 0},
     DESELECTED = {code = "DESELECTED", del = 0},
+    QNH = {code = "QNH", del = 0},
+    ALTIMETER = {code = "ALTIMETER", del = 0},
+    LEFT = {code = "LEFT", del = 0},
+    RIGHT = {code = "RIGHT", del = 0},
+    CENTER = {code = "CENTER", del = 0},
 
 -- FLIGHT PARAMETERS CALLOUTS
     SPEED = {code = "SPEED", del = 0},

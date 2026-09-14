@@ -3,6 +3,10 @@ Desarrollar la toma del METAR en tierra como antes del descenso **
 Desarrollar alerta proximidad al TOD **
 
 // DEBOGiN 1.2
+Revisar handlers de decision de los procedures que ningun pack usa hoy (se conservan 1:1 al unificar el motor):
+    - taxi_proc lleva BRAKE_TEMP, TEMP_CHECK y ENGINE_MODE_SELECTOR, que solo usa Before Takeoff
+    - before_takeoff_proc lleva WEATHER_RADAR y ON_OETD, que solo usa Taxi
+Revisar copy-paste en one_engine_taxi_DEP: ENG_COMP e IAE_CHECK_TIME comparan tambien item == "After Start Checklist" (hoy inalcanzable, el handler "After Start Checklist" va antes)
 
 
 /////// FUTURO ///////

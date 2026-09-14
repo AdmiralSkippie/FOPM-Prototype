@@ -508,10 +508,10 @@ FOPM_procedure = {
         [24] = {
             int_item = "After Start Checklist",
             step_desition = true,
-            check = function () return not FOPM_TL_CHECKLIST.EX_AS_CL end
+            check = function () return not FOPM_TL_CHECKLIST.EXECUTE_CL end
         },
         [25] = {
-            check = function () return FOPM_TL_CHECKLIST.AS_CL end
+            check = function () return FOPM_TL_CHECKLIST.After_start_checklist end
         },
         [26] = {
             int_item = "FLTCTLCHK",

@@ -8,6 +8,7 @@ fo_autoperform = false
 fo_wx_req = false
 fo_speed = 0.85
 prcl_to_load = "Airbus"
+fopm_show_checklist = false
 
 FOPM_wleft = nil
 FOPM_wtop = nil

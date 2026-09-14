@@ -2,6 +2,26 @@
 -- FO/PM PROCEDURES --
 ----------------------
 
+-- EVERY PROCEDURE IS A LIST OF STEPS THE PROCEDURE ENGINE RUNS IN ORDER. FIELDS OF A STEP:
+--   item                VOICE SAID WHEN THE STEP STARTS (A KEY OF THE VOICE PACK). IF THE
+--                       STEP WAITS ON A check, IT IS SAID AGAIN EVERY 10 s
+--   int_item            SILENT NAME, ONLY TO TELL THE STEP APART (A SHORT PAUSE, NO VOICE)
+--   state               VOICE SAID WHEN THE STEP IS DONE ("FLAPS" SAYS THE FLAPS POSITION)
+--   essential           SAID EVEN WITH SPEAK ONLY ESSENTIALS
+--   condition           function, THE STEP IS SKIPPED WHILE IT RETURNS false
+--   check               function, THE STEP WAITS UNTIL IT RETURNS true
+--   action              DONE ONCE WHEN THE STEP ENDS
+--   action_check        DONE WHILE check IS false, THEN check IS ASKED AGAIN
+--   action_pre_check    DONE WHEN THE STEP STARTS
+--                       AN ACTION CAN HOLD dataref = VALUE (WRITTEN TO dataref_name),
+--                       command = CMD, run = function, delay = SECONDS TO WAIT AFTER IT.
+--                       command AND dataref_name ALSO TAKE A LIST: {CMD_A, CMD_B}
+--   dataref_name        NAME OF THE DATAREF VARIABLE, OR A LIST OF NAMES
+--   step_desition       DECISION STEP, ITS LOGIC IS A HANDLER OF THE PROCEDURE (FO-PM.lua)
+--   to_step_desition    BRANCH OF A DECISION, SKIPPED IF ANOTHER BRANCH OF IT ALREADY RAN
+--   recovery_step       (ONE ENGINE TAXI DEP) STEP TO RESUME FROM IF RECOVERED HERE
+-- A NEW PROCEDURE ALSO NEEDS ITS ENTRY IN FOPM_PROC_CFG (FO-PM.lua) AND SOMETHING TO START IT.
+
 FOPM_proc_config_name = "Avianca 2022"
 
 FOPM_procedure = {
@@ -297,6 +317,153 @@ FOPM_procedure = {
             to_step_desition = true
         }
     },
+    Enter_runway_proc = {
+        [1] = {
+            -- DELAY
+            action = {delay = 1}
+        },
+        [2] = {
+            item = "EXTERIOR_LIGHTS",
+        },
+        [3] = {
+            -- STROBE, NOT WHEN CROSSING A RUNWAY AFTER LANDING
+            condition = function () return not FOPM_TL_FLT_PHASE.TAXI_IN end,
+            action = {dataref = 2},
+            dataref_name = "STROBE_SW"
+        },
+        [4] = {
+            -- LANDING LIGHTS
+            action = {dataref = 2},
+            dataref_name = {"LANDLT_L_SW", "LANDLT_R_SW"}
+        },
+        [5] = {
+            -- TAXI LIGHTS
+            action = {dataref = 2},
+            dataref_name = "TAXILT_SW"
+        },
+        [6] = {
+            state = "SET"
+        },
+        [7] = {
+            item = "TCAS",
+            state = "SET",
+            action = {dataref = 4},
+            dataref_name = "TCAS_SW"
+        },
+    },
+    Vacating_runway_proc = {
+        [1] = {
+            -- DELAY
+            action = {delay = 1}
+        },
+        [2] = {
+            item = "EXTERIOR_LIGHTS",
+        },
+        [3] = {
+            -- LANDING LIGHTS
+            action = {dataref = 0},
+            dataref_name = {"LANDLT_L_SW", "LANDLT_R_SW"}
+        },
+        [4] = {
+            -- STROBE
+            action = {dataref = 1},
+            dataref_name = "STROBE_SW"
+        },
+        [5] = {
+            -- TAXI LIGHTS
+            state = "SET",
+            action = {dataref = 1},
+            dataref_name = "TAXILT_SW"
+        },
+        [6] = {
+            item = "TCAS",
+            state = "SET",
+            action = {dataref = 2},
+            dataref_name = "TCAS_SW"
+        },
+    },
+    Ten_thousand_feet_CLB = {
+        [1] = {
+            item = "TEN_THAUSAND_FEET",
+            essential = true,
+            condition = function () return fo_autoperform end
+        },
+        [2] = {
+            item = "EXTERIOR_LIGHTS",
+        },
+        [3] = {
+            -- RUNWAY TURN OFF LIGHTS
+            action = {dataref = 0},
+            dataref_name = "RWYTOLT_SW"
+        },
+        [4] = {
+            -- LANDING LIGHTS
+            action = {dataref = 0},
+            dataref_name = {"LANDLT_L_SW", "LANDLT_R_SW"}
+        },
+        [5] = {
+            -- TAXI LIGHTS
+            state = "OFF",
+            action = {dataref = 0},
+            dataref_name = "TAXILT_SW"
+        },
+        [6] = {
+            -- ND RANGE
+            action = {dataref = 3, delay = 0.7},
+            dataref_name = "EFIS_RNG"
+        },
+        [7] = {
+            -- TERRAIN
+            action = {command = TERRAIN_FO_PB, delay = 1}
+        },
+    },
+    Ten_thousand_feet_DES = {
+        [1] = {
+            item = "TEN_THAUSAND_FEET",
+            essential = true,
+            condition = function () return fo_autoperform end
+        },
+        [2] = {
+            item = "EXTERIOR_LIGHTS",
+        },
+        [3] = {
+            -- RUNWAY TURN OFF LIGHTS
+            action = {dataref = 1},
+            dataref_name = "RWYTOLT_SW"
+        },
+        [4] = {
+            -- LANDING LIGHTS
+            action = {dataref = 2},
+            dataref_name = {"LANDLT_L_SW", "LANDLT_R_SW"}
+        },
+        [5] = {
+            -- TAXI LIGHTS
+            state = "ON",
+            action = {dataref = 2},
+            dataref_name = "TAXILT_SW"
+        },
+        [6] = {
+            -- ND RANGE
+            action = {dataref = 1, delay = 0.7},
+            dataref_name = "EFIS_RNG"
+        },
+        [7] = {
+            -- TERRAIN
+            action = {command = TERRAIN_FO_PB, delay = 0.5}
+        },
+        [8] = {
+            item = "LS",
+            condition = function () return FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP or FOPM_TL_APP_TYPE.LDA_APP or FOPM_TL_APP_TYPE.FLS end,
+            action = {command = LS_FO_PB}
+        },
+        [9] = {
+            item = "ENGINE_MODE_SELECTOR",
+            state = "IGNITION",
+            condition = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
+            action = {dataref = 2},
+            dataref_name = "ENG_Mode"
+        },
+    },
     After_landing_proc = {
         [1] = {
             -- DELAY
@@ -371,6 +538,48 @@ FOPM_procedure = {
             int_item = "FO_HDGTRK",
             check = function () return HDGTRK_MODE == 0 end,
             action_check = {command = HDGTRK_TOGGLE}
+        },
+    },
+    Parking_proc = {
+        [1] = {
+            -- IAE ENGINES SHUTDOWN TIME, USED BY THE NEXT ONE ENGINE TAXI DEP
+            action = {
+                run = function ()
+                    if ENG_MODEL == 0 then
+                        FOPM_CONFIG_VARIABLE.IAE_SD_TIME = math.floor(TIME)
+                    end
+                end,
+                delay = 1
+            }
+        },
+        [2] = {
+            item = "APU_BLEED",
+            state = "ON",
+            action = {command = APU_BLEED_PB}
+        },
+        [3] = {
+            item = "FUEL_PUMPS",
+            action = {command = {FPUMP_LTANK_1_PB, FPUMP_LTANK_2_PB}}
+        },
+        [4] = {
+            action = {command = {FPUMP_CTANK_1_PB, FPUMP_CTANK_2_PB}}
+        },
+        [5] = {
+            state = "OFF",
+            action = {command = {FPUMP_RTANK_1_PB, FPUMP_RTANK_2_PB}}
+        },
+        [6] = {
+            item = "ATC",
+            state = "SET",
+            action = {dataref = 0},
+            dataref_name = "TCAS_SW"
+        },
+        [7] = {
+            -- CHRONO
+            action = {command = CRONO_SET_PB}
+        },
+        [8] = {
+            action = {command = CRONO_RESET_PB}
         },
     },
     One_engine_taxi_DEP = {
@@ -511,6 +720,8 @@ FOPM_procedure = {
             check = function () return not FOPM_TL_CHECKLIST.EXECUTE_CL end
         },
         [25] = {
+            -- A RELOAD STOPS THE CHECKLIST, SO A RECOVERY HERE LAUNCHES IT AGAIN
+            recovery_step = 24,
             check = function () return FOPM_TL_CHECKLIST.After_start_checklist end
         },
         [26] = {
@@ -567,5 +778,24 @@ FOPM_procedure = {
             int_item = "STOP_CHRONO",
             action = {command = CRONO_RESET_PB}
         }
+    },
+    One_engine_taxi_ARR = {
+        [1] = {
+            int_item = "APU_AVAIL",
+            check = function () return APU_STATE == 1 end
+        },
+        [2] = {
+            item = "ENGINE_2_SHUTDOWN",
+            essential = true,
+            action = {dataref = 0},
+            dataref_name = "ENG_2_Master"
+        },
+        [3] = {
+            item = "YELLOW_HYDRAULIC_PUMP",
+            essential = true,
+            state = "ON",
+            action = {dataref = 1},
+            dataref_name = "Y_ELEC_PUMP_PB"
+        },
     }
 }

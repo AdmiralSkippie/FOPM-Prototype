@@ -1,0 +1,117 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+                  FIRST OFFICER & PILOT MONITORING PLUGIN  -  ROADMAP
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Where the plugin comes from, what is being built right now and where it is heading.
+This roadmap only covers the big milestones. For the detailed changes of every release,
+check the "Version History" file.
+
+Status
+    [RELEASED]         Available to download
+    [IN DEVELOPMENT]   Being built and tested right now
+    [PLANNED]          Next steps, in the intended order
+    [IDEAS]            Being considered, no version assigned yet
+
+Plans for future versions may change in order or content as development goes on.
+Names of unreleased versions are working titles.
+
+
+============================================================================================
+ WHAT HAS BEEN ACHIEVED
+============================================================================================
+
+--- V1.0  "Main Release" ---------------------------------------- [RELEASED]  June 2026
+
+The first public version: a virtual First Officer for the ToLiss A319, A320/A20N and
+A321/A21N.
+
+    - Performs the normal procedures of a complete flight, from the preliminary cockpit
+      preparation to parking, on your command or automatically
+    - Reads the checklists with you and verifies that every item is really set
+    - Monitors the flight and makes the standard callouts during takeoff, flight and landing
+    - One engine taxi for departure and arrival
+    - RNP AR and ILS CAT II/III operations
+    - Briefing page for takeoff and landing, and a main page to follow the flight
+    - Keyboard commands for flaps, gear, checklist response and the interface
+    - Two voice packs: Owen and Adriana
+
+
+--- V1.1  "Procedures online" ----------------------------------- [RELEASED]  August 2026
+
+Fly with the SOP you choose.
+
+    - Swappable procedure and checklist packs: fly with the Airbus standard or with an
+      airline's SOP (Avianca 2022)
+    - The FO requests the weather over datalink (Hoppie) and sets the altimeter, or you
+      simply type the QNH
+    - Briefings fill in automatically from the MCDU and can be changed after confirming them
+    - Session recovery: continue your flight where you left it after a crash or a reload
+    - New checklists (Cockpit Preparation, Taxi, Departure Change, Line Up) and a new
+      Taxi procedure
+    - Rebuilt audio: callouts sound inside the cockpit and no longer talk over each other
+
+
+============================================================================================
+ WHAT IS BEING BUILT NOW
+============================================================================================
+
+--- V1.2 (working title) ---------------------------------------- [IN DEVELOPMENT]
+
+A cleaner and stronger base before the fleet grows.
+
+    - Checklists on screen: optionally follow each item and its answer as the FO reads it
+    - Checklists and procedures rebuilt from the inside: lighter, more reliable and ready
+      to welcome new aircraft and new SOP packs
+    - More natural callouts: the FO confirms the takeoff runway at line up
+      ("two seven left") and says "QNH" or "ALTIMETER" depending on the unit in use
+    - Creating a voice pack is much easier: callout timing is taken from the audio files
+    - Session recovery also resumes a one engine taxi exactly where it was
+    - The old "Legacy" pack is retired, Airbus and Avianca 2022 remain
+
+
+============================================================================================
+ WHAT IS COMING NEXT
+============================================================================================
+
+--- V1.3 (working title) ---------------------------------------- [PLANNED]
+
+    - Support for the ToLiss A340-600
+    - Procedures, checklists and callouts adapted to a four engine, long haul aircraft
+
+
+--- V1.4 (working title) ---------------------------------------- [PLANNED]
+
+    - Support for the ToLiss A330-900neo
+    - Procedures, checklists and callouts adapted to the A330neo
+
+
+--- V2.0 (working title) ---------------------------------------- [PLANNED]
+
+The next major step.
+
+    - Completely redesigned interface, clearer and easier to use during the flight
+    - A base prepared to support aircraft from other developers, not only ToLiss
+
+
+--- Beyond V2.0 ------------------------------------------------- [PLANNED]
+
+    - Laminar Research A330, the default X-Plane 12 widebody
+    - FlyJSim Q400, the first non-Airbus aircraft and the first turboprop
+
+
+============================================================================================
+ IDEAS FOR THE FUTURE                                                      [IDEAS]
+============================================================================================
+
+    - Top of descent reminder
+    - Interaction with ground services
+    - More voice packs and languages
+    - More airline SOP packs, including packs made by the community
+    - Callouts and support in non-normal situations, such as an engine failure
+
+
+--------------------------------------------------------------------------------------------
+Suggestions and bug reports are always welcome, they help to decide what comes next.
+
+Enjoy and happy flights :)
+Best Regards: Admiral Skippie

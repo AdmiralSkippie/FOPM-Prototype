@@ -92,7 +92,6 @@ dataref("EXTPWR_State", "AirbusFBW/ExtPowOHPArray", "readonly", 0) -- 1 ON/2 AVA
 dataref("ALTNBRK_State", "AirbusFBW/AltnBrake", "readonly")
 dataref("APU_BLEED_STATE", "AirbusFBW/APUBleedSwitch", "readonly")
 dataref("Y_ELEC_PUMP_STATE", "AirbusFBW/HydPumpOHPArray", "readonly", 3)
-dataref("TCAS_STATE", "AirbusFBW/XPDRPower", "readonly")
 dataref("PACK_1_STATE", "AirbusFBW/Pack1Switch", "readonly")
 dataref("PACK_2_STATE", "AirbusFBW/Pack2Switch", "readonly")
 -- AUTOBRK STATE --
@@ -107,16 +106,8 @@ dataref("PACK_2_STATE", "AirbusFBW/Pack2Switch", "readonly")
     dataref("FPUMP_LTANK_1_STATE", "AirbusFBW/FuelAutoPumpOHPArray", "readonly", 4)
     dataref("FPUMP_LTANK_2_STATE", "AirbusFBW/FuelAutoPumpOHPArray", "readonly", 5)
 ----- S/W -----
-dataref("ENG_1_Master_State", "AirbusFBW/ENG1MasterSwitch", "readonly")
-dataref("ENG_2_Master_State", "AirbusFBW/ENG2MasterSwitch", "readonly")
-dataref("ENG_Mode_State", "AirbusFBW/ENGModeSwitch", "readonly") -- 1 Normal --
 dataref("RADAR_SYS_SW_State", "ckpt/radar/sys/anim", "readonly")
-dataref("PWS_STATE", "AirbusFBW/WXSwitchPWS", "readonly")
-dataref("LWipers_State", "AirbusFBW/LeftWiperSwitch", "readonly")
-dataref("RWipers_State", "AirbusFBW/RightWiperSwitch", "readonly")
-dataref("PRKBRK_State", "AirbusFBW/ParkBrake", "readonly") -- 1 ON
-dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11) -- 1 ON 
-dataref("XBLEED_STATE", "AirbusFBW/XBleedSwitch", "readonly") -- 1 Auto --
+dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11) -- 1 ON
 dataref("SIGNS_STATE", "AirbusFBW/OHPLightSwitches", "readonly", 12)
 
 -- ADIRS --
@@ -127,14 +118,12 @@ dataref("SIGNS_STATE", "AirbusFBW/OHPLightSwitches", "readonly", 12)
 dataref("BEACON_STATE", "sim/cockpit2/switches/beacon_on", "readonly")
 
 ---- LEVERS ----
-dataref("LG_Lever_State", "AirbusFBW/GearLever", "readonly")
 dataref("LG_NG_State", "AirbusFBW/NoseGearInd", "readonly") -- 2 GREEN
 dataref("LG_LG_State", "AirbusFBW/LeftGearInd", "readonly")
 dataref("LG_RG_State", "AirbusFBW/RightGearInd", "readonly")
 dataref("FLAPS_LEVER_State", "AirbusFBW/FlapLeverRatio", "readonly") -- 0.25 = 1/ 0.5 = 2
 dataref("FLAPS_State", "AirbusFBW/FlapRequestPos", "readonly") -- -1 = on position
 dataref("FLAPS_TO_CONFIG", "AirbusFBW/TOFlapSettingMCDU", "readonly") -- 1 = 1
-dataref("SPDBRK_State", "sim/cockpit2/controls/speedbrake_ratio", "readonly")
 dataref("THR_STATE", "AirbusFBW/THRRatingType", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 dataref("THR_LEVER", "AirbusFBW/THRLeverMode", "readonly") -- 1 CLB/2 MCT/3 TOGA/4 FLEX --
 

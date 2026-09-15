@@ -214,6 +214,7 @@ dataref("RUDDER", "sim/flightmodel2/wing/rudder1_deg", "readonly", 10) -- 0 NTRL
     dataref("V1_SPEED", "AirbusFBW/V1Value", "readonly")
     dataref("VR_SPEED", "toliss_airbus/performance/VR", "readonly")
     dataref("V2_SPEED", "toliss_airbus/performance/V2", "readonly")
+    dataref("GND_SPEED","sim/cockpit2/gauges/indicators/ground_speed_kt_copilot","readonly")
 dataref("ENG_ATHR_MODE", "AirbusFBW/SPDmanaged", "readonly") -- 1 = Managed
 dataref("THR_SETTING", "toliss_airbus/performance/flextemp", "readonly")
 dataref("GNDAIR_SW", "sim/flightmodel2/gear/on_ground", "readonly", 1)

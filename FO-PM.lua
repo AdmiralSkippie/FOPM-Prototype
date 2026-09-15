@@ -42,6 +42,10 @@ logMsg("XXXXX   Voices Loaded")
 dofile(SCRIPT_DIRECTORY.."/FO PM/Voices/Active/FO Voicepack conf.lua")
 logMsg("XXXXX   Voices Pack Config Loaded")
 
+-- LOGBOOK LOAD
+dofile(SCRIPT_DIRECTORY.."/FO PM/Logbook/A32S Logbook.lua")
+logMsg("XXXXX   Logbook loaded")
+
 ----------------
 ---- PHASES ----
 ----------------
@@ -419,6 +423,8 @@ function save_backup()
             config:write("FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM = "..tostring(FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM).."\n")
             config:write("FOPM_CONFIG_VARIABLE.IAE_SD_TIME = "..tonumber(FOPM_CONFIG_VARIABLE.IAE_SD_TIME).."\n")
             config:write("FOPM_CONFIG_VARIABLE.TO_RWY = "..'"'..tostring(FOPM_CONFIG_VARIABLE.TO_RWY)..'"'.."\n")
+            config:write("-- LOGBOOK\n")
+            config:write("fopm_logbook_total_flthr = "..fopm_logbook_total_flthr.."\n")
             config:close()
             RECOVERY_AVAIL = false
             NEED_SAVE = false
@@ -426,7 +432,40 @@ function save_backup()
     end
 end
 
-do_often("save_backup()")
+do_sometimes("save_backup()")
+
+-------------------
+----- LOGBOOK -----
+-------------------
+
+local actual_flthr = 0
+local logbook_mark = 0
+local logging_flthr = false
+function fopm_logbook_engine()
+    if not logging_flthr then
+        if FOPM_TL_FLT_PHASE.PUSHBACK and (math.floor(GND_SPEED*10)/10) >= 1.5 then
+            logging_flthr = true
+            logbook_mark = math.floor(simtime)
+        end
+    else
+        actual_flthr = math.floor(simtime) - logbook_mark
+        fopm_logbook_total_flthr = fopm_logbook_total_flthr + math.floor(((actual_flthr/60)/60)*100)/100
+        if FOPM_TL_COMPLETED_PROC.PARK_PROC then
+            logging_flthr = false
+            fopm_logbook_total_flts = fopm_logbook_total_flts + 1
+            local rute = SCRIPT_DIRECTORY .. "FO PM/Logbooks/A32S Logbook.lua"
+            local config = io.open(rute, "w")
+            if config then
+                config:write("-- ///// A32S LOGBOOK /////\n")
+                config:write("fopm_logbook_total_flthr = "..fopm_logbook_total_flthr.."\n")
+                config:write("fopm_logbook_total_flts = "..fopm_logbook_total_flts.."\n")
+                config:close()
+            end
+        end
+    end
+end
+
+do_often("fopm_logbook_engine()")
 
 -- //////////////////////////////
 -- ///////// PROCEDURES /////////
@@ -3630,6 +3669,10 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if RECOVERY_AVAIL then
             if imgui.SmallButton("RECOVERY") then
                 dofile(SCRIPT_DIRECTORY .. "/FO PM/FO_Recovery.lua")
+                if not FOPM_TL_FLT_PHASE.PREFLIGHT or not FOPM_TL_FLT_PHASE.PUSHBACK then
+                    logging_flthr = true
+                    logbook_mark = math.floor(simtime)
+                end
                 RECOVERY_AVAIL = false
             end
         end
@@ -4296,6 +4339,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
+        imgui.TextUnformatted("Total Flt Hours: "..math.floor(fopm_logbook_total_flthr).." hr")
+        imgui.TextUnformatted("Total Flights: "..math.floor(fopm_logbook_total_flts).." Flts")
         imgui.TextUnformatted("FOPM Version: "..FOPM_plugin_version)
         imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)
         if #FOPM_SOUND_MISSING > 0 then

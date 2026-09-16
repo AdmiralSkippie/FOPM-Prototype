@@ -43,7 +43,7 @@ dofile(SCRIPT_DIRECTORY.."/FO PM/Voices/Active/FO Voicepack conf.lua")
 logMsg("XXXXX   Voices Pack Config Loaded")
 
 -- LOGBOOK LOAD
-dofile(SCRIPT_DIRECTORY.."/FO PM/Logbook/A32S Logbook.lua")
+dofile(SCRIPT_DIRECTORY.."/FO PM/Logbooks/A32S Logbook.lua")
 logMsg("XXXXX   Logbook loaded")
 
 ----------------

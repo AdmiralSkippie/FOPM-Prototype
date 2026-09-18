@@ -2,7 +2,7 @@
 -- FO/PM CHECKLIST --
 ---------------------
 
-FOPM_cklst_config_name = "Airbus"
+FOPM_cklst_config_name = "Avianca 2022"
 
 FOPM_checklist = {
     Cockpit_preparation_checklist = {

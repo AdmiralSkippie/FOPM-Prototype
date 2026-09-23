@@ -439,17 +439,19 @@ do_sometimes("save_backup()")
 -------------------
 
 local actual_flthr = 0
+local flthr_diff = 0
 local logbook_mark = 0
 local logging_flthr = false
 function fopm_logbook_engine()
     if not logging_flthr then
-        if FOPM_TL_FLT_PHASE.PUSHBACK and (math.floor(GND_SPEED*10)/10) >= 1.5 then
+        if FOPM_TL_FLT_PHASE.PUSHBACK and (math.floor(GND_SPEED*10)/10) >= 1 then
             logging_flthr = true
+            actual_flthr = fopm_logbook_total_flthr
             logbook_mark = math.floor(simtime)
         end
     else
-        actual_flthr = math.floor(simtime) - logbook_mark
-        fopm_logbook_total_flthr = fopm_logbook_total_flthr + math.floor(((actual_flthr/60)/60)*100)/100
+        flthr_diff = math.floor(simtime) - logbook_mark
+        fopm_logbook_total_flthr = actual_flthr + flthr_diff
         if FOPM_TL_COMPLETED_PROC.PARK_PROC then
             logging_flthr = false
             fopm_logbook_total_flts = fopm_logbook_total_flts + 1
@@ -2248,7 +2250,7 @@ function go_arround()
         if FOPM_STEP_VARIABLE.STEP == 6 then
             if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                 if FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP then
-                    FOPM_STEP_VARIABLE.STEP = 11
+                    FOPM_STEP_VARIABLE.STEP = 10
                 else
                     local speech = "FLIGHT_DIRECTORS"
                     FOPM_PlaySound(FOPM_Talk[speech])
@@ -2306,11 +2308,15 @@ function go_arround()
             end
             if FOPM_STEP_VARIABLE.STEP == 11 then
                 if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                    FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
+                    if string.match(MCDU2_GLINE_1, "(%d+)") then
+                        FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
+                    end
                     if string.match(MCDU2_GLINE_2, "(%d+)") then
                         FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
                     end
-                    FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
+                    if string.match(MCDU2_GLINE_3,"(%d+)") then
+                        FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
+                    end
                     FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                     FOPM_STEP_VARIABLE.STEP = 12
                 else
@@ -4339,7 +4345,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
-        imgui.TextUnformatted("Total Flt Hours: "..math.floor(fopm_logbook_total_flthr).." hr")
+        imgui.TextUnformatted("Total Flt Hours: "..(math.floor(((fopm_logbook_total_flthr/60)/60)*10)/10).." hr")
         imgui.TextUnformatted("Total Flights: "..math.floor(fopm_logbook_total_flts).." Flts")
         imgui.TextUnformatted("FOPM Version: "..FOPM_plugin_version)
         imgui.TextUnformatted("Voice Pack: "..FOPM_voicepack_name)

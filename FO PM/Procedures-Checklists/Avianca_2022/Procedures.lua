@@ -22,7 +22,7 @@
 --   recovery_step       (ONE ENGINE TAXI DEP) STEP TO RESUME FROM IF RECOVERED HERE
 -- A NEW PROCEDURE ALSO NEEDS ITS ENTRY IN FOPM_PROC_CFG (FO-PM.lua) AND SOMETHING TO START IT.
 
-FOPM_proc_config_name = "Avianca 2022"
+FOPM_proc_config_name = "Avianca_2022"
 
 FOPM_procedure = {
     Pre_cockpit_preparation = {

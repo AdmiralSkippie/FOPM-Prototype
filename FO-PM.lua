@@ -297,6 +297,15 @@ do_every_frame("flaps_voice_search()")
 ---- PROCEDURES AND CHECKLIST LOAD ----
 ---------------------------------------
 
+-- SECURITY CHECK
+local available_packs = {
+    Airbus = true,
+    Avianca_2022 = true
+}
+if not available_packs[prcl_to_load] then
+    prcl_to_load = "Airbus"
+end
+
 -- PROCEDURES LOAD
 dofile(SCRIPT_DIRECTORY.."/FO PM/Procedures-Checklists/"..prcl_to_load.."/Procedures.lua")
 logMsg("XXXXX   Procedures Loaded")
@@ -4447,8 +4456,8 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
         if imgui.RadioButton("Airbus", prcl_to_load == "Airbus") then
             prcl_to_load = "Airbus"
         end
-        if imgui.RadioButton("Avianca 2022", prcl_to_load == "Avianca 2022") then
-            prcl_to_load = "Avianca 2022"
+        if imgui.RadioButton("Avianca 2022", prcl_to_load == "Avianca_2022") then
+            prcl_to_load = "Avianca_2022"
         end
         if FOPM_proc_config_name ~= prcl_to_load then
             imgui.TextUnformatted("Reload the script to see changes")

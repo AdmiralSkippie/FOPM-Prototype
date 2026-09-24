@@ -3594,7 +3594,7 @@ function FOPM_resize_to(to)
     end
     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-(b.w-a.w),FOPM_wtop,FOPM_wright,FOPM_wbottom-dh)
-    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
+    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE) 
 end
 
 local function FOPM_measure_raw(wnd)
@@ -3898,12 +3898,16 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     imgui.SameLine()
                 end
             end
-            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_TL_FLT_PHASE.ON_RWY then
+            if not FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_TL_FLT_PHASE.ON_RWY
+               and not FOPM_Procedures_Control.EXECUTE_TXP
+               and not FOPM_Procedures_Control.EXECUTE_BTP then
                 if imgui.SmallButton("Entry RWY") then
                     FOPM_Procedures_Control.EXECUTE_ENRWY = true
                 end
             end
-            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FOPM_TL_FLT_PHASE.ON_RWY then
+            if not FOPM_Procedures_Control.EXECUTE_EXRWY and FOPM_TL_FLT_PHASE.ON_RWY
+               and not FOPM_Procedures_Control.EXECUTE_TXP
+               and not FOPM_Procedures_Control.EXECUTE_BTP then
                 if imgui.SmallButton("Exit RWY") then
                     FOPM_Procedures_Control.EXECUTE_EXRWY = true
                 end

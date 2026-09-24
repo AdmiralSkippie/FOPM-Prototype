@@ -3562,14 +3562,13 @@ local FOPM_PAGE_SIZE = {
     PRCL_SEL = {w = 235, h = 142}
 }
 
-local FOPM_PAGE_MEASURED = {}
-FOPM_AUTOSIZE = true
-local FOPM_AUTOSIZE_OK = nil -- nil UNTIL THE imgui CALLS HAVE BEEN TRIED ONCE
-
+-- THE MAIN PAGE ONLY CARRIES THE EXTRA "Departure Change CKL" BUTTON WHILE IT
+-- IS ACTUALLY DRAWN, WHICH IS IN PUSHBACK AND TAXI OUT AND NOWHERE ELSE.
+-- THIS TEST IS THE SAME ONE THE BUTTON IS DRAWN UNDER, KEEP THE TWO IN STEP.
 local function FOPM_main_has_dc()
     if not (FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT) then return false end
     if not FOPM_checklist.Departure_change_checklist then return false end
-    return (not FOPM_TL_CHECKLIST.Departure_change_checklist) and (not FOPM_TL_CHECKLIST.EX_DC_CL)
+    return not FOPM_TL_CHECKLIST.Departure_change_checklist
 end
 
 local function FOPM_active_page()
@@ -3580,44 +3579,29 @@ local function FOPM_active_page()
     return "MAIN"
 end
 
+-- RESIZES FROM THE PAGE ON SCREEN TO THE ONE ABOUT TO BE SHOWN.
+-- CALL IT BEFORE FLIPPING THE WND_ FLAGS, IT READS THE CURRENT PAGE FROM THEM.
+-- THE DELTA IS ALWAYS THE PLAIN DIFFERENCE BETWEEN TWO ENTRIES OF THE TABLE
+-- ABOVE, WHICH IS EXACTLY THE OLD HAND TUNED FIXED SUM SYSTEM. AN EARLIER
+-- VERSION PREFERRED A HEIGHT MEASURED ON SCREEN WITH imgui, BUT THAT
+-- MEASUREMENT WAS TAKEN AT THE END OF THE BUILDER, AFTER THE BUTTON HAD
+-- ALREADY FLIPPED THE WND_ FLAGS, SO ON EVERY TRANSITION FRAME IT FILED THE
+-- HEIGHT OF THE PAGE BEING LEFT UNDER THE NAME OF THE PAGE BEING ENTERED. THE
+-- NEXT PAGE CHANGE THEN APPLIED A DELTA BUILT FROM TWO WRONG HEIGHTS AND THE
+-- WINDOW CAME BACK TALLER OR SHORTER THAN IT LEFT. DO NOT REINTRODUCE IT.
 function FOPM_resize_to(to)
     if FO_INTERFACE == nil then return end
     local from = FOPM_active_page()
     if to == "MAIN" and FOPM_main_has_dc() then to = "MAIN_DC" end
+    if from == to then return end
     local a, b = FOPM_PAGE_SIZE[from], FOPM_PAGE_SIZE[to]
-    if a == nil or b == nil or from == to then return end
-    local dh
-    if FOPM_PAGE_MEASURED[from] ~= nil and FOPM_PAGE_MEASURED[to] ~= nil then
-        dh = FOPM_PAGE_MEASURED[to] - FOPM_PAGE_MEASURED[from]
-    else
-        dh = b.h - a.h
-    end
+    if a == nil or b == nil then return end
     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-(b.w-a.w),FOPM_wtop,FOPM_wright,FOPM_wbottom-dh)
-    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE) 
-end
-
-local function FOPM_measure_raw(wnd)
-    local ww, wh = imgui.GetWindowSize()
-    if type(wh) ~= "number" or wh <= 0 then return nil end
-    local cy = imgui.GetCursorPosY()
-    if type(cy) ~= "number" then return nil end
-    local left, top, right, bottom = float_wnd_get_geometry(wnd)
-    return cy * ((top - bottom) / wh)
-end
-
-function FOPM_MeasurePage(wnd)
-    if not FOPM_AUTOSIZE or FOPM_AUTOSIZE_OK == false then return end
-    local ok, h = pcall(FOPM_measure_raw, wnd)
-    if not ok then
-        FOPM_AUTOSIZE_OK = false
-        logMsg("XXXXX   FO/PM UI: imgui measuring not available, page sizes fall back to the built in table")
-        return
-    end
-    FOPM_AUTOSIZE_OK = true
-    if type(h) == "number" and h > 40 and h < 2000 then
-        FOPM_PAGE_MEASURED[FOPM_active_page()] = h
-    end
+    -- A WINDOW THAT IS ALREADY GONE READS BACK AS nil, RESIZING IT WOULD THROW
+    if type(FOPM_wleft) ~= "number" or type(FOPM_wtop) ~= "number" or
+       type(FOPM_wright) ~= "number" or type(FOPM_wbottom) ~= "number" then return end
+    float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-(b.w-a.w),FOPM_wtop,FOPM_wright,FOPM_wbottom-(b.h-a.h))
+    FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
 end
 
 local FOPM_RIGHT_ALIGN_OK = nil
@@ -3655,6 +3639,11 @@ end
 
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
+    -- ONE elseif CHAIN, NOT FOUR SEPARATE if BLOCKS. A PAGE BUTTON FLIPS THE
+    -- WND_ FLAGS IN THE MIDDLE OF THE FRAME, SO WITH SEPARATE BLOCKS THE PAGE
+    -- BEING ENTERED WAS DRAWN UNDER THE ONE BEING LEFT FOR ONE FRAME, INSIDE A
+    -- WINDOW ALREADY RESIZED FOR THE NEW PAGE. THE CHAIN DRAWS ONE PAGE PER
+    -- FRAME AND THE FLIP ONLY SHOWS UP ON THE NEXT ONE.
     if WND_MAIN then -- MAIN WINDOW
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
@@ -3965,8 +3954,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-    end
-    if WND_BRIEFING then -- BRIEFING WINDOW
+    elseif WND_BRIEFING then -- BRIEFING WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Settings") then
             FOPM_resize_to("SETTINGS")
@@ -4334,8 +4322,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 end
             end
         end
-    end
-    if WND_SETTINGS then -- SETTINGS WINDOW
+    elseif WND_SETTINGS then -- SETTINGS WINDOW
         imgui.Spacing()
         if imgui.SmallButton("Main") then
             FOPM_resize_to("MAIN")
@@ -4426,8 +4413,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             speak_only_essencials = true
             config_save()
         end
-    end
-    if WND_PRCL_SEL then
+    elseif WND_PRCL_SEL then
         imgui.Spacing()
         if imgui.SmallButton("<-") then
             FOPM_resize_to("SETTINGS")
@@ -4472,7 +4458,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
     end
-    FOPM_MeasurePage(FO_INTERFACE)
 end
 
 -- FLOAT WINDOWS MASTER

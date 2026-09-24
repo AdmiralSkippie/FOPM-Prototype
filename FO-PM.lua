@@ -3079,6 +3079,26 @@ end
 ---- ///////// MAIN LOGIC /////////
 ---- //////////////////////////////
 
+-- NEW FLIGHT RESET
+-- CALLED WHEN PARKING GOES BACK TO PREFLIGHT, SO A SECOND LEG WITHOUT A RELOAD
+-- STARTS CLEAN. THE CHECKLIST FLAGS ARE TAKEN FROM THE LOADED PACK, SO ANY
+-- CHECKLIST A PACK ADDS IS RESET TOO. DEPARTURE CHANGE WORKS THE OTHER WAY
+-- ROUND (TRUE = NOTHING PENDING), SO IT GOES BACK TO TRUE.
+function FOPM_ResetForNewFlight()
+    for name, _ in pairs(FOPM_checklist) do
+        FOPM_TL_CHECKLIST[name] = false
+    end
+    FOPM_TL_CHECKLIST.Departure_change_checklist = true
+    FOPM_TL_COMPLETED_PROC.TO_PROC_DONE = false
+    FOPM_TL_COMPLETED_PROC.DECEL_CALLOUTS = false
+    FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE = false
+    FOPM_TL_COMPLETED_PROC.DES_BRIEFING = false
+    FOPM_TL_COMPLETED_PROC.ENT_RWY_DONE = false
+    FOPM_TL_FLT_PHASE.ON_RWY = false
+    FOPM_Procedures_Control.START_ENG2 = false
+    FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = false
+end
+
 -- ACTUAL FLIGHT PHASE
 function phase_check()
     if FOPM_TL_FLT_PHASE.PREFLIGHT then
@@ -3324,6 +3344,7 @@ function phase_check()
             FOPM_TL_APP_TYPE.LDA_APP = false
             FOPM_TL_APP_TYPE.FLS = false
             FOPM_TL_APP_TYPE.CAT_II_III = false
+            FOPM_ResetForNewFlight()
             NEED_SAVE = true
         end
     end

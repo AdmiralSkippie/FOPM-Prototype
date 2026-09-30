@@ -1,0 +1,88 @@
+||||| CKECK LIST |||||
+
+ ALL THE ITEMS ARE ONLY CHECK 
+ CPT CONFIRMATION
+
+//// BEFORE START ////
+    COCKPIT PREP                |   COMPLETED (BOTH)
+    GEAR PINS AND COVERS        |   REMOVED
+    SIGNS                       |   ON/AUTO
+    ADIRS                       |   NAV
+    FUEL QTY                    |   SET
+    TO DATA                     |   SET (BOTH)
+    BARO REF                    |   SET (BOTH)
+----DOWN TO THE LINE----
+
+//// BEFORE START BELOW THE LINE ////
+    WINDOWS/DOORS               |   CLOSE (BOTH)
+    BEACON                      |   ON
+    THR LEVERS                  |   IDLE
+    PARKING BREAK               |   AS RQRD
+----C/L COMPLETED----
+
+//// AFTER START ////
+    ANTI ICE                    |   AS RQRD
+    ECAM STS                    |   CHECK
+    TRIMS                       |   SET //CHECK PITCH AND RUDDER//
+----C/L COMPLETED----
+
+//// BEFORE TAKEOFF ////
+    FLIGHT CONTROLS             |   CHECK (BOTH)
+    FLT INTRUMENTS              |   CHECK (BOTH)
+    BREAFING                    |   CONFIRM
+    FLAPS                       |   SET (BOTH)
+    V1 VR V2 FLX                |   SET (BOTH)
+    ECAM MEMO                   |   TAKEOFF NO BLUE
+----DOWN TO THE LINE----
+
+//// BEFORE TAKEOFF BELOW THE LINE ////
+    CABIN CREW                  |   ADVISED
+    LIGHTS                      |   ON
+    PACKS                       |   AS RQRD
+    RADAR/TCAS/PWS              |   SET & AUTO
+----C/L COMPLETED----
+
+//// AFTER T/O ////
+    LDG GEAR                    |   UP
+    FLAPS                       |   RETRACTED
+    PACKS/APU                   |   ON/OFF
+
+//// CLIMB ///
+    BARO REF                    |   STD SET (Check standar)
+
+//// APPROACH ////
+    BREAFING                    |   CONFIRM
+    ECAM STATUS                 |   CHECK
+    SEAT BELTS                  |   ON AND ON
+    BARO REF                    |   SET
+    MINIMUM                     |   SET
+
+//// LANDING ////
+    A/THR                       |   (CHECK FMA)
+    AUTOBRAKES                  |   AS RQRD
+    ECAM MEMO                   |   LDG NO BLUE
+    CABIN CREW                  |   ADVISED
+
+//// AFTER LANDING ////
+    FLAPS                       |   RETRACTED
+    SPOILERS                    |   DISARMED
+    RADAR                       |   OFF/STBY
+    PWS                         |   OFF
+    APU                         |   START
+
+//// PARKING ////
+    APU BLEED                   |   ON
+    ENGINES                     |   OFF
+    SEAT BELTS                  |   OFF
+    EXT LIGHTS                  |   AS RQRD
+    FUEL PUMPS                  |   OFF
+    PARK BRK OR CHOCKS          |   SET
+
+//// SECURING ////
+    TCAS                        |   STAND BY
+    ADIRS                       |   OFF
+    OXYGEN                      |   OFF
+    APU BLEED                   |   OFF
+    EMER EXIT LT                |   OFF
+    NO PORTABLE                 |   OFF
+    BATTERIES                   |   OFF

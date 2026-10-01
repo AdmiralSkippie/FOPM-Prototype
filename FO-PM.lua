@@ -1327,7 +1327,7 @@ function take_off_proc()
                     STABLE1_CHECK = ENG_1_THR
                     STABLE2_CHECK = ENG_2_THR
                     FOPM_STEP_VARIABLE.STEP = 1
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + 3
+                    FOPM_DELAY_VARIABLE.DELAY = TIME + 1
                 else
                     return
                 end
@@ -1376,33 +1376,32 @@ function take_off_proc()
         end
         if FOPM_STEP_VARIABLE.STEP == 3 then -- speeds check
             if TIME >= FOPM_DELAY_VARIABLE.DELAY then
-                if math.floor(IND_AIRSPEED) == 100 then
+                if math.floor(IND_AIRSPEED) >= 100 then
                     local speech = "N100"
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(FO_voices_directory, speech))
+                    FOPM_STEP_VARIABLE.STEP = 3.1
                 end
-                if math.floor(IND_AIRSPEED) == V1_SPEED - 1 then
+            end
+        end
+        if FOPM_STEP_VARIABLE.STEP == 3.1 then
+            if TIME >= FOPM_DELAY_VARIABLE.DELAY then
+                if math.floor(IND_AIRSPEED) >= V1_SPEED - 1 then
                     local speech = "V1"
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(FO_voices_directory, speech))
+                    FOPM_STEP_VARIABLE.STEP = 3.2
                 end
+            end
+        end
+        if FOPM_STEP_VARIABLE.STEP == 3.2 then
+            if TIME >= FOPM_DELAY_VARIABLE.DELAY then
                 if math.floor(IND_AIRSPEED) >= VR_SPEED then
                     local speech = "ROTATE"
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(FO_voices_directory, speech))
-                    FOPM_STEP_VARIABLE.STEP = 4
+                    FOPM_STEP_VARIABLE.STEP = 5
                 end
-                return
-            else
-                return
-            end
-        end
-        if FOPM_STEP_VARIABLE.STEP == 4 then
-            if VERTICAL_SPEED > 700 then
-                FOPM_DELAY_VARIABLE.DELAY = TIME + 1.5
-                FOPM_STEP_VARIABLE.STEP = 5
-            else
-                return
             end
         end
         if FOPM_STEP_VARIABLE.STEP == 5 then

@@ -3,7 +3,7 @@
 
 ////////// CURRENT VERSION //////////
 
-Version 1.1 Procedures online (Check "Version History" for more details)
+Version 1.2 On Hand Checklist (Check "Version History" for more details)
 ____________________________________________________________________________________________________
 
 Hello there pilots and curious people welcome.
@@ -27,7 +27,16 @@ If you have previous versions installed the plugin might crash
 1. In the downloaded folder you will find 1 file "FO-PM.lua" and 1 folder "FO PM", put them both into the scripts folder of FlyWithLua
 2. Enjoy :)
 
-That's it for the installation, but if you want to enhance your experience there is four more things:
+///// UPDATING FROM A PREVIOUS VERSION /////
+
+1. Replace both "FO-PM.lua" and the "FO PM" folder with the new ones, overwrite all.
+2. Your settings go back to their default values, so check them again in the Settings page.
+3. The "Legacy" pack no longer exists. If you were flying with Avianca 2022, select it again in the Settings page and reload the script.
+4. If you use a voice pack made for V1.1, it still works, but it is missing the five new callouts of V1.2, see "CREATE A NEW VOICE PACK" below.
+
+DISCLAIMER: Do not update in the middle of a flight, a session saved with an older version can not be recovered with the new one.
+
+That's it for the installation, but if you want to enhance your experience there are five more things:
 
 ///// CHANGE VOICE PACK /////
 
@@ -45,12 +54,13 @@ You will see the active voice pack name in the Settings page.
 
 ///// CHANGE PROCEDURES & CHECKLIST PACK /////
 
-New in V1.1: the whole set of procedures and checklists can now be changed, so you can fly the same aircraft with a different operator's SOP.
-The plugin comes with 3 packs:
+The whole set of procedures and checklists can be changed, so you can fly the same aircraft with a different operator's SOP.
+The plugin comes with 2 packs:
 
     Airbus       - Manufacturer standard procedures and checklists
     Avianca 2022 - Airline procedures and checklists
-    Legacy       - The procedures used in V1.0
+
+The "Legacy" pack, with the procedures used in V1.0, was retired in V1.2.
 
 To change it you don't need to move any file:
 
@@ -74,11 +84,21 @@ The FO can set his own baro reference, and there are two ways to give him the QN
 
 The switch is off by default, so if you don't use Hoppie you don't have to change anything.
 
+///// CHECKLISTS ON SCREEN /////
+
+New in V1.2: if you want to follow the checklists with your eyes and not only by ear, tick "Interface Checklist" in the Settings page.
+While the FO reads a checklist, the Main page will show the current item and its answer, for example "SEAT BELTS... ON".
+The setting is off by default.
+
 ///// CREATE A NEW VOICE PACK /////
 
 Yes you can create your own voice pack, it's totally possible and easy.
 You only need to read the instructions, you can find it into the "Create Voice Pack" folder (FO PM/Voices/Create Voice Pack) there are the resources to create a new pack.
 Store the new pack into the "Voice Pack" folder to have it available whenever you want to use it.
+Since V1.2 you don't need to measure the duration of the files anymore, the plugin reads it from each .wav on its own.
+
+If you made a pack for V1.1, record the five new callouts of V1.2 (QNH, ALTIMETER, LEFT, RIGHT and CENTER, all of them in the "Voices list.txt") and add them to your pack.
+Without them the pack still works, the FO just skips those words, and the Settings page will tell you how many files are missing.
 
 That's it, enjoy and have good flights.
 Best Regards: Admiral Skippie

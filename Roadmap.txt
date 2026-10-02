@@ -51,11 +51,7 @@ Fly with the SOP you choose.
     - Rebuilt audio: callouts sound inside the cockpit and no longer talk over each other
 
 
-============================================================================================
- WHAT IS BEING BUILT NOW
-============================================================================================
-
---- V1.2 (working title) ---------------------------------------- [IN DEVELOPMENT]
+--- V1.2  "On Hand Checklist" ----------------------------------- [RELEASED]  October 2026
 
 A cleaner and stronger base before the fleet grows.
 
@@ -66,7 +62,15 @@ A cleaner and stronger base before the fleet grows.
       ("two seven left") and says "QNH" or "ALTIMETER" depending on the unit in use
     - Creating a voice pack is much easier: callout timing is taken from the audio files
     - Session recovery also resumes a one engine taxi exactly where it was
+    - Logbook with your total flight hours and flights flown with the FO
     - The old "Legacy" pack is retired, Airbus and Avianca 2022 remain
+
+
+============================================================================================
+ WHAT IS BEING BUILT NOW
+============================================================================================
+
+--- Taking a little time for prepare the next update :) ---------- [VACATIONS]
 
 
 ============================================================================================
@@ -77,7 +81,6 @@ A cleaner and stronger base before the fleet grows.
 
     - Support for the ToLiss A340-600
     - Procedures, checklists and callouts adapted to a four engine, long haul aircraft
-
 
 --- V1.4 (working title) ---------------------------------------- [PLANNED]
 

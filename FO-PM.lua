@@ -3776,7 +3776,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
             if FOPM_TL_FLT_PHASE.TAXI_OUT then
                 if FOPM_checklist.Taxi_checklist then
-                    -- HIDDEN WHILE ONE ENGINE TAXI IS RUNNING, SO THE TWO CANNOT TALK OVER EACH OTHER
                     if not FOPM_TL_CHECKLIST.Taxi_checklist and FOPM_TL_COMPLETED_PROC.TAXI_PROC_DONE then
                         if imgui.SmallButton("Taxi CKL") then
                             FOPM_TL_CHECKLIST.EXECUTE_CL = true

@@ -1,11 +1,54 @@
 
 # VERSION HISTORY
 
-# Version V1.2
+# Version V1.2 On Hand Checklist
+
+---
+
+## Visual changes
+
+**Checklists on screen (Interface Checklist)**
+A new "Interface Checklist" setting lets you follow every checklist on the FO window while he reads it. Instead of the "Executing Checklist" message, the Main page now shows the current item together with its answer, for example "SEAT BELTS... ON" or "GEAR PINS & COVERS... REMOVED", and it moves on at the same pace as the FO's voice until CHECKLIST COMPLETED. Items whose answer depends on your flight, such as BARO REF, FLAPS SETTING, PITCH TRIM or T.O RWY, show "____" in place of the value.
+
+It is switched off by default, tick it in the Settings page to use it.
+
+**Logbook**
+The Settings page now shows your **Total Flt Hours** and **Total Flights** flown with the FO. The time starts counting when the aircraft starts moving at pushback and stops when the Parking procedure is completed, which is when the flight is added to the logbook. It is kept in "FO PM/Logbooks/A32S Logbook.lua", so it carries over from one session to the next, and a flight picked back up with RECOVERY keeps counting.
+
+**Window size and position**
+The window no longer grows or shrinks by itself when you move between Main, Briefing and Settings, it keeps the size you gave it and only adjusts by the difference between the pages. The page you are leaving no longer flashes under the new one for a frame when you switch.
+
+The position is now saved no matter how you close the window, with the command, the macro or the window's own X button. If the saved position is no longer valid, for example because it was on a monitor that is not connected anymore, the window opens in its default position instead of somewhere you cannot reach.
 
 ---
 
 ## Functional changes
+
+**Speak Only Essentials now applies to checklist answers**
+With "Speak Only Essentials" on, the FO only speaks the answer of the essential items (BARO REF, T.O SPEEDS & THRUST, WINDOWS & DOORS, FLIGHT CONTROLS, FLAPS SETTING and T.O RWY), the rest of the items move on silently when you confirm them. With the setting off he answers every item, as before.
+
+**Takeoff runway confirmation at Line Up**
+In the T.O RWY item of the Line Up checklist the FO now reads out the runway loaded in the PERF TAKE OFF page before confirming it, including its side: "two seven left", "one three right", "one eight center", or just "two seven" for a runway without a side. If there is no runway loaded he simply confirms the item as before.
+
+**"QNH" or "ALTIMETER"**
+When the FO sets his baro reference, and when he answers the BARO REF item of the checklists, he now says "QNH" when the pressure is in hPa and "ALTIMETER" when it is in inHg, followed by the digits, instead of the generic "BARO REFERENCE".
+
+**New voices**
+Five new callouts have been added to both default voice packs, Owen and Adriana: QNH, ALTIMETER, LEFT, RIGHT and CENTER. The "Voices list.txt" used to create a voice pack now includes them. A custom pack made for V1.1 still works without them: the plugin reports the missing files in Settings and in the log, the FO skips those words, and the checklist or procedure carries on.
+
+**Session recovery for One Engine Taxi**
+RECOVERY now also resumes a One Engine Taxi Departure exactly at the step where it was, without repeating any decision already taken, like starting engine 2 or switching the APU BLEED. If the After Start checklist launched by the FO was halfway, it is launched again from its first item.
+
+The flight state is now checked every 10 seconds and written only when something actually changed, which makes the saving lighter during the flight.
+
+**Entry RWY and Exit RWY wait for the Taxi and Before Takeoff procedures**
+The Entry RWY and Exit RWY buttons are hidden while the Taxi or Before Takeoff procedure is running, and they come back as soon as the FO says READY, so the two flows no longer mix with each other.
+
+**Legacy pack retired**
+The "Legacy" procedures and checklists pack has been removed, Airbus and Avianca 2022 remain. If your configuration points to a pack that does not exist anymore, the plugin now loads the Airbus pack instead of failing to start. If you flew with Avianca 2022 in V1.1, select it again in Settings after updating.
+
+**More variety in the FO's phrases**
+The random choice of the FO's variable phrases, such as the READY or the briefing callouts, is now better seeded, so they change more from one session to the next.
 
 **Callout durations are now measured automatically**
 The plugin no longer depends on a table of hand written durations to space out the First Officer's callouts. When a voice pack is loaded it now reads the exact length of every .wav straight from the file itself, and uses that to time the speech.
@@ -16,6 +59,19 @@ The "FO Voicepack conf.lua" file of every pack now carries only the pack name. I
 
 **Missing or unreadable voice files no longer run the callouts together**
 If a file is missing, or is not a readable PCM .wav, the plugin now reports it in the X-Plane log naming the file, and falls back to a one second spacing for that callout instead of leaving it with no spacing at all and letting the FO talk over himself.
+
+---
+
+## Bug fixes
+
+**Back to back flights without reloading**
+When the Parking checklist takes you back to Preflight, every checklist and procedure of the previous flight is now reset, so the next leg starts clean without reloading the script.
+
+**Takeoff callouts could be skipped**
+The FO only called "100 KNOTS" and "V1" if he caught the exact knot at the moment he checked the speed, so with a fast acceleration or a low frame rate he could miss them. The takeoff callouts are now said in order as soon as each speed is reached, and none of them is skipped.
+
+**The go-around procedure could stop halfway**
+On an ILS or MLS approach the FO skipped the step that opens the PERF page of his MCDU, so he tried to read the flaps, slats and green dot speeds from the wrong page, and if one of those lines had no number the go-around procedure stopped. He now always opens the PERF page, and an empty line no longer stops the procedure.
 
 # Version V1.1 Procedures online
 

@@ -2554,7 +2554,7 @@ function fopm_checklist_engine()
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
             if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
-                if FOPM_TL_APP_TYPE.AR_DEP then
+                if FOPM_TL_APP_TYPE.AR_DEP or FOPM_TL_APP_TYPE.RNAVAR_APP then
                     local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))

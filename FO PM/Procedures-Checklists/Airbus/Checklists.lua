@@ -4,6 +4,78 @@
 
 FOPM_cklst_config_name = "Airbus"
 
+FOPM_cklst_handlers = {
+    Taxi_checklist = {
+        OETD_CHECK = {
+            question = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
+            end
+        },
+        ENGINE_MODE_SELECTOR = {
+            question = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end
+        }
+    },
+    Lineup_checklist = {
+        PACKS = {
+            question = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
+            end
+        },
+        PACKS_APU = {
+            question = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 3
+            end
+        }
+    },
+    Approach_checklist = {
+        ENGINE_MODE_SELECTOR = {
+            question = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end
+        },
+        AUTOBRAKES = {
+            question = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
+            end
+        },
+        AUTOBRAKES_MED = {
+            question = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM end,
+            answeryes = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
+            end
+        }
+    }
+}
+
 FOPM_checklist = {
     Cockpit_preparation_checklist = {
         [1] = {
@@ -161,11 +233,10 @@ FOPM_checklist = {
             item_answer = "",
         },
         [2] = {
-            int_item = "OETD CHECK",
+            int_item = "OETD_CHECK",
             item_name = "TAXI",
             item_answer = "",
             step_desition = true,
-            check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
         },
         [3] = {
             item = "FLIGHT_CONTROLS",
@@ -195,8 +266,7 @@ FOPM_checklist = {
             item_name = "ENG MODE SEL",
             item_answer = "____",
             essential = false,
-            step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
+            step_desition = true
         },
         [7] = {
             state = "IGNITION",
@@ -296,19 +366,13 @@ FOPM_checklist = {
             item_answer = "____",
             essential = false,
             step_desition = true,
-            check = {
-                [1] = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO end,
-                [2] = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
-            }
         },
         [5] = {
-            state = "ON",
+            item = "PACKS_APU",
             item_name = "PACKS",
-            item_answer = "ON",
+            item_answer = "____",
             essential = false,
             step_desition = true,
-            to_step_desition = true,
-            check = function () return PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 end,
         },
         [6] = {
             state = "ON",
@@ -317,9 +381,18 @@ FOPM_checklist = {
             essential = false,
             step_desition = true,
             to_step_desition = true,
-            check = function () return PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 1 end,
+            check = function () return PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 0 end,
         },
         [7] = {
+            state = "ON",
+            item_name = "PACKS",
+            item_answer = "ON",
+            essential = false,
+            step_desition = true,
+            to_step_desition = true,
+            check = function () return PACK_1_STATE == 1 and PACK_2_STATE == 1 and APU_BLEED_STATE == 1 end,
+        },
+        [8] = {
             state = "OFF",
             item_name = "PACKS",
             item_answer = "OFF",
@@ -328,7 +401,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return PACK_1_STATE == 0 and PACK_2_STATE == 0 and APU_BLEED_STATE == 0 end,
         },
-        [8] = {
+        [9] = {
             AR_item = true,
             item = "GPS_NAV_MODE",
             item_name = "GPS NAV MODE",
@@ -336,7 +409,7 @@ FOPM_checklist = {
             essential = false,
             state = "BOTH_NAV",
         },
-        [9] = {
+        [10] = {
             AR_item = true,
             item = "NAV_ON_FMA",
             item_name = "NAV ON FMA",
@@ -345,7 +418,7 @@ FOPM_checklist = {
             state = "CHECK",
             check = function () return string.find(FMA_B_STATE, "NAV") end
         },
-        [10] = {
+        [11] = {
             item = "CHECKLIST_COMPLETED",
             item_name = "CHECKLIST COMPLETED",
             item_answer = ""
@@ -385,13 +458,16 @@ FOPM_checklist = {
             item_name = "AUTO BRAKE",
             item_answer = "____",
             essential = false,
-            step_desition = true,
-            check = {
-                [1] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.LOW end,
-                [2] = function () return FOPM_CONFIG_VARIABLE.AUTOBRAKES.MEDIUM end
-            }
+            step_desition = true
         },
         [6] = {
+            item = "AUTOBRAKES_MED",
+            item_name = "AUTO BRAKE",
+            item_answer = "____",
+            essential = false,
+            step_desition = true
+        },
+        [8] = {
             state = "LOW",
             item_name = "AUTO BRAKE",
             item_answer = "LOW",
@@ -400,7 +476,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return AUTOBRK_LOW == 1 end
         },
-        [7] = {
+        [9] = {
             state = "MEDIUM",
             item_name = "AUTO BRAKE",
             item_answer = "MED",
@@ -409,15 +485,14 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return AUTOBRK_MED == 1 end
         },
-        [8] = {
+        [10] = {
             item = "ENGINE_MODE_SELECTOR",
             item_name = "ENG MODE SEL",
             item_answer = "____",
             essential = false,
             step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
         },
-        [9] = {
+        [11] = {
             state = "IGNITION",
             item_name = "ENG MODE SEL",
             item_answer = "IGNITION",
@@ -426,7 +501,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return ENG_Mode == 2 end,
         },
-        [10] = {
+        [12] = {
             state = "NORMAL",
             item_name = "ENG MODE SEL",
             item_answer = "NORMAL",
@@ -435,7 +510,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return ENG_Mode == 1 end,
         },
-        [11] = {
+        [13] = {
             AR_item = true,
             item = "RADIONAV_POSITION",
             item_name = "RADIO NAV POSITION",
@@ -443,7 +518,7 @@ FOPM_checklist = {
             essential = false,
             state = "DESELECTED",
         },
-        [12] = {
+        [14] = {
             AR_item = true,
             item = "GPS_NAV_MODE",
             item_name = "GPS NAV MODE",
@@ -451,7 +526,7 @@ FOPM_checklist = {
             essential = false,
             state = "BOTH_NAV",
         },
-        [13] = {
+        [15] = {
             item = "CHECKLIST_COMPLETED",
             item_name = "CHECKLIST COMPLETED",
             item_answer = ""

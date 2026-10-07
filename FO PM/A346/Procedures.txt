@@ -463,13 +463,14 @@ Structure with essencials
         end
     end
 
+A340
 //// Preliminary Cockpit Prep ////
-1     *ENG MASTERS         |   CHECK OFF
-2     *ENG MODE SEL        |   CHECK NORMAL
-3     *L/G LEVER           |   CHECK DOWN
-4     *WIPERS              |   OFF
+1    *ENG MASTERS         |   CHECK OFF
+2    *ENG MODE SEL        |   CHECK NORMAL
+3    *L/G LEVER           |   CHECK DOWN
+4    *WIPERS              |   OFF
 5    BAT                   |   CHECK CHARGE ****
-6     *EXT PWR             |   CHECK IF AVAIL
+6    *EXT PWR             |   CHECK IF AVAIL
          IF NOT
          APU               |   CHECK IF ON
               IF NOT

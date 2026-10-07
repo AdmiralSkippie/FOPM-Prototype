@@ -2548,14 +2548,15 @@ end
 
 -- CHEKCLIST ENGINE
 function fopm_checklist_engine()
+    local ACT = FOPM_TL_CHECKLIST.ACT_CL
     if FOPM_STEP_VARIABLE.STEP_CHECK == 0 then
         FOPM_STEP_VARIABLE.STEP_CHECK = 1
         FOPM_STEP_VARIABLE.CKLST_STEP = 1
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 1 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
-            if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
+            if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].AR_item then
                 if FOPM_TL_APP_TYPE.AR_DEP or FOPM_TL_APP_TYPE.RNAVAR_APP then
-                    local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item
+                    local speech = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                     FOPM_STEP_VARIABLE.STEP_CHECK = 2
@@ -2563,9 +2564,9 @@ function fopm_checklist_engine()
                 else
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
-            elseif FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
+            elseif FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].CAT_item then
                 if FOPM_TL_APP_TYPE.CAT_II_III then
-                    local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item
+                    local speech = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
                     FOPM_PlaySound(FOPM_Talk[speech])
                     FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                     FOPM_STEP_VARIABLE.STEP_CHECK = 2
@@ -2573,92 +2574,20 @@ function fopm_checklist_engine()
                 else
                     FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                 end
-            elseif FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].step_desition then
-                if not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].to_step_desition then
+            elseif FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].step_desition then
+                if not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].to_step_desition then
                     if FOPM_STEP_VARIABLE.DES_MADED then
                         FOPM_STEP_VARIABLE.DES_MADED = false
                     end
-                    if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item then
-                        local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item
+                    if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item then
+                        local speech = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
                         FOPM_PlaySound(FOPM_Talk[speech])
                         FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                     end
-                    if FOPM_TL_CHECKLIST.ACT_CL == "Taxi_checklist" then
-                        if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
-                            if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        elseif FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].int_item == "OETD CHECK" then
-                            if FOPM_checklist.Taxi_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            end
-                        end
-                    elseif FOPM_TL_CHECKLIST.ACT_CL == "Lineup_checklist" then
-                        if FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "PACKS_AND_APU_BLEED" or FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "PACKS" then
-                            if FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            elseif FOPM_checklist.Lineup_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 3
-                            end
-                        end
-                    elseif FOPM_TL_CHECKLIST.ACT_CL == "Before_takeoff_checklist_BTL" then
-                        if FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
-                            if FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        elseif FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].item == "PACKS_AND_APU_BLEED" or FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].item == "PACKS" then
-                            if FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            elseif FOPM_checklist.Before_takeoff_checklist_BTL[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 3
-                            end
-                        end
-                    elseif FOPM_TL_CHECKLIST.ACT_CL == "Approach_checklist" then
-                        if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "ENGINE_MODE_SELECTOR" then
-                            if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "AUTOBRAKES" then
-                            if FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            elseif FOPM_checklist.Approach_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        end
-                    elseif FOPM_TL_CHECKLIST.ACT_CL == "Landing_checklist" then
-                        if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "AUTO_TRHUST" then
-                            if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "AUTOBRAKES" then
-                            if FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[1]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            elseif FOPM_checklist.Landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check[2]() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        end
-                    elseif FOPM_TL_CHECKLIST.ACT_CL == "After_landing_checklist" then
-                        if FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].item == "APU" then
-                            if FOPM_checklist.After_landing_checklist[FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
-                            else
-                                FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 2
-                            end
-                        end
+                    if FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].question() then
+                        FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].answeryes()
+                    else
+                        FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].answerno()
                     end
                 else
                     if not FOPM_STEP_VARIABLE.DES_MADED then
@@ -2670,7 +2599,7 @@ function fopm_checklist_engine()
                     end
                 end
             else
-                local speech = FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].item
+                local speech = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
                 FOPM_PlaySound(FOPM_Talk[speech])
                 FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                 FOPM_STEP_VARIABLE.STEP_CHECK = 2
@@ -2679,20 +2608,20 @@ function fopm_checklist_engine()
         end
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 2 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
-            if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].check then
+            if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].check then
                 if response_CHECK then
-                    if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].check() then
-                        if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                            if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
-                               (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
+                    if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].check() then
+                        if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
+                            if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
+                               (not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
                                 local speech = CONFIG_VOICE_SRCH
                                 FOPM_PlaySound(FOPM_Talk[speech])
                                 FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_CONFIG, speech))
                             end
                         else
-                            if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
-                               (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
-                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP])
+                            if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
+                               (not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP])
                             end
                         end
                         FOPM_STEP_VARIABLE.STEP_CHECK = 3
@@ -2701,19 +2630,19 @@ function fopm_checklist_engine()
                         response_CHECK = false
                     end
                 end
-            elseif FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].state then
+            elseif FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].state then
                 if response_CHECK then
-                    if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
-                        if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
-                           (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
+                    if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].state == "FLAPS" then
+                        if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
+                           (not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
                             local speech = CONFIG_VOICE_SRCH
                             FOPM_PlaySound(FOPM_Talk[speech])
                             FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FLAP_CONFIG, speech))
                         end
                     else
-                        if FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
-                           (not FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
-                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL][FOPM_STEP_VARIABLE.CKLST_STEP])
+                        if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential or
+                           (not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].essential and not speak_only_essencials) then
+                            FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + FOPM_AnswerSay(FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP])
                         end
                     end
                     FOPM_STEP_VARIABLE.STEP_CHECK = 3
@@ -2726,10 +2655,10 @@ function fopm_checklist_engine()
         end
     elseif FOPM_STEP_VARIABLE.STEP_CHECK == 3 then
         if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
-            if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist[FOPM_TL_CHECKLIST.ACT_CL] then
+            if FOPM_STEP_VARIABLE.CKLST_STEP > #FOPM_checklist[ACT] then
                 FOPM_STEP_VARIABLE.STEP_CHECK = 0
                 FOPM_STEP_VARIABLE.CKLST_STEP = 0
-                FOPM_TL_CHECKLIST[FOPM_TL_CHECKLIST.ACT_CL] = true
+                FOPM_TL_CHECKLIST[ACT] = true
                 FOPM_TL_CHECKLIST.EXECUTE_CL = false
                 NEED_SAVE = true
             else

@@ -463,6 +463,7 @@ Structure with essencials
         end
     end
 
+A32S
 //// Preliminary Cockpit Prep ////
 1    *ENG MASTERS         |   CHECK OFF
 2    *ENG MODE SEL        |   CHECK NORMAL
@@ -487,9 +488,9 @@ Structure with essencials
 //// After Start ////
 Trigger: ENG MODE SELECTOR--NORM
 1    *GND SPOILERS    |   ARM
-2    *RUD TRIM        |   ZERO
-3    FLAPS           |   (Set conf)  Set
-4    PITCH TRIM      |   (Set Conf)  Set
+2    *RUD TRIM        |   NEUTRAL
+3    FLAPS            |   (Set conf)  Set
+4    PITCH TRIM       |   (Set Conf)  Set
 5    *ECAM STS        |   CHECK
 
 //// Flight Controls Check ////

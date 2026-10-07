@@ -368,7 +368,7 @@ FOPM_checklist = {
             step_desition = true,
         },
         [5] = {
-            item = "PACKS_APU",
+            int_item = "PACKS_APU",
             item_name = "PACKS",
             item_answer = "____",
             essential = false,
@@ -461,13 +461,13 @@ FOPM_checklist = {
             step_desition = true
         },
         [6] = {
-            item = "AUTOBRAKES_MED",
+            int_item = "AUTOBRAKES_MED",
             item_name = "AUTO BRAKE",
             item_answer = "____",
             essential = false,
             step_desition = true
         },
-        [8] = {
+        [7] = {
             state = "LOW",
             item_name = "AUTO BRAKE",
             item_answer = "LOW",
@@ -476,7 +476,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return AUTOBRK_LOW == 1 end
         },
-        [9] = {
+        [8] = {
             state = "MEDIUM",
             item_name = "AUTO BRAKE",
             item_answer = "MED",
@@ -485,14 +485,14 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return AUTOBRK_MED == 1 end
         },
-        [10] = {
+        [9] = {
             item = "ENGINE_MODE_SELECTOR",
             item_name = "ENG MODE SEL",
             item_answer = "____",
             essential = false,
             step_desition = true,
         },
-        [11] = {
+        [10] = {
             state = "IGNITION",
             item_name = "ENG MODE SEL",
             item_answer = "IGNITION",
@@ -501,7 +501,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return ENG_Mode == 2 end,
         },
-        [12] = {
+        [11] = {
             state = "NORMAL",
             item_name = "ENG MODE SEL",
             item_answer = "NORMAL",
@@ -510,7 +510,7 @@ FOPM_checklist = {
             to_step_desition = true,
             check = function () return ENG_Mode == 1 end,
         },
-        [13] = {
+        [12] = {
             AR_item = true,
             item = "RADIONAV_POSITION",
             item_name = "RADIO NAV POSITION",
@@ -518,7 +518,7 @@ FOPM_checklist = {
             essential = false,
             state = "DESELECTED",
         },
-        [14] = {
+        [13] = {
             AR_item = true,
             item = "GPS_NAV_MODE",
             item_name = "GPS NAV MODE",
@@ -526,7 +526,7 @@ FOPM_checklist = {
             essential = false,
             state = "BOTH_NAV",
         },
-        [15] = {
+        [14] = {
             item = "CHECKLIST_COMPLETED",
             item_name = "CHECKLIST COMPLETED",
             item_answer = ""

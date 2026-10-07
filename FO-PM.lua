@@ -2584,10 +2584,16 @@ function fopm_checklist_engine()
                         FOPM_PlaySound(FOPM_Talk[speech])
                         FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FOPM_Duration(FO_voices_directory, speech))
                     end
-                    if FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].question() then
-                        FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].answeryes()
+                    local item = ""
+                    if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item then
+                        item = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
                     else
-                        FOPM_cklst_handlers[ACT][FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item].answerno()
+                        item = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].int_item
+                    end
+                    if FOPM_cklst_handlers[ACT][item].question() then
+                        FOPM_cklst_handlers[ACT][item].answeryes()
+                    else
+                        FOPM_cklst_handlers[ACT][item].answerno()
                     end
                 else
                     if not FOPM_STEP_VARIABLE.DES_MADED then

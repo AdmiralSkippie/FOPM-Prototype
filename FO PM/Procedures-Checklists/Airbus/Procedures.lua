@@ -24,6 +24,273 @@
 
 FOPM_proc_config_name = "Airbus"
 
+FOPM_proc_handlers = {
+    Pre_cockpit_preparation = {
+        EXTERNAL_CHECK = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Pre_cockpit_preparation.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Pre_cockpit_preparation.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Pre_cockpit_preparation.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Pre_cockpit_preparation.."_STEP"] + 2
+            end
+        }
+    },
+    After_start_procedure = {
+        PITCHTRM = {
+            complex_action = function ()
+                FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU2_BLINE_3, "([UPDN]+)")
+                FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU2_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
+                FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
+                FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
+                FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
+            end
+        },
+        TRIM_CHECK = {
+            answeryes = function ()
+                FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = FOPM_CONFIG_VARIABLE.PT_TO_ANGLE * 1
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = FOPM_CONFIG_VARIABLE.PT_TO_ANGLE * -1
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 2
+            end
+        },
+        TRIM_STOP = {
+            answeryes = function ()
+                command_end(PITCH_TRIM_DN)
+                command_end(PITCH_TRIM_UP)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+            end
+        },
+        OETD_CHECK = {
+            answeryes = function ()
+                FOPM_Procedures_Control.ENG2_ACT_PROC = "One_engine_taxi_DEP"
+                FOPM_Procedures_Control.EXECUTE_ENG2 = true
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+            end
+        }
+    },
+    Taxi_procedure = {
+        OETD_CHECK = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 2
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 1
+            end
+        },
+        FLTCTLCHK = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 1
+            end,
+            answerno = function ()
+                flt_ctl_chk()
+            end
+        },
+        WEATHER_RADAR = {
+            answeryes = function ()
+                local number = math.random(2)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + number
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 3
+            end
+        },
+        ON_OETD = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 3
+                FOPM_STEP_VARIABLE.ENG1_STEP = 3
+            end
+        }
+    },
+    Before_takeoff_proc = {
+        BRAKE_TEMP = {
+            answeryes = function ()
+                local rindex = math.random(3)
+                FOPM_PlaySound(BRAKE_WARNINGS[rindex])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRAKE_WARN, rindex))
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 2
+            end
+        },
+        TEMP_CHECK = {
+            answeryes = function ()
+                local rindex = math.random(5)
+                FOPM_PlaySound(READY[rindex])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] - 1
+            end
+        },
+        ENGINE_MODE_SELECTOR = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 2
+            end
+        },
+        PACKS = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 4
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 1
+            end
+        },
+        PACKS_OFF = {
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 2
+                FOPM_STEP_VARIABLE.ENG1_STEP = 3
+            end
+        }
+    },
+    Ten_thousand_feet_CLB = {
+        TEN_THAUSAND_FEET = {
+            answeryes = function ()
+                local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"]].int_item
+                FOPM_PlaySound(FOPM_Talk[speech])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] + 1
+            end
+        }
+    },
+    Ten_thousand_feet_DES = {
+        TEN_THAUSAND_FEET = {
+            answeryes = function ()
+                local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"]].int_item
+                FOPM_PlaySound(FOPM_Talk[speech])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
+            end
+        },
+        LS = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 2
+            end
+        },
+        ENGINE_MODE_SELECTOR = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 2
+            end
+        },
+    },
+    After_landing_proc = {
+        FLAPS = {
+            answeryes = function ()
+                FOPM_CONFIG_VARIABLE.F_TARGET = 0.25
+                FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_CONFIG_VARIABLE.F_TARGET = 0
+                FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] + 1
+            end
+        },
+        FLAPS_RET = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc.."_STEP"] + 1
+            end,
+            answerno = function ()
+                command_once(FLAPS_1UP)
+                FOPM_CONFIG_VARIABLE.F_ATARGET = FOPM_CONFIG_VARIABLE.F_ATARGET - 0.25
+                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed + 0.25
+            end
+        }
+    },
+    Parking_proc = {
+        IAE_CHECK = {
+            complex_action = function ()
+                if ENG_MODEL == 0 then
+                    FOPM_CONFIG_VARIABLE.IAE_SD_TIME = math.floor(TIME)
+                end
+            end
+        }
+    },
+    One_engine_taxi_DEP = {
+        APU_BLEED = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 4
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end
+        },
+        APU_OFF_SKIP = {
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 2
+            end
+        },
+        ANTI_ICE = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 2
+            end
+        },
+        After_Start_Checklist = {
+            answeryes = function ()
+                FOPM_TL_CHECKLIST.After_start_checklist = false
+                FOPM_TL_CHECKLIST.ACT_CL = "After_start_checklist"
+                FOPM_TL_CHECKLIST.EXECUTE_CL = true
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end
+        },
+        WAIT_CL = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end
+        },
+        FLTCTLCHK = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end,
+            answerno = function ()
+                flt_ctl_chk()
+            end
+        },
+        PROC_COMP = {
+            complex_action = function ()
+                local rindex = math.random(5)
+                FOPM_PlaySound(READY[rindex])
+                FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(RDY, rindex))
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end
+        },
+        ENG_COMP = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 3
+            end
+        },
+        IAE_CHECK_TIME = {
+            answeryes = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
+            end,
+            answerno = function ()
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 2
+            end
+        }
+    }
+}
+
 FOPM_procedure = {
     Pre_cockpit_preparation = {
         [1] = {
@@ -105,7 +372,7 @@ FOPM_procedure = {
         },
         [16] = {
             item = "FLAPS",
-            state = "CHECK", -- REVISAR CON LA CONFIGURACION
+            state = "POS",
             check = function () return FLAPS_LEVER_State <= 0.25 end,
         },
         [17] = {
@@ -140,6 +407,10 @@ FOPM_procedure = {
             check = function () return FO_CSTR_STATE == 1 end,
             action_check = {command = FO_ND_CSTR_PB}
         },
+        [23] = {
+            int_item = "FO FLPLN",
+            action = {command = MCDU_FO_KEY_Fpln}
+        }
     },
     After_start_procedure = {
         [1] = {
@@ -155,13 +426,14 @@ FOPM_procedure = {
         },
         [3] = {
             item = "FLAPS",
-            state = "CHECK",
+            state = "CONF",
             action_check = {command = FLAPS_1DOWN},
             check = function () return ((math.floor(FLAPS_LEVER_State * 100)/100) * 4) == FLAPS_TO_CONFIG end
         },
         [4] = {
             item = "PITCHTRM",
             action_pre_check = {command = MCDU_FO_KEY_Perf},
+            action = {complex_action = true}
         },
         [5] = {
             int_item = "TRIM_CHECK",
@@ -169,37 +441,53 @@ FOPM_procedure = {
             check = function () return FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION == "UP" end
         },
         [6] = {
-            int_item = "TRIM_STOP",
+            nodelay_item = "START_TRIM_UP",
+            step_desition = true,
+            to_step_desition = true,
+            action = {command_begin = PITCH_TRIM_UP}
+        },
+        [7] = {
+            nodelay_item = "START_TRIM_DOWN",
+            step_desition = true,
+            to_step_desition = true,
+            action = {command_begin = PITCH_TRIM_DN}
+        },
+        [8] = {
+            nodelay_item = "TRIM_STOP",
             step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.PT_TO_CONFIG == math.floor(PITCH_TRIM * 10) / 10 end
         },
-        [7] = {
+        [9] = {
             state = "SET"
         },
-        [8] = {
+        [10] = {
             item = "ECAM_STATUS",
             state = "CHECK"
         },
-        [9] = {
+        [11] = {
+            int_item = "FO FLPLN",
+            action = {command = MCDU_FO_KEY_Fpln}
+        },
+        [12] = {
             int_item = "FLAPS",
             essential = true,
-            state = "CHECK",
+            state = "CONF",
             check = function () return FLAPS_State == -1 end
         },
-        [10] = {
-            int_item = "OETD CHECK",
+        [13] = {
+            int_item = "OETD_CHECK",
             step_desition = true,
             check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
         },
     },
     Taxi_procedure = {
         [1] = {
-            int_item = "OETD CHECK",
+            int_item = "OETD_CHECK",
             step_desition = true,
             check = function () return FOPM_Procedures_Control.ONEENG_TAXI_DEP end
         },
         [2] = {
-            int_item = "FLTCTLCHK",
+            nodelay_item = "FLTCTLCHK",
             step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
         },
@@ -312,6 +600,11 @@ FOPM_procedure = {
             action_check = {command = PACK_2_PB}
         },
         [11] = {
+            int_item = "PACKS_OFF",
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.PACKS_FOR_TO or FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
+        },
+        [12] = {
             state = "ON",
             step_desition = true,
             to_step_desition = true
@@ -384,8 +677,8 @@ FOPM_procedure = {
     },
     Ten_thousand_feet_CLB = {
         [1] = {
-            item = "TEN_THAUSAND_FEET",
-            essential = true,
+            int_item = "TEN_THAUSAND_FEET",
+            step_desition = true,
             condition = function () return fo_autoperform end
         },
         [2] = {
@@ -409,18 +702,18 @@ FOPM_procedure = {
         },
         [6] = {
             -- ND RANGE
-            action = {dataref = 3, delay = 0.7},
+            action = {dataref = 3},
             dataref_name = "EFIS_RNG"
         },
         [7] = {
             -- TERRAIN
-            action = {command = TERRAIN_FO_PB, delay = 1}
+            action = {command = TERRAIN_FO_PB}
         },
     },
     Ten_thousand_feet_DES = {
         [1] = {
-            item = "TEN_THAUSAND_FEET",
-            essential = true,
+            int_item = "TEN_THAUSAND_FEET",
+            step_desition = true,
             condition = function () return fo_autoperform end
         },
         [2] = {
@@ -444,23 +737,41 @@ FOPM_procedure = {
         },
         [6] = {
             -- ND RANGE
-            action = {dataref = 1, delay = 0.7},
+            action = {dataref = 1},
             dataref_name = "EFIS_RNG"
         },
         [7] = {
             -- TERRAIN
-            action = {command = TERRAIN_FO_PB, delay = 0.5}
+            action = {command = TERRAIN_FO_PB}
         },
         [8] = {
             item = "LS",
-            condition = function () return FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP or FOPM_TL_APP_TYPE.LDA_APP or FOPM_TL_APP_TYPE.FLS end,
-            action = {command = LS_FO_PB}
+            step_desition = true,
+            check = function () return FOPM_TL_APP_TYPE.ILS_APP or FOPM_TL_APP_TYPE.MLS_APP or FOPM_TL_APP_TYPE.LDA_APP or FOPM_TL_APP_TYPE.FLS end
         },
         [9] = {
+            nodelay_item = "LS ON",
+            step_desition = true,
+            to_step_desition = true,
+            action = {command = LS_FO_PB}
+        },
+        [10] = {
             item = "ENGINE_MODE_SELECTOR",
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end
+        },
+        [11] = {
             state = "IGNITION",
-            condition = function () return FOPM_CONFIG_VARIABLE.RAINING and ENG_MODEL ~= 0 end,
+            step_desition = true,
+            to_step_desition = true,
             action = {dataref = 2},
+            dataref_name = "ENG_Mode"
+        },
+        [12] = {
+            state = "NORMAL",
+            step_desition = true,
+            to_step_desition = true,
+            action = {dataref = 1},
             dataref_name = "ENG_Mode"
         },
     },
@@ -504,7 +815,7 @@ FOPM_procedure = {
         },
         [8] = {
             int_item = "FLAPS",
-            state = "FLAPS",
+            state = "POS",
             check = function () return FLAPS_LEVER_State == FOPM_CONFIG_VARIABLE.F_TARGET end
         },
         [9] = {
@@ -543,14 +854,8 @@ FOPM_procedure = {
     Parking_proc = {
         [1] = {
             -- IAE ENGINES SHUTDOWN TIME, USED BY THE NEXT ONE ENGINE TAXI DEP
-            action = {
-                run = function ()
-                    if ENG_MODEL == 0 then
-                        FOPM_CONFIG_VARIABLE.IAE_SD_TIME = math.floor(TIME)
-                    end
-                end,
-                delay = 1
-            }
+            int_item = "IAE_CHECK",
+            action = {complex_action = true}
         },
         [2] = {
             item = "APU_BLEED",
@@ -673,6 +978,12 @@ FOPM_procedure = {
             state = "OFF",
             action = {command = APU_MASTER_PB},
         },
+        [14] = {
+            item = "APU_OFF_SKIP",
+            essential = true,
+            step_desition = true,
+            check = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
+        },
         [17] = {
             step_desition = true,
             to_step_desition = true,
@@ -715,13 +1026,13 @@ FOPM_procedure = {
             state = "SET",
         },
         [24] = {
-            int_item = "After Start Checklist",
+            nodelay_item = "After_Start_Checklist",
             step_desition = true,
             check = function () return not FOPM_TL_CHECKLIST.EXECUTE_CL end
         },
         [25] = {
-            -- A RELOAD STOPS THE CHECKLIST, SO A RECOVERY HERE LAUNCHES IT AGAIN
-            recovery_step = 24,
+            nodelay_item = "WAIT_CL",
+            step_desition = true,
             check = function () return FOPM_TL_CHECKLIST.After_start_checklist end
         },
         [26] = {
@@ -741,8 +1052,7 @@ FOPM_procedure = {
         },
         [29] = {
             int_item = "PROC_COMP",
-            step_desition = true,
-            check = function () return FOPM_STEP_VARIABLE.PROC_OE_STEP == 29 end
+            complex_action = true
         },
         [30] = {
             int_item = "ENG_COMP",

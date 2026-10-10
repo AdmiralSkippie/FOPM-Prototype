@@ -17,7 +17,6 @@ dataref("ACF_UI_Name","sim/aircraft/view/acf_ui_name","readonly")
 if COMPATIBLE_ACF[ACF_ICAO] then -- LUA START
 if string.find(string.lower(ACF_UI_Name),"toliss") then
 logMsg("XXXXX   ACF Compatible")
-dataref("TIME", "sim/time/total_running_time_sec", "readonly")
 
 -- /////////////////////////////////
 -- ///// FOPM MAIN CONFIG LOAD /////
@@ -144,7 +143,6 @@ FOPM_TL_APP_TYPE = {
 ---- ONGOING PROCEDURES ----
 ----------------------------
 FOPM_Procedures_Control = {
-    ACT_PROC = "",
     UNASSIGN_PROC = "",
     Engine_Assingment = {
         Pre_cockpit_preparation = "ENG1",
@@ -164,20 +162,9 @@ FOPM_Procedures_Control = {
     EXECUTE_ENG1 = false,
     ENG2_ACT_PROC = "",
     EXECUTE_ENG2 = false,
-    EXECUTE_PCP = false,
-    EXECUTE_ASP = false,
-    EXECUTE_TXP = false,
-    EXECUTE_BTP = false,
-    EXECUTE_10FT_CLB = false,
-    EXECUTE_10FT_DES = false,
     ONEENG_TAXI_DEP = false,
-    EXECUTE_OETD = false,
     START_ENG2 = false,
-    EXECUTE_AL_PROC = false,
-    EXECUTE_ENRWY = false,
-    EXECUTE_EXRWY = false,
     ONEENG_TAXI_ARR_AVAIL = false,
-    EXECUTE_OETA = false,
     EXECUTE_FLP = false,
     EXECUTE_GEAR = false,
     EXECUTE_BARO_SET = false,
@@ -201,7 +188,6 @@ response_CHECK = false
 FOPM_DELAY_VARIABLE = {
     DELAY = 0,
     DELAY_CHECK = 0,
-    DELAY_PROC = 0,
     DELAY_PROC_ENG1 = 0,
     DELAY_PROC_ENG2 = 0,
     DELAY_CLEAN = 0,
@@ -219,18 +205,12 @@ FOPM_STEP_VARIABLE = {
     STEP_AP = 0,
     STEP_AL = 0,
     STEP_CHECK = 0,
-    STEP_ONEENG = 0,
-    STEP_RWY = 0,
-    PROC_OE_STEP = 0,
     PROC_ENG1_STEP = 0,
     PROC_ENG2_STEP = 0,
-    PROC_RWY_STEP = 0,
     CKLST_STEP = 0,
     DES_MADED_CKL = false,
     DES_MADED1 = false,
-    DES_MADED2 = false,
-    DES_MADED_OE = false,
-    DES_MADED_RWY = false
+    DES_MADED2 = false
 }
 FOPM_CONFIG_VARIABLE = {
     PT_TO_DIRECTION = 0,
@@ -269,7 +249,6 @@ local FPMTR = {
     PITCHDELAY = 0,
     LOCDELAY = 0,
     GLIDEDELAY = 0,
-    XTRKDELAY = 0,
     CONT_APP = true
 }
 
@@ -349,8 +328,6 @@ local RECOVERY_AVAIL = true
 local NEED_SAVE = false
 function save_backup()
     if NEED_SAVE then
-        -- A PROCEDURE IS NEVER SAVED HALFWAY. THE ENGINES ASK FOR A SAVE WHEN ONE ENDS, SO A
-        -- RELOAD ONLY KEEPS COMPLETED PROCEDURES AND ONE THAT WAS RUNNING STARTS AGAIN.
         local rute = SCRIPT_DIRECTORY .. "FO PM/FO_Recovery.lua"
         local config = io.open(rute, "w")
         if config then
@@ -666,417 +643,6 @@ end
 -- ///////////////////////////////////////
 -- ///////// PROCEDURE ENGINE ///////////
 -- ///////////////////////////////////////
--- ONE ENGINE RUNS EVERY PROCEDURE OF THE PACK'S Procedures.lua, THE SAME WAY
--- fopm_checklist_engine() RUNS EVERY CHECKLIST. WHAT USED TO BE COPIED INTO
--- SIX FUNCTIONS LIVES HERE ONCE, AND WHAT IS PARTICULAR TO A PROCEDURE LIVES
--- IN ITS ENTRY OF FOPM_PROC_CFG:
---   pack                TABLE NAME INSIDE FOPM_procedure
---   step / pstep        WHICH FOPM_STEP_VARIABLE FIELDS IT RUNS ON. ONE ENGINE
---                       TAXI KEEPS ITS OWN PAIR SO IT CAN RUN ALONGSIDE THE
---                       OTHERS, AND ITS PACK READS PROC_OE_STEP DIRECTLY, SO
---                       THESE STAY THE SAME GLOBALS AS BEFORE. DELAY AND
---                       DELAY_PROC ARE SHARED AS THEY ALWAYS WERE.
---   des                 DECISION FLAG FIELD, "DES_MADED1" UNLESS SET. ONE ENGINE
---                       TAXI HAS ITS OWN, SO A PROCEDURE OR A CHECKLIST RUN WHILE
---                       IT IS PAUSED CANNOT MAKE IT REPEAT A DECISION BRANCH.
---   flap_config         SAY THE FLAPS WITH THE "CONF" CALLOUTS, NOT "FLAPS n"
---   flaps_check_delay   WAIT AFTER MOVING THE FLAPS ON AN action_check
---   int_retry_fo_speed  RETRY A SILENT CHECK EVERY fo_speed INSTEAD OF 10 s
---   ready_for_to        SAY THE "READY FOR TAKEOFF" CALLOUT ON THAT STATE
---   end_ready           SAY A "READY" CALLOUT WHEN THE PROCEDURE ENDS
---   end_ready_optional  THAT "READY" IS SKIPPED WITH SPEAK ONLY ESSENTIALS
---   end_fpln            RETURN THE MCDU TO THE FLIGHT PLAN WHEN IT ENDS
---   save_step           WAKE THE RECOVERY SAVE ON EVERY NEW STEP
---   on_done             COMPLETION FLAGS OF THIS PROCEDURE
---   handlers            (OPTIONAL) DECISION STEPS WITH THEIR OWN LOGIC, BY ITEM NAME.
---                       THEY ARE PER PROCEDURE ON PURPOSE, THE SAME NAME DOES
---                       NOT ALWAYS BEHAVE THE SAME ("OETD CHECK" IN AFTER START
---                       IS NOT "OETD CHECK" IN TAXI).
-
-local function proc_adv(cfg, n)
-    FOPM_STEP_VARIABLE[cfg.pstep] = FOPM_STEP_VARIABLE[cfg.pstep] + n
-end
-
-local function proc_step(cfg, v)
-    FOPM_STEP_VARIABLE[cfg.step] = v
-end
-
--- SPEAKS THE ITEM NAME OF A STEP, RESPECTING SPEAK ONLY ESSENTIALS
-local function proc_say_item(e)
-    if not e.essential then
-        if not speak_only_essencials then
-            local speech = e.item
-            FOPM_PlaySound(FOPM_Talk[speech])
-            FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(FO_voices_directory, speech))
-        else
-            FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-        end
-    else
-        local speech = e.item
-        FOPM_PlaySound(FOPM_Talk[speech])
-        FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(FO_voices_directory, speech))
-    end
-end
-
--- WRITES ONE DATAREF, OR EVERY DATAREF OF A LIST (dataref_name = {"A", "B"})
-local function proc_write(names, value)
-    if type(names) == "table" then
-        for _, name in ipairs(names) do
-            _G[name] = value
-        end
-    else
-        _G[names] = value
-    end
-end
-
--- RUNS ONE COMMAND, OR EVERY COMMAND OF A LIST (command = {CMD_A, CMD_B})
-local function proc_command(cmd)
-    if type(cmd) == "table" then
-        for _, c in ipairs(cmd) do
-            command_once(c)
-        end
-    else
-        command_once(cmd)
-    end
-end
-
--- DOES WHAT AN action, action_check OR action_pre_check ASKS FOR. dataref, command
--- AND run CAN GO TOGETHER IN ONE STEP, delay IS LEFT TO WHOEVER CALLS IT
-local function proc_do(act, e)
-    if act.dataref ~= nil then
-        proc_write(e.dataref_name, act.dataref)
-    end
-    if act.command then
-        proc_command(act.command)
-    end
-    if act.run then
-        act.run()
-    end
-end
-
-local function proc_pre_action(e)
-    if e.action_pre_check then
-        proc_do(e.action_pre_check, e)
-    end
-end
-
-local function proc_flap_voice(cfg)
-    if cfg.flap_config then
-        return CONFIG_VOICE_SRCH, FLAP_CONFIG
-    end
-    return FL_VOICE_SRCH, FLAP_POS
-end
-
--- DECISION HANDLERS SHARED WORD FOR WORD BY MORE THAN ONE PROCEDURE
-local function h_fltctlchk(e, cfg)
-    if e.check() then
-        proc_adv(cfg, 1)
-        proc_step(cfg, 3)
-    else
-        flt_ctl_chk()
-    end
-end
-
-local function h_weather_radar(e, cfg)
-    radar_pos = math.random(2)
-    if e.check() then
-        proc_adv(cfg, 1)
-    else
-        proc_adv(cfg, 2)
-    end
-end
-
-local function h_engine_mode(e, cfg)
-    if e.check() then
-        proc_adv(cfg, 1)
-    else
-        proc_adv(cfg, 2)
-    end
-end
-
-local function h_brake_temp(e, cfg)
-    if e.check() then
-        local rindex = math.random(3)
-        FOPM_PlaySound(BRAKE_WARNINGS[rindex])
-        FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRAKE_WARN, rindex))
-        proc_adv(cfg, 1)
-    else
-        proc_adv(cfg, 2)
-    end
-end
-
-local function h_temp_check(e, cfg)
-    if e.check() then
-        local rindex = math.random(5)
-        FOPM_PlaySound(READY[rindex])
-        FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(RDY, rindex))
-        proc_adv(cfg, -1)
-    end
-end
-
-local function h_on_oetd(e, cfg)
-    if e.check() then
-        proc_adv(cfg, 1)
-    else
-        proc_adv(cfg, 3)
-        proc_step(cfg, 3)
-    end
-end
-
-local FOPM_PROC_CFG = {
-    PCP = {
-        pack = "Pre_cockpit_preparation", step = "STEP", pstep = "PROC_STEP",
-        end_ready = true, end_fpln = true,
-        on_done = function ()
-            FOPM_TL_COMPLETED_PROC.Pre_cockpit_preparation = true
-            FOPM_Procedures_Control.EXECUTE_PCP = false
-        end,
-        handlers = {
-            EXTERNAL_CHECK = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 1)
-                else
-                    proc_adv(cfg, 2)
-                end
-            end
-        }
-    },
-    ASP = {
-        pack = "After_start_procedure", step = "STEP", pstep = "PROC_STEP",
-        flap_config = true, flaps_check_delay = 0.9,
-        end_ready = true, end_fpln = true,
-        on_done = function ()
-            FOPM_TL_COMPLETED_PROC.After_start_procedure = true
-            FOPM_Procedures_Control.EXECUTE_ASP = false
-        end,
-        handlers = {
-            TRIM_CHECK = function (e, cfg)
-                FOPM_CONFIG_VARIABLE.PT_TO_DIRECTION = string.match(MCDU2_BLINE_3, "([UPDN]+)")
-                FOPM_CONFIG_VARIABLE.PT_TO_ANGLE = tonumber(string.match(MCDU2_BLINE_3, "/.-[UPDN]+(%d+%.%d+)"))
-                FOPM_CONFIG_VARIABLE.FLAP_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_1, "(%d+)"))
-                FOPM_CONFIG_VARIABLE.SLAT_RETRACT_SPEED = tonumber(string.match(MCDU2_GLINE_2, "(%d+)"))
-                FOPM_CONFIG_VARIABLE.GREENDOT = tonumber(string.match(MCDU2_GLINE_3,"(%d+)"))
-                if e.check() then
-                    FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = FOPM_CONFIG_VARIABLE.PT_TO_ANGLE * 1
-                    proc_adv(cfg, 1)
-                    command_begin(PITCH_TRIM_UP)
-                else
-                    FOPM_CONFIG_VARIABLE.PT_TO_CONFIG = FOPM_CONFIG_VARIABLE.PT_TO_ANGLE * -1
-                    proc_adv(cfg, 1)
-                    command_begin(PITCH_TRIM_DN)
-                end
-            end,
-            TRIM_STOP = function (e, cfg)
-                if e.check() then
-                    command_end(PITCH_TRIM_DN)
-                    command_end(PITCH_TRIM_UP)
-                    proc_adv(cfg, 1)
-                end
-            end,
-            ["OETD CHECK"] = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 2)
-                    FOPM_Procedures_Control.EXECUTE_OETD = true
-                    proc_step(cfg, 3)
-                else
-                    proc_adv(cfg, 1)
-                    proc_step(cfg, 3)
-                end
-            end,
-            FLTCTLCHK = h_fltctlchk
-        }
-    },
-    TXP = {
-        pack = "Taxi_procedure", step = "STEP", pstep = "PROC_STEP",
-        flap_config = true,
-        end_ready = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_TXP = false
-            FOPM_TL_COMPLETED_PROC.Taxi_procedure = true
-            FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
-        end,
-        handlers = {
-            WEATHER_RADAR = h_weather_radar,
-            ENGINE_MODE_SELECTOR = h_engine_mode,
-            BRAKE_TEMP = h_brake_temp,
-            TEMP_CHECK = h_temp_check,
-            ON_OETD = h_on_oetd,
-            ["OETD CHECK"] = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 2)
-                    FOPM_Procedures_Control.EXECUTE_OETD = true
-                    proc_step(cfg, 3)
-                else
-                    proc_adv(cfg, 1)
-                end
-            end,
-            FLTCTLCHK = h_fltctlchk
-        }
-    },
-    BTP = {
-        pack = "Before_takeoff_proc", step = "STEP", pstep = "PROC_STEP",
-        flap_config = true,
-        end_ready = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_BTP = false
-            FOPM_TL_COMPLETED_PROC.Before_takeoff_proc = true
-            FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE = false
-        end,
-        handlers = {
-            WEATHER_RADAR = h_weather_radar,
-            ENGINE_MODE_SELECTOR = h_engine_mode,
-            BRAKE_TEMP = h_brake_temp,
-            TEMP_CHECK = h_temp_check,
-            ON_OETD = h_on_oetd,
-            PACKS = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 3)
-                else
-                    proc_adv(cfg, 1)
-                end
-            end
-        }
-    },
-    AL = {
-        pack = "After_landing_proc", step = "STEP", pstep = "PROC_STEP",
-        int_retry_fo_speed = true,
-        end_ready = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_AL_PROC = false
-            FOPM_TL_COMPLETED_PROC.After_landing_proc = true
-        end,
-        handlers = {
-            FLAPS = function (e, cfg)
-                if e.check() then
-                    FOPM_CONFIG_VARIABLE.F_TARGET = 0.25
-                    FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
-                    proc_adv(cfg, 1)
-                else
-                    FOPM_CONFIG_VARIABLE.F_TARGET = 0
-                    FOPM_CONFIG_VARIABLE.F_ATARGET = FLAPS_LEVER_State
-                    proc_adv(cfg, 1)
-                end
-            end,
-            FLAPS_RET = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 1)
-                else
-                    command_once(FLAPS_1UP)
-                    FOPM_CONFIG_VARIABLE.F_ATARGET = FOPM_CONFIG_VARIABLE.F_ATARGET - 0.25
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
-                end
-            end
-        }
-    },
-    OETD = {
-        pack = "One_engine_taxi_DEP", step = "STEP_ONEENG", pstep = "PROC_OE_STEP", des = "DES_MADED_OE",
-        ready_for_to = true, save_step = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_OETD = false
-            FOPM_Procedures_Control.ONEENG_TAXI_DEP = false
-        end,
-        handlers = {
-            APU_BLEED = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 3)
-                else
-                    proc_adv(cfg, 1)
-                end
-            end,
-            ANTI_ICE = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 1)
-                else
-                    proc_adv(cfg, 2)
-                end
-            end,
-            ["After Start Checklist"] = function (e, cfg)
-                if e.check() then
-                    -- LAUNCHED THE WAY THE CHECKLIST ENGINE EXPECTS. THE FLAG IS CLEARED
-                    -- FIRST SO THE NEXT PACK STEP WAITS FOR THIS FLIGHT'S CHECKLIST AND
-                    -- NOT FOR ONE LEFT OVER FROM A PREVIOUS LEG. DURING OETD THE AFTER
-                    -- START CKL BUTTON IS HIDDEN, SO NOTHING ELSE CAN HAVE RUN IT.
-                    FOPM_TL_CHECKLIST.After_start_checklist = false
-                    FOPM_TL_CHECKLIST.ACT_CL = "After_start_checklist"
-                    FOPM_TL_CHECKLIST.EXECUTE_CL = true
-                    proc_adv(cfg, 1)
-                end
-            end,
-            PROC_COMP = function (e, cfg)
-                if e.check() then
-                    local rindex = math.random(5)
-                    FOPM_PlaySound(READY[rindex])
-                    FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(RDY, rindex))
-                    proc_adv(cfg, 1)
-                end
-            end,
-            FLTCTLCHK = h_fltctlchk,
-            ENG_COMP = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 1)
-                else
-                    proc_adv(cfg, 3)
-                end
-            end,
-            IAE_CHECK_TIME = function (e, cfg)
-                if e.check() then
-                    proc_adv(cfg, 1)
-                else
-                    proc_adv(cfg, 2)
-                end
-            end
-        }
-    },
-    -- NEVER RUNS WITH ONE ENGINE TAXI DEP, SO IT SHARES ITS STEPS
-    OETA = {
-        pack = "One_engine_taxi_ARR", step = "STEP_ONEENG", pstep = "PROC_OE_STEP", des = "DES_MADED_OE",
-        on_done = function ()
-            FOPM_Procedures_Control.ONEENG_TAXI_ARR_AVAIL = false
-            FOPM_Procedures_Control.EXECUTE_OETA = false
-        end
-    },
-    -- ENTER AND VACATING RUNWAY CAN RUN DURING THE TAXI PROCEDURES, SO THEY KEEP
-    -- THEIR OWN STEPS AND DECISION FLAG (THE TWO NEVER RUN TOGETHER)
-    ENRWY = {
-        pack = "Enter_runway_proc", step = "STEP_RWY", pstep = "PROC_RWY_STEP", des = "DES_MADED_RWY",
-        end_ready = true, end_ready_optional = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_ENRWY = false
-            FOPM_TL_COMPLETED_PROC.Enter_runway_proc = true
-        end
-    },
-    EXRWY = {
-        pack = "Vacating_runway_proc", step = "STEP_RWY", pstep = "PROC_RWY_STEP", des = "DES_MADED_RWY",
-        end_ready = true, end_ready_optional = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_EXRWY = false
-            FOPM_TL_COMPLETED_PROC.Vacating_runway_proc = false
-        end
-    },
-    CLB10 = {
-        pack = "Ten_thousand_feet_CLB", step = "STEP", pstep = "PROC_STEP",
-        end_ready = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_10FT_CLB = false
-            FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_CLB = true
-        end
-    },
-    DES10 = {
-        pack = "Ten_thousand_feet_DES", step = "STEP", pstep = "PROC_STEP",
-        end_ready = true,
-        on_done = function ()
-            FOPM_Procedures_Control.EXECUTE_10FT_DES = false
-            FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES = true
-        end
-    },
-    PARK = {
-        pack = "Parking_proc", step = "STEP", pstep = "PROC_STEP",
-        end_ready = true,
-        on_done = function ()
-            FOPM_TL_COMPLETED_PROC.Parking_proc = true
-        end
-    }
-}
 
 ---- PROCEDURES ENGINE #1
 function fopm_procedure_engine1()
@@ -1650,42 +1216,6 @@ function fopm_procedure_engine2()
             end
         end
     end
-end
-
----- PRELIMINARY COCKPIT PREPARATION
-function pre_cockpit_pre()
-    fopm_procedure_engine(FOPM_PROC_CFG.PCP)
-end
-
----- AFTER START PROCEDURE
-function after_start_proc()
-    fopm_procedure_engine(FOPM_PROC_CFG.ASP)
-end
-
----- TAXI PROCEDURE
-function taxi_proc()
-    fopm_procedure_engine(FOPM_PROC_CFG.TXP)
-end
-
----- BEFORE TAKEOFF PROCEDURE
-function before_takeoff_proc()
-    fopm_procedure_engine(FOPM_PROC_CFG.BTP)
-end
-
----- ENTER RWY
-function enter_rwy()
-    if FOPM_TL_FLT_PHASE.ON_RWY then
-        if not FOPM_TL_COMPLETED_PROC.Enter_runway_proc then
-            fopm_procedure_engine(FOPM_PROC_CFG.ENRWY)
-        else
-            FOPM_Procedures_Control.EXECUTE_ENRWY = false
-        end
-    end
-end
-
----- VACATING RWY
-function vacating_rwy()
-    fopm_procedure_engine(FOPM_PROC_CFG.EXRWY)
 end
 
 ---- TAKE OFF PROCEDURE
@@ -2276,16 +1806,6 @@ function gear_command()
     end
 end
 
----- 10.000FT CLB PROCEDURE
-function ten_thausand_feet_CLB()
-    fopm_procedure_engine(FOPM_PROC_CFG.CLB10)
-end
-
----- 10.000FT DES PROCEDURE
-function ten_thausand_feet_DES()
-    fopm_procedure_engine(FOPM_PROC_CFG.DES10)
-end
-
 ---- AP DISCONECT
 function ap_discn_behaviour()
     if FOPM_STEP_VARIABLE.STEP_AP == 0 then
@@ -2778,11 +2298,6 @@ function touch_down()
     end
 end
 
----- AFTER LANDING PROCEDURE
-function after_landing_proc()
-    fopm_procedure_engine(FOPM_PROC_CFG.AL)
-end
-
 ---- BRAKE TEMP CHECK PROCEDURE
 function brake_temp_check()
     if BRAKE1_TEMP > 150 or BRAKE2_TEMP > 150 or BRAKE3_TEMP > 150 or BRAKE4_TEMP > 150 then
@@ -2802,31 +2317,12 @@ function brake_temp_check()
     end
 end
 
--- PARKING PROCEDURE
-function parking_proc()
-    fopm_procedure_engine(FOPM_PROC_CFG.PARK)
-end
-
--- ONE ENGINE TAXI DEPARTURE
-function one_engine_taxi_DEP()
-    fopm_procedure_engine(FOPM_PROC_CFG.OETD)
-end
-
--- ONE ENGINE TAXI ARRIVAL
-function one_engine_taxi_ARR()
-    fopm_procedure_engine(FOPM_PROC_CFG.OETA)
-end
-
 -- ///////////////////////////////////
 -- ///// CHECKLIST ANSWER ENGINE /////
 -- ///////////////////////////////////
 
--- LAST QNH READ FROM A METAR, MIRRORED HERE SO THE CHECKLIST PACKS CAN SEE IT.
--- THE STATION IS KEPT TOO, SO AN ARRIVAL ITEM NEVER VALIDATES OR READS BACK A
--- DEPARTURE QNH THAT IS STILL SITTING IN MEMORY.
 FOPM_METAR = {QNH = nil, UNIT = nil, STATION = nil}
 
--- RETURNS THE METAR QNH ONLY IF IT BELONGS TO THE AIRPORT THAT MATTERS RIGHT NOW
 function FOPM_MetarQNH()
     if FOPM_METAR.QNH == nil then return nil end
     local expected
@@ -2841,8 +2337,6 @@ function FOPM_MetarQNH()
     return FOPM_METAR.QNH, FOPM_METAR.UNIT
 end
 
--- TRUE WHEN AN ALTIMETER READING IN INHG MATCHES THE METAR QNH, USING THE SAME
--- ROUNDING set_baro_ref() USES TO DRIVE THE KNOB
 local function baro_matches(setting, qnh, unit)
     if unit == "InHg" then
         return math.floor((setting * 100) + 0.5) == qnh
@@ -2850,9 +2344,6 @@ local function baro_matches(setting, qnh, unit)
     return math.floor((setting * 33.8639) + 0.5) == qnh
 end
 
--- CHECKLIST CHECK FOR BARO REFERENCE.
--- WITH A USABLE METAR BOTH ALTIMETERS MUST SIT ON THAT QNH.
--- WITHOUT ONE IT FALLS BACK TO THE OLD RULE, CP AND FO SIMPLY AGREE.
 function FOPM_BaroCheck()
     local qnh, unit = FOPM_MetarQNH()
     if qnh == nil then
@@ -2861,7 +2352,6 @@ function FOPM_BaroCheck()
     return baro_matches(CM_QNH, qnh, unit) and baro_matches(FO_QNH, qnh, unit)
 end
 
--- VALUES ABOVE 1500 ARE INHG (2992), BELOW ARE HPA (1013), SAME RULE AS set_baro_ref()
 function FOPM_BaroWord(qnh)
     if qnh > 1500 then
         return "ALTIMETER"
@@ -2872,11 +2362,6 @@ end
 -- RUNWAY SIDE LETTER TO ITS VOICE KEY
 local rwy_side_voice = {L = "LEFT", R = "RIGHT", C = "CENTER"}
 
--- SPEAKS THE ANSWER OF A CHECKLIST ITEM AND RETURNS HOW LONG IT TAKES.
--- BARO REFERENCE SAYS QNH/ALTIMETER, SPELLS THE METAR QNH DIGIT BY DIGIT AND
--- THEN SAYS ITS STATE, THE SAME WAY set_baro_ref() DOES.
--- TAKEOFF RUNWAY SPELLS THE RUNWAY NUMBER, ITS SIDE IF IT HAS ONE AND THE STATE.
--- EVERY OTHER ITEM IS ONE PLAIN CLIP.
 function FOPM_AnswerSay(entry)
     local state = entry.state
     if entry.item == "BARO_REFERENCE" then
@@ -3045,7 +2530,6 @@ function fopm_checklist_engine()
 end
 
 -- BARO SETTING
--- DEBUGIN
 local qnh_value = 1013
 local qnh_target = 0
 local qnh_step = 0
@@ -3241,7 +2725,7 @@ end
 function weather_request()
     if TIME >= FOPM_DELAY_VARIABLE.DELAY then
         if FOPM_STEP_VARIABLE.STEP == 0 then -- INICIO
-            if FOPM_CONFIG_VARIABLE.WX_READY then -- EVITA BUCLE O REPETICION INECESARIA
+            if FOPM_CONFIG_VARIABLE.WX_READY then
                 FOPM_Procedures_Control.EXECUTE_WX_REQ = false
             else
                 FOPM_STEP_VARIABLE.STEP = 1
@@ -3347,7 +2831,7 @@ function weather_request()
                 station = FOPM_CONFIG_VARIABLE.ARR_ARRP
             end
             local v, u = read_qnh_from_mcdu(station)
-            if v == nil then -- SIN QNH USABLE, SE SALE SIN TOCAR EL ALTIMETRO
+            if v == nil then
                 logMsg("XXXXX   FO/PM WX: METAR sin QNH usable ("..tostring(u).."), peticion cancelada")
                 FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed
                 FOPM_STEP_VARIABLE.STEP = 0
@@ -3384,10 +2868,6 @@ end
 ---- //////////////////////////////
 
 -- NEW FLIGHT RESET
--- CALLED WHEN PARKING GOES BACK TO PREFLIGHT, SO A SECOND LEG WITHOUT A RELOAD
--- STARTS CLEAN. THE CHECKLIST FLAGS ARE TAKEN FROM THE LOADED PACK, SO ANY
--- CHECKLIST A PACK ADDS IS RESET TOO. DEPARTURE CHANGE WORKS THE OTHER WAY
--- ROUND (TRUE = NOTHING PENDING), SO IT GOES BACK TO TRUE.
 function FOPM_ResetForNewFlight()
     for name, _ in pairs(FOPM_checklist) do
         FOPM_TL_CHECKLIST[name] = false
@@ -3657,38 +3137,12 @@ function FO_main_logic()
     if FOPM_Procedures_Control.EXECUTE_ENG2 then
         fopm_procedure_engine2()
     end
-    if FOPM_TL_FLT_PHASE.PREFLIGHT then
-        if FOPM_Procedures_Control.EXECUTE_PCP then
-            pre_cockpit_pre()
-        end
-    end
     if FOPM_TL_FLT_PHASE.ENG_START then
         if not FOPM_TL_COMPLETED_PROC.After_start_procedure then
             if ENG_Mode == 1 then
                 FOPM_Procedures_Control.UNASSIGN_PROC = "After_start_procedure"
                 proc_assignment()
             end
-        end
-    end
-    if FOPM_Procedures_Control.EXECUTE_OETD and
-       not FOPM_Procedures_Control.EXECUTE_BTP and
-       not FOPM_Procedures_Control.EXECUTE_TXP and
-       not FOPM_Procedures_Control.EXECUTE_ENRWY and
-       not FOPM_Procedures_Control.EXECUTE_EXRWY then
-        one_engine_taxi_DEP()
-    end
-    if FOPM_TL_FLT_PHASE.TAXI_OUT then
-        if FOPM_Procedures_Control.EXECUTE_TXP then
-            taxi_proc()
-        end
-        if FOPM_Procedures_Control.EXECUTE_BTP then
-            before_takeoff_proc()
-        end
-        if FOPM_Procedures_Control.EXECUTE_ENRWY then
-            enter_rwy()
-        end
-        if FOPM_Procedures_Control.EXECUTE_EXRWY then
-            vacating_rwy()
         end
     end
     if FOPM_checklist.Before_takeoff_checklist_BTL then
@@ -3734,9 +3188,6 @@ function FO_main_logic()
                 FOPM_Procedures_Control.UNASSIGN_PROC = "Ten_thousand_feet_CLB"
                 proc_assignment()
             end
-        elseif FOPM_Procedures_Control.EXECUTE_10FT_CLB then
-            FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES = false
-            ten_thausand_feet_CLB()
         end
         if not FOPM_CONFIG_VARIABLE.PASSED_TRANS_ALT then
             if TRANSITION_ALT <= math.floor(IND_ALTITUDE) then
@@ -3789,19 +3240,8 @@ function FO_main_logic()
     end
     if FOPM_TL_FLT_PHASE.TAXI_IN then
         if not FOPM_TL_COMPLETED_PROC.After_landing_proc and SPDBRK_Lever == 0 then
-            if not FOPM_Procedures_Control.EXECUTE_EXRWY then
-                FOPM_Procedures_Control.UNASSIGN_PROC = "After_landing_proc"
-                proc_assignment()
-            end
-        end
-        if FOPM_Procedures_Control.EXECUTE_EXRWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC then
-            vacating_rwy()
-        end
-        if FOPM_Procedures_Control.EXECUTE_ENRWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC then
-            enter_rwy()
-        end
-        if FOPM_Procedures_Control.EXECUTE_OETA then
-            one_engine_taxi_ARR()
+            FOPM_Procedures_Control.UNASSIGN_PROC = "After_landing_proc"
+            proc_assignment()
         end
         if CRONO >= 300 and not FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
             brake_temp_check()
@@ -3874,7 +3314,6 @@ local WND_MAIN = true
 local WND_BRIEFING = false
 local WND_PRCL_SEL = false
 local DEPARTURE_BRIEFING_BLEED_OPT = 1
-local setting_change = false
 local acf_neo_type = "N"
 FO_INTERFACE = nil
 
@@ -3884,15 +3323,12 @@ FO_INTERFACE = nil
 
 local FOPM_PAGE_SIZE = {
     MAIN     = {w = 250, h = 125},
-    MAIN_DC  = {w = 251, h = 179}, -- MAIN WHILE IT CARRIES THE EXTRA "Departure Change CKL" BUTTON
+    MAIN_DC  = {w = 251, h = 179},
     BRIEFING = {w = 310, h = 313},
     SETTINGS = {w = 290, h = 251},
     PRCL_SEL = {w = 235, h = 142}
 }
 
--- THE MAIN PAGE ONLY CARRIES THE EXTRA "Departure Change CKL" BUTTON WHILE IT
--- IS ACTUALLY DRAWN, WHICH IS IN PUSHBACK AND TAXI OUT AND NOWHERE ELSE.
--- THIS TEST IS THE SAME ONE THE BUTTON IS DRAWN UNDER, KEEP THE TWO IN STEP.
 local function FOPM_main_has_dc()
     if not (FOPM_TL_FLT_PHASE.PUSHBACK or FOPM_TL_FLT_PHASE.TAXI_OUT) then return false end
     if not FOPM_checklist.Departure_change_checklist then return false end
@@ -3907,16 +3343,7 @@ local function FOPM_active_page()
     return "MAIN"
 end
 
--- RESIZES FROM THE PAGE ON SCREEN TO THE ONE ABOUT TO BE SHOWN.
--- CALL IT BEFORE FLIPPING THE WND_ FLAGS, IT READS THE CURRENT PAGE FROM THEM.
--- THE DELTA IS ALWAYS THE PLAIN DIFFERENCE BETWEEN TWO ENTRIES OF THE TABLE
--- ABOVE, WHICH IS EXACTLY THE OLD HAND TUNED FIXED SUM SYSTEM. AN EARLIER
--- VERSION PREFERRED A HEIGHT MEASURED ON SCREEN WITH imgui, BUT THAT
--- MEASUREMENT WAS TAKEN AT THE END OF THE BUILDER, AFTER THE BUTTON HAD
--- ALREADY FLIPPED THE WND_ FLAGS, SO ON EVERY TRANSITION FRAME IT FILED THE
--- HEIGHT OF THE PAGE BEING LEFT UNDER THE NAME OF THE PAGE BEING ENTERED. THE
--- NEXT PAGE CHANGE THEN APPLIED A DELTA BUILT FROM TWO WRONG HEIGHTS AND THE
--- WINDOW CAME BACK TALLER OR SHORTER THAN IT LEFT. DO NOT REINTRODUCE IT.
+-- PAGE RESIZE
 function FOPM_resize_to(to)
     if FO_INTERFACE == nil then return end
     local from = FOPM_active_page()
@@ -3925,7 +3352,6 @@ function FOPM_resize_to(to)
     local a, b = FOPM_PAGE_SIZE[from], FOPM_PAGE_SIZE[to]
     if a == nil or b == nil then return end
     FOPM_wleft,FOPM_wtop,FOPM_wright,FOPM_wbottom = float_wnd_get_geometry(FO_INTERFACE)
-    -- A WINDOW THAT IS ALREADY GONE READS BACK AS nil, RESIZING IT WOULD THROW
     if type(FOPM_wleft) ~= "number" or type(FOPM_wtop) ~= "number" or
        type(FOPM_wright) ~= "number" or type(FOPM_wbottom) ~= "number" then return end
     float_wnd_set_geometry(FO_INTERFACE,FOPM_wleft-(b.w-a.w),FOPM_wtop,FOPM_wright,FOPM_wbottom-(b.h-a.h))
@@ -3967,11 +3393,6 @@ end
 
 -- IMGUI BUILDER
 function FO_imgui_builder(FO_INTERFACE, x, y)
-    -- ONE elseif CHAIN, NOT FOUR SEPARATE if BLOCKS. A PAGE BUTTON FLIPS THE
-    -- WND_ FLAGS IN THE MIDDLE OF THE FRAME, SO WITH SEPARATE BLOCKS THE PAGE
-    -- BEING ENTERED WAS DRAWN UNDER THE ONE BEING LEFT FOR ONE FRAME, INSIDE A
-    -- WINDOW ALREADY RESIZED FOR THE NEW PAGE. THE CHAIN DRAWS ONE PAGE PER
-    -- FRAME AND THE FLIP ONLY SHOWS UP ON THE NEXT ONE.
     if WND_MAIN then -- MAIN WINDOW
     imgui.Spacing()
         if imgui.SmallButton("Settings") then
@@ -4008,8 +3429,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                 RECOVERY_AVAIL = false
             end
         end
-        -- DEBUGING
-
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -4053,7 +3472,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     end
                 end
                 if FOPM_checklist.Securing_checklist then
-                    if not FOPM_TL_CHECKLIST.Securing_checklist and not FOPM_TL_CHECKLIST.EX_BS_CL then
+                    if not FOPM_TL_CHECKLIST.Securing_checklist then
                         if imgui.SmallButton("Securing CKL") then
                             FOPM_TL_CHECKLIST.EXECUTE_CL = true
                             FOPM_TL_CHECKLIST.ACT_CL = "Securing_checklist"
@@ -4275,7 +3694,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             end
         end
         if FOPM_TL_FLT_PHASE.TAXI_IN then
-            if not FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control["EXECUTE_"..FOPM_Procedures_Control.Engine_Assingment.Enter_runway_proc] and not FOPM_TL_CHECKLIST.EX_AL_CL then
+            if not FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control["EXECUTE_"..FOPM_Procedures_Control.Engine_Assingment.Enter_runway_proc] then
                 if imgui.SmallButton("Entry RWY") then
                     FOPM_TL_FLT_PHASE.ON_RWY = true
                     FOPM_TL_COMPLETED_PROC.Vacating_runway_proc = false
@@ -4284,7 +3703,7 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                     NEED_SAVE = true
                 end
             end
-            if FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control["EXECUTE_"..FOPM_Procedures_Control.Engine_Assingment.Vacating_runway_proc] and not FOPM_TL_CHECKLIST.EX_AL_CL then
+            if FOPM_TL_FLT_PHASE.ON_RWY and not FOPM_Procedures_Control["EXECUTE_"..FOPM_Procedures_Control.Engine_Assingment.Vacating_runway_proc] then
                 if imgui.SmallButton("Exit RWY") then
                     FOPM_TL_FLT_PHASE.ON_RWY = false
                     FOPM_TL_COMPLETED_PROC.Enter_runway_proc = false
@@ -4317,8 +3736,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_BRIEFING = false
             WND_PRCL_SEL = false
         end
-        -- DEBUGING
-
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -4522,7 +3939,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
                             FOPM_METAR.QNH = qnh_value
                             FOPM_METAR.STATION = nil
                             FOPM_Procedures_Control.EXECUTE_BARO_SET = true
-                            FOPM_Procedures_Control.EXECUTE_BARO_SET = true
                         end
                     end
                 end
@@ -4685,8 +4101,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_BRIEFING = true
             WND_PRCL_SEL = false
         end
-        -- DEBUGING
-
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -4782,8 +4196,6 @@ function FO_imgui_builder(FO_INTERFACE, x, y)
             WND_BRIEFING = true
             WND_PRCL_SEL = false
         end
-        -- DEBUGING
-
         imgui.Spacing()
         imgui.Separator()
         imgui.Spacing()
@@ -4809,9 +4221,6 @@ end
 -- FLOAT WINDOWS MASTER
 
 -- GEOMETRY SANITY CHECK
--- A GEOMETRY READ BACK FROM A WINDOW THAT WAS ALREADY GONE, OR SAVED ON A
--- MONITOR THAT IS NO LONGER THERE, COMES OUT AS nil OR AS AN ABSURD
--- COORDINATE. APPLYING IT WOULD PUT THE INTERFACE WHERE NOBODY CAN REACH IT.
 local function FOPM_geometry_valid()
     if type(FOPM_wleft) ~= "number" or type(FOPM_wtop) ~= "number" or
        type(FOPM_wright) ~= "number" or type(FOPM_wbottom) ~= "number" then
@@ -4826,10 +4235,7 @@ local function FOPM_geometry_valid()
     return true
 end
 
--- READS THE GEOMETRY AND WRITES IT TO THE CONFIG.
--- THE PAGE IS COLLAPSED BACK TO MAIN FIRST BECAUSE THE PAGE FLAGS ARE NOT
--- PERSISTED AND EVERY FRESH LOAD STARTS ON MAIN, SO SAVING A SETTINGS SIZED
--- RECT WOULD REOPEN THE MAIN PAGE AT THE WRONG SIZE ON THE NEXT SESSION.
+-- SAVE GEOMETRY
 local function FOPM_save_geometry()
     FOPM_resize_to("MAIN")
     WND_SETTINGS = false
@@ -4847,19 +4253,13 @@ local function FOPM_save_geometry()
 end
 
 -- SINGLE CLOSE PATH
--- THE HANDLE ITSELF IS THE OPEN/CLOSED STATE, THERE IS NOTHING ELSE TO KEEP IN
--- STEP. RUNS ONCE: WHOEVER GETS THERE FIRST CLEARS THE HANDLE AND THE SECOND
--- CALLER FINDS nil AND DOES NOTHING.
 local function FOPM_interface_cleanup()
     if FO_INTERFACE == nil then return end
     FOPM_save_geometry()
     FO_INTERFACE = nil
 end
 
--- CALLED BY FlyWithLua WHEN THE WINDOW GOES AWAY, WHICH IS HOW CLOSING WITH THE
--- NATIVE X ENDS UP IN THE SAME PLACE AS THE COMMAND AND THE MACRO. THE WINDOW
--- IS STILL ALIVE INSIDE THIS CALLBACK, SO ITS GEOMETRY CAN STILL BE READ, AND
--- IT MUST NOT BE DESTROYED HERE.
+-- WINDOW CLOSED CALLBACK
 function on_interface_closed(wnd)
     FOPM_interface_cleanup()
 end
@@ -4882,8 +4282,8 @@ end
 function hide_interface()
     if FO_INTERFACE == nil then return end
     local wnd = FO_INTERFACE
-    FOPM_interface_cleanup() -- SAVES WHILE THE WINDOW IS STILL ALIVE, THEN CLEARS THE HANDLE
-    float_wnd_destroy(wnd)   -- IF THIS FIRES on_interface_closed IT FINDS nil AND DOES NOTHING
+    FOPM_interface_cleanup()
+    float_wnd_destroy(wnd)
 end
 
 function toggle_interface()

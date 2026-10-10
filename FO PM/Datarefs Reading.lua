@@ -91,7 +91,6 @@ dataref("BAT_2_State", "AirbusFBW/BatOHPArray", "readonly", 1)
 dataref("EXTPWR_State", "AirbusFBW/ExtPowOHPArray", "readonly", 0) -- 1 ON/2 AVAIL -- 
 dataref("ALTNBRK_State", "AirbusFBW/AltnBrake", "readonly")
 dataref("APU_BLEED_STATE", "AirbusFBW/APUBleedSwitch", "readonly")
-dataref("Y_ELEC_PUMP_STATE", "AirbusFBW/HydPumpOHPArray", "readonly", 3)
 dataref("PACK_1_STATE", "AirbusFBW/Pack1Switch", "readonly")
 dataref("PACK_2_STATE", "AirbusFBW/Pack2Switch", "readonly")
 -- AUTOBRK STATE --
@@ -106,7 +105,6 @@ dataref("PACK_2_STATE", "AirbusFBW/Pack2Switch", "readonly")
     dataref("FPUMP_LTANK_1_STATE", "AirbusFBW/FuelAutoPumpOHPArray", "readonly", 4)
     dataref("FPUMP_LTANK_2_STATE", "AirbusFBW/FuelAutoPumpOHPArray", "readonly", 5)
 ----- S/W -----
-dataref("RADAR_SYS_SW_State", "ckpt/radar/sys/anim", "readonly")
 dataref("SEATBELTS_SW", "AirbusFBW/OHPLightSwitches", "readonly", 11) -- 1 ON
 dataref("SIGNS_STATE", "AirbusFBW/OHPLightSwitches", "readonly", 12)
 

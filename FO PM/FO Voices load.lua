@@ -22,13 +22,6 @@ local FOPM_PLAY_ON_BUS = {
     master   = play_sound_on_master_bus
 }
 
-local FOPM_STOP_ON_BUS = {
-    interior = stop_sound_on_interior_bus,
-    ui       = stop_sound_on_ui_bus,
-    com1     = stop_sound_on_com1_bus,
-    master   = stop_sound_on_master_bus
-}
-
 -- FlyWithLua CHANNEL GROUP DATAREFS, THEY START MUTED / AT ZERO VOLUME
 -- SO THE BUS MUST BE OPENED BEFORE ANYTHING CAN BE HEARD
 local FOPM_BUS_GROUP = {
@@ -221,19 +214,6 @@ function FOPM_SpeechQueueRun()
     local nxt = table.remove(FOPM_QUEUE, 1)
     FOPM_PlaySound(FOPM_Talk[nxt.key])
     FOPM_QUEUE_DUE = TIME + nxt.dur
-end
-
--- DROPS ANYTHING STILL QUEUED
-function FOPM_SpeechQueueClear()
-    FOPM_QUEUE = {}
-end
-
--- SINGLE STOP ENTRY POINT, STOPS EVERYTHING PLAYING ON THE FO/PM BUS
-function FOPM_StopSound()
-    FOPM_QUEUE = {}
-    local stop = FOPM_STOP_ON_BUS[FOPM_AUDIO_BUS]
-    if stop == nil then return end
-    stop()
 end
 
 -- BULK VOICE PACK LOADER

@@ -202,13 +202,17 @@ FOPM_DELAY_VARIABLE = {
     DELAY = 0,
     DELAY_CHECK = 0,
     DELAY_PROC = 0,
+    DELAY_PROC_ENG1 = 0,
+    DELAY_PROC_ENG2 = 0,
     DELAY_CLEAN = 0,
     DELAY_SPEACH = 0,
     DELAY_AP = 0,
     DELAY_AL = 0,
 }
 FOPM_STEP_VARIABLE = {
+    STEP = 0,
     ENG1_STEP = 0,
+    ENG2_STEP = 0,
     STEP_FLT = 0,
     STEP_CLEAN = 0,
     STEP_SPEACH = 0,
@@ -219,9 +223,12 @@ FOPM_STEP_VARIABLE = {
     STEP_RWY = 0,
     PROC_OE_STEP = 0,
     PROC_ENG1_STEP = 0,
+    PROC_ENG2_STEP = 0,
     PROC_RWY_STEP = 0,
     CKLST_STEP = 0,
-    DES_MADED = false,
+    DES_MADED_CKL = false,
+    DES_MADED1 = false,
+    DES_MADED2 = false,
     DES_MADED_OE = false,
     DES_MADED_RWY = false
 }
@@ -683,7 +690,7 @@ end
 --                       OTHERS, AND ITS PACK READS PROC_OE_STEP DIRECTLY, SO
 --                       THESE STAY THE SAME GLOBALS AS BEFORE. DELAY AND
 --                       DELAY_PROC ARE SHARED AS THEY ALWAYS WERE.
---   des                 DECISION FLAG FIELD, "DES_MADED" UNLESS SET. ONE ENGINE
+--   des                 DECISION FLAG FIELD, "DES_MADED1" UNLESS SET. ONE ENGINE
 --                       TAXI HAS ITS OWN, SO A PROCEDURE OR A CHECKLIST RUN WHILE
 --                       IT IS PAUSED CANNOT MAKE IT REPEAT A DECISION BRANCH.
 --   flap_config         SAY THE FLAPS WITH THE "CONF" CALLOUTS, NOT "FLAPS n"
@@ -1087,57 +1094,57 @@ local FOPM_PROC_CFG = {
 
 ---- PROCEDURES ENGINE #1
 function fopm_procedure_engine1()
-    local ACT_PROC = FOPM_Procedures_Control.ACT_PROC
+    local ACT_PROC = FOPM_Procedures_Control.ENG1_ACT_PROC
     if FOPM_STEP_VARIABLE.ENG1_STEP == 0 then
         FOPM_STEP_VARIABLE.ENG1_STEP = 1
         FOPM_STEP_VARIABLE.PROC_ENG1_STEP = 1
     elseif FOPM_STEP_VARIABLE.ENG1_STEP == 1 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 then
             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].step_desition then
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].to_step_desition then
-                    if DES_MADED then
+                    if FOPM_STEP_VARIABLE.DES_MADED1 then
                         FOPM_STEP_VARIABLE.PROC_ENG1_STEP = FOPM_STEP_VARIABLE.PROC_ENG1_STEP + 1
                     else
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item then
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                                 end
                             end
                         elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].int_item then
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                         end
-                        DES_MADED = true
+                        FOPM_STEP_VARIABLE.DES_MADED1 = true
                         FOPM_STEP_VARIABLE.ENG1_STEP = 2
                     end
                 else
-                    if DES_MADED then
-                        DES_MADED = false
+                    if FOPM_STEP_VARIABLE.DES_MADED1 then
+                        FOPM_STEP_VARIABLE.DES_MADED1 = false
                     end
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item then
                         if not speak_only_essencials then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                             end
                         end
                     elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                     end
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_pre_check then
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_pre_check.dataref then
@@ -1161,25 +1168,25 @@ function fopm_procedure_engine1()
                     end
                 end
             else
-                if DES_MADED then
-                    DES_MADED = false
+                if FOPM_STEP_VARIABLE.DES_MADED1 then
+                    FOPM_STEP_VARIABLE.DES_MADED1 = false
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item then
                     if not speak_only_essencials then
                         local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                         FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                     else
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                         else
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                         end
                     end
                 elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].int_item then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_pre_check then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_pre_check.dataref then
@@ -1193,7 +1200,7 @@ function fopm_procedure_engine1()
             end
         end
     elseif FOPM_STEP_VARIABLE.ENG1_STEP == 2 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 then
             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].check then
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].check() then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state then
@@ -1206,32 +1213,32 @@ function fopm_procedure_engine1()
                             end
                             if not speak_only_essencials then
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FLAP_POS[speech].del) + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FLAP_POS[speech].del) + fo_speed
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                                 end
                             end
                         else
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del) + fo_speed
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                                 end
                             end
                         end
                     else
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                     end
                     FOPM_STEP_VARIABLE.ENG1_STEP = 3
                     FOPM_STEP_VARIABLE.PROC_ENG1_STEP = FOPM_STEP_VARIABLE.PROC_ENG1_STEP + 1
@@ -1243,13 +1250,13 @@ function fopm_procedure_engine1()
                         elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_check.command then
                             command_once(FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].action_check.command)
                         end
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + 0.9
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + 0.9
                     else
-                        if TIME >= DELAY_CHECK then
+                        if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
                             end
                         end
                     end
@@ -1269,7 +1276,7 @@ function fopm_procedure_engine1()
                     local handler_item = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item or FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].int_item
                     FOPM_proc_handlers[ACT_PROC][handler_item].complex_action()
                 elseif PROC_ACTION.delay then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + PROC_ACTION.delay
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + PROC_ACTION.delay
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].item == "FLAPS" or FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].int_item == "FLAPS" then
@@ -1281,32 +1288,32 @@ function fopm_procedure_engine1()
                         end
                         if not speak_only_essencials then
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FLAP_POS[speech].del) + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FLAP_POS[speech].del) + fo_speed
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                             end
                         end
                     else
                         if not speak_only_essencials then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del) + fo_speed
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                             end
                         end
                     end
                 elseif not FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].nodelay_item then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                 end
                 FOPM_STEP_VARIABLE.ENG1_STEP = 3
                 FOPM_STEP_VARIABLE.PROC_ENG1_STEP = FOPM_STEP_VARIABLE.PROC_ENG1_STEP + 1
@@ -1314,14 +1321,14 @@ function fopm_procedure_engine1()
                 if not speak_only_essencials then
                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                     FOPM_PlaySound(FOPM_Talk[speech])
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del) + fo_speed
                 else
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].essential then
                         local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG1_STEP].state
                         FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (FO_voices_directory[speech].del)
                     else
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + fo_speed
                     end
                 end
                 FOPM_STEP_VARIABLE.ENG1_STEP = 3
@@ -1332,11 +1339,11 @@ function fopm_procedure_engine1()
             end
         end
     elseif FOPM_STEP_VARIABLE.ENG1_STEP == 3 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 then
             if FOPM_STEP_VARIABLE.PROC_ENG1_STEP > #FOPM_procedure[ACT_PROC] then
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
-                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG1 = TIME + (RDY[rindex].del) + fo_speed
                 FOPM_STEP_VARIABLE.ENG1_STEP = 0
                 FOPM_STEP_VARIABLE.PROC_ENG1_STEP = 0
                 FOPM_TL_COMPLETED_PROC[ACT_PROC] = true
@@ -1350,57 +1357,57 @@ end
 
 ---- PROCEDURES ENGINE #2
 function fopm_procedure_engine2()
-    local ACT_PROC = FOPM_Procedures_Control.ACT_PROC
+    local ACT_PROC = FOPM_Procedures_Control.ENG2_ACT_PROC
     if FOPM_STEP_VARIABLE.ENG2_STEP == 0 then
         FOPM_STEP_VARIABLE.ENG2_STEP = 1
         FOPM_STEP_VARIABLE.PROC_ENG2_STEP = 1
     elseif FOPM_STEP_VARIABLE.ENG2_STEP == 1 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 then
             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].step_desition then
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].to_step_desition then
-                    if DES_MADED then
+                    if FOPM_STEP_VARIABLE.DES_MADED2 then
                         FOPM_STEP_VARIABLE.PROC_ENG2_STEP = FOPM_STEP_VARIABLE.PROC_ENG2_STEP + 1
                     else
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item then
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                                 end
                             end
                         elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].int_item then
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                         end
-                        DES_MADED = true
+                        FOPM_STEP_VARIABLE.DES_MADED2 = true
                         FOPM_STEP_VARIABLE.ENG2_STEP = 2
                     end
                 else
-                    if DES_MADED then
-                        DES_MADED = false
+                    if FOPM_STEP_VARIABLE.DES_MADED2 then
+                        FOPM_STEP_VARIABLE.DES_MADED2 = false
                     end
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item then
                         if not speak_only_essencials then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                             end
                         end
                     elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].int_item then
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                     end
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_pre_check then
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_pre_check.dataref then
@@ -1424,25 +1431,25 @@ function fopm_procedure_engine2()
                     end
                 end
             else
-                if DES_MADED then
-                    DES_MADED = false
+                if FOPM_STEP_VARIABLE.DES_MADED2 then
+                    FOPM_STEP_VARIABLE.DES_MADED2 = false
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item then
                     if not speak_only_essencials then
                         local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                         FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                     else
                         if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                         else
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                         end
                     end
                 elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].int_item then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_pre_check then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_pre_check.dataref then
@@ -1456,7 +1463,7 @@ function fopm_procedure_engine2()
             end
         end
     elseif FOPM_STEP_VARIABLE.ENG2_STEP == 2 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 then
             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].check then
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].check() then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state then
@@ -1469,32 +1476,32 @@ function fopm_procedure_engine2()
                             end
                             if not speak_only_essencials then
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FLAP_POS[speech].del) + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FLAP_POS[speech].del) + fo_speed
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                                 end
                             end
                         else
                             if not speak_only_essencials then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del) + fo_speed
                             else
                                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                                     FOPM_PlaySound(FOPM_Talk[speech])
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                                 else
-                                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                                 end
                             end
                         end
                     else
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                     end
                     FOPM_STEP_VARIABLE.ENG2_STEP = 3
                     FOPM_STEP_VARIABLE.PROC_ENG2_STEP = FOPM_STEP_VARIABLE.PROC_ENG2_STEP + 1
@@ -1506,13 +1513,13 @@ function fopm_procedure_engine2()
                         elseif FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_check.command then
                             command_once(FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].action_check.command)
                         end
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + 0.9
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + 0.9
                     else
-                        if TIME >= DELAY_CHECK then
+                        if TIME >= FOPM_DELAY_VARIABLE.DELAY_CHECK then
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
+                                FOPM_DELAY_VARIABLE.DELAY_CHECK = TIME + (FO_voices_directory[speech].del) + 10
                             end
                         end
                     end
@@ -1532,7 +1539,7 @@ function fopm_procedure_engine2()
                     local handler_item = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item or FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].int_item
                     FOPM_proc_handlers[ACT_PROC][handler_item].complex_action()
                 elseif PROC_ACTION.delay then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + PROC_ACTION.delay
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + PROC_ACTION.delay
                 end
                 if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state then
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].item == "FLAPS" or FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].int_item == "FLAPS" then
@@ -1544,32 +1551,32 @@ function fopm_procedure_engine2()
                         end
                         if not speak_only_essencials then
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FLAP_POS[speech].del) + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FLAP_POS[speech].del) + fo_speed
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                             end
                         end
                     else
                         if not speak_only_essencials then
                             local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                             FOPM_PlaySound(FOPM_Talk[speech])
-                            FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                            FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del) + fo_speed
                         else
                             if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                                 FOPM_PlaySound(FOPM_Talk[speech])
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                             else
-                                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                             end
                         end
                     end
                 elseif not FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].nodelay_item then
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                 end
                 FOPM_STEP_VARIABLE.ENG2_STEP = 3
                 FOPM_STEP_VARIABLE.PROC_ENG2_STEP = FOPM_STEP_VARIABLE.PROC_ENG2_STEP + 1
@@ -1577,14 +1584,14 @@ function fopm_procedure_engine2()
                 if not speak_only_essencials then
                     local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                     FOPM_PlaySound(FOPM_Talk[speech])
-                    FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del) + fo_speed
+                    FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del) + fo_speed
                 else
                     if FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].essential then
                         local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE.PROC_ENG2_STEP].state
                         FOPM_PlaySound(FOPM_Talk[speech])
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (FO_voices_directory[speech].del)
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (FO_voices_directory[speech].del)
                     else
-                        FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + fo_speed
+                        FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + fo_speed
                     end
                 end
                 FOPM_STEP_VARIABLE.ENG2_STEP = 3
@@ -1595,11 +1602,11 @@ function fopm_procedure_engine2()
             end
         end
     elseif FOPM_STEP_VARIABLE.ENG2_STEP == 3 then
-        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC then
+        if TIME >= FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 then
             if FOPM_STEP_VARIABLE.PROC_ENG2_STEP > #FOPM_procedure[ACT_PROC] then
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
-                FOPM_DELAY_VARIABLE.DELAY_PROC = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_DELAY_VARIABLE.DELAY_PROC_ENG2 = TIME + (RDY[rindex].del) + fo_speed
                 FOPM_STEP_VARIABLE.ENG2_STEP = 0
                 FOPM_STEP_VARIABLE.PROC_ENG2_STEP = 0
                 FOPM_TL_COMPLETED_PROC[ACT_PROC] = true
@@ -2905,8 +2912,8 @@ function fopm_checklist_engine()
                 end
             elseif FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].step_desition then
                 if not FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].to_step_desition then
-                    if FOPM_STEP_VARIABLE.DES_MADED then
-                        FOPM_STEP_VARIABLE.DES_MADED = false
+                    if FOPM_STEP_VARIABLE.DES_MADED_CKL then
+                        FOPM_STEP_VARIABLE.DES_MADED_CKL = false
                     end
                     if FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item then
                         local speech = FOPM_checklist[ACT][FOPM_STEP_VARIABLE.CKLST_STEP].item
@@ -2925,10 +2932,10 @@ function fopm_checklist_engine()
                         FOPM_cklst_handlers[ACT][item].answerno()
                     end
                 else
-                    if not FOPM_STEP_VARIABLE.DES_MADED then
+                    if not FOPM_STEP_VARIABLE.DES_MADED_CKL then
                         FOPM_STEP_VARIABLE.STEP_CHECK = 2
                         response_CHECK = false
-                        FOPM_STEP_VARIABLE.DES_MADED = true
+                        FOPM_STEP_VARIABLE.DES_MADED_CKL = true
                     else
                         FOPM_STEP_VARIABLE.CKLST_STEP = FOPM_STEP_VARIABLE.CKLST_STEP + 1
                     end
@@ -3631,7 +3638,8 @@ function FO_main_logic()
     if FOPM_TL_FLT_PHASE.ENG_START then
         if not FOPM_TL_COMPLETED_PROC.After_start_procedure then
             if ENG_Mode == 1 then
-                after_start_proc()
+                FOPM_Procedures_Control.UNASSIGN_PROC = "After_start_procedure"
+                proc_assignment()
             end
         end
     end
@@ -3694,9 +3702,10 @@ function FO_main_logic()
     end
     if FOPM_TL_FLT_PHASE.CLIMB then
         if fo_autoperform then
-            if (not FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_CLB and IND_ALTITUDE > 14000) or FOPM_Procedures_Control.EXECUTE_10FT_CLB then
+            if not FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_CLB and IND_ALTITUDE > 14000 then
                 FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES = false
-                ten_thausand_feet_CLB()
+                FOPM_Procedures_Control.UNASSIGN_PROC = "Ten_thousand_feet_CLB"
+                proc_assignment()
             end
         elseif FOPM_Procedures_Control.EXECUTE_10FT_CLB then
             FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES = false
@@ -3716,11 +3725,11 @@ function FO_main_logic()
     end
     if FOPM_TL_FLT_PHASE.DESCEND then
         if fo_autoperform then
-            if (not FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES and IND_ALTITUDE < 14000) or FOPM_Procedures_Control.EXECUTE_10FT_DES then
-                ten_thausand_feet_DES()
+            if not FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_DES and IND_ALTITUDE < 14000 then
+                FOPM_TL_COMPLETED_PROC.Ten_thousand_feet_CLB = false
+                FOPM_Procedures_Control.UNASSIGN_PROC = "Ten_thousand_feet_CLB"
+                proc_assignment()
             end
-        elseif FOPM_Procedures_Control.EXECUTE_10FT_DES then
-            ten_thausand_feet_DES()
         end
     end
     if FOPM_TL_FLT_PHASE.DESCEND or FOPM_TL_FLT_PHASE.APPROACH then
@@ -3754,7 +3763,8 @@ function FO_main_logic()
     if FOPM_TL_FLT_PHASE.TAXI_IN then
         if not FOPM_TL_COMPLETED_PROC.After_landing_proc and SPDBRK_Lever == 0 then
             if not FOPM_Procedures_Control.EXECUTE_EXRWY then
-                after_landing_proc()
+                FOPM_Procedures_Control.UNASSIGN_PROC = "After_start_procedure"
+                proc_assignment()
             end
         end
         if FOPM_Procedures_Control.EXECUTE_EXRWY and not FOPM_Procedures_Control.EXECUTE_AL_PROC then
@@ -3775,7 +3785,8 @@ function FO_main_logic()
             brake_temp_check()
         end
         if not FOPM_TL_COMPLETED_PROC.Parking_proc and FOPM_TL_COMPLETED_PROC.BRKTEMP_CHK_DONE then
-            parking_proc()
+            FOPM_Procedures_Control.UNASSIGN_PROC = "Parking_proc"
+            proc_assignment()
         end
     end
     if FOPM_Procedures_Control.EXECUTE_BARO_SET then

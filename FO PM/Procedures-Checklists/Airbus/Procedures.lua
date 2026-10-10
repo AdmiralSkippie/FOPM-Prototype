@@ -67,9 +67,11 @@ FOPM_proc_handlers = {
                 FOPM_Procedures_Control.ENG2_ACT_PROC = "One_engine_taxi_DEP"
                 FOPM_Procedures_Control.EXECUTE_ENG2 = true
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+                FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = 3
             end,
             answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
+                FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = 3
             end
         }
     },
@@ -114,7 +116,7 @@ FOPM_proc_handlers = {
             answeryes = function ()
                 local rindex = math.random(3)
                 FOPM_PlaySound(BRAKE_WARNINGS[rindex])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(BRAKE_WARN, rindex))
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc] = TIME + (FOPM_Duration(BRAKE_WARN, rindex))
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 1
             end,
             answerno = function ()
@@ -125,7 +127,7 @@ FOPM_proc_handlers = {
             answeryes = function ()
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc] = TIME + (RDY[rindex].del) + fo_speed
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] - 1
             end
         },
@@ -157,7 +159,7 @@ FOPM_proc_handlers = {
             answeryes = function ()
                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"]].int_item
                 FOPM_PlaySound(FOPM_Talk[speech])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB] = TIME + (FO_voices_directory[speech].del)
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] + 1
             end
         }
@@ -167,7 +169,7 @@ FOPM_proc_handlers = {
             answeryes = function ()
                 local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"]].int_item
                 FOPM_PlaySound(FOPM_Talk[speech])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FO_voices_directory[speech].del)
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES] = TIME + (FO_voices_directory[speech].del)
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
             end
         },
@@ -208,7 +210,7 @@ FOPM_proc_handlers = {
             answerno = function ()
                 command_once(FLAPS_1UP)
                 FOPM_CONFIG_VARIABLE.F_ATARGET = FOPM_CONFIG_VARIABLE.F_ATARGET - 0.25
-                FOPM_DELAY_VARIABLE.DELAY = TIME + fo_speed + 0.25
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_landing_proc] = TIME + fo_speed + 0.25
             end
         }
     },
@@ -268,7 +270,7 @@ FOPM_proc_handlers = {
             complex_action = function ()
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
-                FOPM_DELAY_VARIABLE.DELAY = TIME + (FOPM_Duration(RDY, rindex))
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP] = TIME + (FOPM_Duration(RDY, rindex))
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
             end
         },
@@ -286,6 +288,14 @@ FOPM_proc_handlers = {
             end,
             answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 2
+            end
+        },
+        TIME_COMP = {
+            answeryes = function ()
+                local rindex = math.random(5)
+                FOPM_PlaySound(READY_FOR_TO[rindex])
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP] = TIME + (FOPM_Duration(RDY_TO_DIR, rindex))
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
             end
         }
     }
@@ -524,7 +534,7 @@ FOPM_procedure = {
         [8] = {
             int_item = "ON_OETD",
             step_desition = true,
-            check = function() return not FOPM_Procedures_Control.EXECUTE_OETD end,
+            check = function() return not FOPM_Procedures_Control.ONEENG_TAXI_DEP end,
         },
         [9] = {
             item = "AUTOBRAKES",
@@ -679,7 +689,7 @@ FOPM_procedure = {
         [1] = {
             int_item = "TEN_THAUSAND_FEET",
             step_desition = true,
-            condition = function () return fo_autoperform end
+            check = function () return fo_autoperform end
         },
         [2] = {
             item = "EXTERIOR_LIGHTS",
@@ -714,7 +724,7 @@ FOPM_procedure = {
         [1] = {
             int_item = "TEN_THAUSAND_FEET",
             step_desition = true,
-            condition = function () return fo_autoperform end
+            check = function () return fo_autoperform end
         },
         [2] = {
             item = "EXTERIOR_LIGHTS",
@@ -979,7 +989,7 @@ FOPM_procedure = {
             action = {command = APU_MASTER_PB},
         },
         [17] = {
-            item = "APU_OFF_SKIP",
+            int_item = "APU_OFF_SKIP",
             essential = true,
             step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
@@ -1052,7 +1062,7 @@ FOPM_procedure = {
         },
         [30] = {
             int_item = "PROC_COMP",
-            complex_action = true
+            action = {complex_action = true}
         },
         [31] = {
             int_item = "ENG_COMP",
@@ -1068,16 +1078,12 @@ FOPM_procedure = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
-            state = "READY_FOR_TO",
-            essential = true,
             check = function () return CRONO >= 300 end
         },
         [34] = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
-            state = "READY_FOR_TO",
-            essential = true,
             check = function () return CRONO >= 120 end
         },
         [35] = {

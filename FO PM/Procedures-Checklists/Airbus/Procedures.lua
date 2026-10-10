@@ -166,7 +166,7 @@ FOPM_proc_handlers = {
             answeryes = function ()
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
-                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc] = TIME + (RDY[rindex].del) + fo_speed
+                FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc] = TIME + (RDY[rindex].del)
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] - 1
             end
         },

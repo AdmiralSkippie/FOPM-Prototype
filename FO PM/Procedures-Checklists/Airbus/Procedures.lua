@@ -978,99 +978,91 @@ FOPM_procedure = {
             state = "OFF",
             action = {command = APU_MASTER_PB},
         },
-        [14] = {
+        [17] = {
             item = "APU_OFF_SKIP",
             essential = true,
             step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.APU_TO_PACKS end
         },
-        [17] = {
+        [18] = {
             step_desition = true,
             to_step_desition = true,
             essential = true,
             state = "ON",
         },
-        [18] = {
+        [19] = {
             item = "CROSS_BLEED",
             essential = true,
             state = "AUTO",
             action = {dataref = 1},
             dataref_name = "XBLEED_SW"
         },
-        [19] = {
+        [20] = {
             item = "ECAM_STATUS",
             essential = true,
             state = "CHECK",
         },
-        [20] = {
+        [21] = {
             item = "ENGINE2",
             essential = true,
         },
-        [21] = {
+        [22] = {
             item = "ANTI_ICE",
             step_desition = true,
             essential = true,
             check = function () return FOPM_CONFIG_VARIABLE.RAINING and OAT < 10 end
-        },
-        [22] = {
-            step_desition = true,
-            to_step_desition = true,
-            essential = true,
-            state = "SET",
-            action = {command = ANTI_ICE_ENG2_PB}
         },
         [23] = {
             step_desition = true,
             to_step_desition = true,
             essential = true,
             state = "SET",
+            action = {command = ANTI_ICE_ENG2_PB}
         },
         [24] = {
+            step_desition = true,
+            to_step_desition = true,
+            essential = true,
+            state = "SET",
+        },
+        [25] = {
             nodelay_item = "After_Start_Checklist",
             step_desition = true,
             check = function () return not FOPM_TL_CHECKLIST.EXECUTE_CL end
         },
-        [25] = {
+        [26] = {
             nodelay_item = "WAIT_CL",
             step_desition = true,
             check = function () return FOPM_TL_CHECKLIST.After_start_checklist end
         },
-        [26] = {
+        [27] = {
             int_item = "FLTCTLCHK",
             step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
         },
-        [27] = {
+        [28] = {
             item = "AUTOBRAKES",
             essential = true,
             state = "MAX",
             action = {command = AUTOBRK_MAX_PB},
         },
-        [28] = {
+        [29] = {
             int_item = "TO_CONFIG",
             action = {command = TO_CONFIG_PB},
         },
-        [29] = {
+        [30] = {
             int_item = "PROC_COMP",
             complex_action = true
         },
-        [30] = {
+        [31] = {
             int_item = "ENG_COMP",
             step_desition = true,
             check = function () return ENG_MODEL == 0 end
         },
-        [31] = {
+        [32] = {
             int_item = "IAE_CHECK_TIME",
             step_desition = true,
             check = function () return FOPM_CONFIG_VARIABLE.IAE_SD_TIME > 7200 end
-        },
-        [32] = {
-            int_item = "TIME_COMP",
-            step_desition = true,
-            to_step_desition = true,
-            state = "READY_FOR_TO",
-            essential = true,
-            check = function () return CRONO >= 300 end
         },
         [33] = {
             int_item = "TIME_COMP",
@@ -1078,13 +1070,21 @@ FOPM_procedure = {
             to_step_desition = true,
             state = "READY_FOR_TO",
             essential = true,
-            check = function () return CRONO >= 120 end
+            check = function () return CRONO >= 300 end
         },
         [34] = {
+            int_item = "TIME_COMP",
+            step_desition = true,
+            to_step_desition = true,
+            state = "READY_FOR_TO",
+            essential = true,
+            check = function () return CRONO >= 120 end
+        },
+        [35] = {
             int_item = "STOP_CHRONO",
             action = {command = CRONO_SET_PB}
         },
-        [35] = {
+        [36] = {
             int_item = "STOP_CHRONO",
             action = {command = CRONO_RESET_PB}
         }

@@ -2,25 +2,64 @@
 -- FO/PM PROCEDURES --
 ----------------------
 
--- EVERY PROCEDURE IS A LIST OF STEPS THE PROCEDURE ENGINE RUNS IN ORDER. FIELDS OF A STEP:
---   item                VOICE SAID WHEN THE STEP STARTS (A KEY OF THE VOICE PACK). IF THE
---                       STEP WAITS ON A check, IT IS SAID AGAIN EVERY 10 s
---   int_item            SILENT NAME, ONLY TO TELL THE STEP APART (A SHORT PAUSE, NO VOICE)
---   state               VOICE SAID WHEN THE STEP IS DONE ("FLAPS" SAYS THE FLAPS POSITION)
---   essential           SAID EVEN WITH SPEAK ONLY ESSENTIALS
---   condition           function, THE STEP IS SKIPPED WHILE IT RETURNS false
---   check               function, THE STEP WAITS UNTIL IT RETURNS true
---   action              DONE ONCE WHEN THE STEP ENDS
---   action_check        DONE WHILE check IS false, THEN check IS ASKED AGAIN
---   action_pre_check    DONE WHEN THE STEP STARTS
---                       AN ACTION CAN HOLD dataref = VALUE (WRITTEN TO dataref_name),
---                       command = CMD, run = function, delay = SECONDS TO WAIT AFTER IT.
---                       command AND dataref_name ALSO TAKE A LIST: {CMD_A, CMD_B}
---   dataref_name        NAME OF THE DATAREF VARIABLE, OR A LIST OF NAMES
---   step_desition       DECISION STEP, ITS LOGIC IS A HANDLER OF THE PROCEDURE (FO-PM.lua)
---   to_step_desition    BRANCH OF A DECISION, SKIPPED IF ANOTHER BRANCH OF IT ALREADY RAN
---   recovery_step       (ONE ENGINE TAXI DEP) STEP TO RESUME FROM IF RECOVERED HERE
--- A NEW PROCEDURE ALSO NEEDS ITS ENTRY IN FOPM_PROC_CFG (FO-PM.lua) AND SOMETHING TO START IT.
+-- EVERY PROCEDURE IS A LIST OF STEPS. THE ENGINE IT IS ASSIGNED TO (ENG1 / ENG2, SEE
+-- Engine_Assingment IN FO-PM.lua) RUNS THEM IN ORDER. FIELDS OF A STEP:
+--
+-- NAME OF THE STEP (ONE OF THEM). IT IS ALSO THE KEY OF ITS HANDLER, IF IT HAS ONE
+--   item                VOICE SAID WHEN THE STEP STARTS (A KEY OF FO_voices_directory),
+--                       THEN THE ENGINE WAITS FOR IT. IF THE STEP WAITS ON A check, IT IS
+--                       SAID AGAIN EVERY 10 s
+--   int_item            SILENT NAME, A fo_speed PAUSE, NO VOICE
+--   nodelay_item        SILENT NAME, NO PAUSE. A DECISION WITH IT IS CHECKED EVERY FRAME
+--
+-- VOICE
+--   state               VOICE SAID WHEN THE STEP IS DONE (A KEY OF FO_voices_directory).
+--                       ON A STEP NAMED "FLAPS": state = "POS" SAYS THE FLAPS POSITION,
+--                       state = "CONF" SAYS THE TAKEOFF CONFIG
+--   essential           item AND state ARE SAID EVEN WITH SPEAK ONLY ESSENTIALS. WITHOUT
+--                       IT THEY BECOME A SILENT fo_speed PAUSE
+--
+-- WAIT
+--   check               function, THE STEP WAITS UNTIL IT RETURNS true. IF THE STEP ALSO
+--                       HAS action = {complex_action = true}, THAT HANDLER RUNS WHEN check
+--                       PASSES (ANY OTHER action IS IGNORED ON A STEP WITH check)
+--   action_check        DONE EVERY 0.9 s WHILE check IS false: {dataref = V} OR {command = CMD}
+--
+-- ACTIONS
+--   action_pre_check    DONE WHEN THE STEP STARTS: {dataref = V} OR {command = CMD}
+--                       (NOT ON A to_step_desition BRANCH)
+--   action              DONE ONCE ON A STEP WITHOUT check. ONE OF:
+--                         dataref = V            WRITTEN TO dataref_name
+--                         command = CMD          OR A LIST {CMD_A, CMD_B}
+--                         command_begin = CMD    command_end = CMD
+--                         complex_action = true  RUNS complex_action OF THE STEP'S HANDLER
+--                         delay = SECONDS        WAIT BEFORE THE NEXT STEP
+--   dataref_name        NAME OF THE DATAREF VARIABLE. IN action IT CAN BE A LIST {"A", "B"}
+--
+-- DECISIONS
+--   step_desition       DECISION STEP. ITS check() IS ASKED ONCE AND THE HANDLER answeryes /
+--                       answerno RUNS. THE ENGINE DOES NOT MOVE ON BY ITSELF: THE HANDLER
+--                       MOVES THE STEP. A MISSING answer KEEPS THE STEP REPEATING (POLLING)
+--   to_step_desition    BRANCH OF A DECISION. THE FIRST BRANCH REACHED RUNS AS A NORMAL STEP,
+--                       THE NEXT CONSECUTIVE BRANCHES ARE SKIPPED. ANY NON BRANCH STEP CLOSES
+--                       THE DECISION
+--
+-- HANDLERS (FOPM_proc_handlers.<PROCEDURE>.<STEP NAME>)
+--   answeryes / answerno    DECISION RESULT, MOVES THE STEP
+--   complex_action          LOGIC THE PACK CAN NOT EXPRESS WITH FIELDS. THE ENGINE MOVES
+--                           THE STEP AFTER IT
+--   ALWAYS REACH THE ENGINE THROUGH Engine_Assingment, NEVER BY ENGINE NAME:
+--     FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.<PROC>.."_STEP"]  STEP OF THE LIST
+--     FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.<PROC>.."_STEP"] = 3       ENDS THE PROCEDURE
+--                                                                                         IF THE STEP IS PAST THE LAST
+--     FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.<PROC>]   ENGINE WAIT
+--
+-- WHEN THE LAST STEP IS DONE THE ENGINE SAYS "READY" (NOT WITH SPEAK ONLY ESSENTIALS) AND SETS
+-- FOPM_TL_COMPLETED_PROC.<PROCEDURE> = true.
+-- A NEW PROCEDURE ALSO NEEDS ITS ENGINE IN Engine_Assingment AND ITS FLAG IN FOPM_TL_COMPLETED_PROC
+-- (FO-PM.lua), AND SOMETHING TO START IT:
+--   FOPM_Procedures_Control.UNASSIGN_PROC = "<PROCEDURE>"
+--   proc_assignment()   (IGNORED WHILE ITS ENGINE IS BUSY)
 
 FOPM_proc_config_name = "Airbus"
 
@@ -64,8 +103,8 @@ FOPM_proc_handlers = {
         },
         OETD_CHECK = {
             answeryes = function ()
-                FOPM_Procedures_Control.ENG2_ACT_PROC = "One_engine_taxi_DEP"
-                FOPM_Procedures_Control.EXECUTE_ENG2 = true
+                FOPM_Procedures_Control.UNASSIGN_PROC = "One_engine_taxi_DEP"
+                proc_assignment()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] + 1
                 FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.After_start_procedure.."_STEP"] = 3
             end,
@@ -107,7 +146,7 @@ FOPM_proc_handlers = {
             end,
             answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] + 3
-                FOPM_STEP_VARIABLE.ENG1_STEP = 3
+                FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.Taxi_procedure.."_STEP"] = 3
             end
         }
     },
@@ -150,16 +189,19 @@ FOPM_proc_handlers = {
         PACKS_OFF = {
             answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] + 2
-                FOPM_STEP_VARIABLE.ENG1_STEP = 3
+                FOPM_STEP_VARIABLE[FOPM_Procedures_Control.Engine_Assingment.Before_takeoff_proc.."_STEP"] = 3
             end
         }
     },
     Ten_thousand_feet_CLB = {
         TEN_THAUSAND_FEET = {
             answeryes = function ()
-                local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"]].int_item
+                local speech = FOPM_procedure.Ten_thousand_feet_CLB[FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"]].int_item
                 FOPM_PlaySound(FOPM_Talk[speech])
                 FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB] = TIME + (FO_voices_directory[speech].del)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] + 1
+            end,
+            answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_CLB.."_STEP"] + 1
             end
         }
@@ -167,9 +209,12 @@ FOPM_proc_handlers = {
     Ten_thousand_feet_DES = {
         TEN_THAUSAND_FEET = {
             answeryes = function ()
-                local speech = FOPM_procedure[ACT_PROC][FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"]].int_item
+                local speech = FOPM_procedure.Ten_thousand_feet_DES[FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"]].int_item
                 FOPM_PlaySound(FOPM_Talk[speech])
                 FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES] = TIME + (FO_voices_directory[speech].del)
+                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
+            end,
+            answerno = function ()
                 FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.Ten_thousand_feet_DES.."_STEP"] + 1
             end
         },
@@ -271,7 +316,6 @@ FOPM_proc_handlers = {
                 local rindex = math.random(5)
                 FOPM_PlaySound(READY[rindex])
                 FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP] = TIME + (FOPM_Duration(RDY, rindex))
-                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
             end
         },
         ENG_COMP = {
@@ -291,11 +335,10 @@ FOPM_proc_handlers = {
             end
         },
         TIME_COMP = {
-            answeryes = function ()
-                local rindex = math.random(5)
+            complex_action = function ()
+                local rindex = math.random(3)
                 FOPM_PlaySound(READY_FOR_TO[rindex])
                 FOPM_DELAY_VARIABLE["DELAY_PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP] = TIME + (FOPM_Duration(RDY_TO_DIR, rindex))
-                FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] = FOPM_STEP_VARIABLE["PROC_"..FOPM_Procedures_Control.Engine_Assingment.One_engine_taxi_DEP.."_STEP"] + 1
             end
         }
     }
@@ -504,7 +547,7 @@ FOPM_procedure = {
         [3] = {
             item = "WEATHER_RADAR",
             step_desition = true,
-            check = function () return radar_pos == 1 end
+            check = function () return RADAR_SYS_SW == 1 end
         },
         [4] = {
             state = "ON",
@@ -549,7 +592,7 @@ FOPM_procedure = {
     },
     Before_takeoff_proc = {
         [1] = {
-            item = "BRAKE_TEMP",
+            int_item = "BRAKE_TEMP",
             step_desition = true,
             check = function () return BRAKE1_TEMP > 150 and BRAKE2_TEMP > 150 and BRAKE3_TEMP > 150 and BRAKE4_TEMP > 150 end
         },
@@ -630,8 +673,8 @@ FOPM_procedure = {
         },
         [3] = {
             -- STROBE, NOT WHEN CROSSING A RUNWAY AFTER LANDING
-            condition = function () return not FOPM_TL_FLT_PHASE.TAXI_IN end,
-            action = {dataref = 2},
+            check = function () return FOPM_TL_FLT_PHASE.TAXI_IN or STROBE_SW == 2 end,
+            action_check = {dataref = 2},
             dataref_name = "STROBE_SW"
         },
         [4] = {
@@ -1046,7 +1089,7 @@ FOPM_procedure = {
             check = function () return FOPM_TL_CHECKLIST.After_start_checklist end
         },
         [27] = {
-            int_item = "FLTCTLCHK",
+            nodelay_item = "FLTCTLCHK",
             step_desition = true,
             check = function () return FOPM_TL_COMPLETED_PROC.FLTCTL_CHK end,
         },
@@ -1072,19 +1115,21 @@ FOPM_procedure = {
         [32] = {
             int_item = "IAE_CHECK_TIME",
             step_desition = true,
-            check = function () return FOPM_CONFIG_VARIABLE.IAE_SD_TIME > 7200 end
+            check = function () return (TIME - FOPM_CONFIG_VARIABLE.IAE_SD_TIME) > 7200 end
         },
         [33] = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
-            check = function () return CRONO >= 300 end
+            check = function () return CRONO >= 300 end,
+            action = {complex_action = true}
         },
         [34] = {
             int_item = "TIME_COMP",
             step_desition = true,
             to_step_desition = true,
-            check = function () return CRONO >= 120 end
+            check = function () return CRONO >= 120 end,
+            action = {complex_action = true}
         },
         [35] = {
             int_item = "STOP_CHRONO",

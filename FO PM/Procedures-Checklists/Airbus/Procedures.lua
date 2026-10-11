@@ -827,6 +827,10 @@ FOPM_procedure = {
             action = {dataref = 1},
             dataref_name = "ENG_Mode"
         },
+        [13] = {
+            -- CLOSING STEP, THE IGNITION BRANCH SKIPS NORMAL AND ENDS HERE
+            nodelay_item = "DES_END"
+        },
     },
     After_landing_proc = {
         [1] = {
